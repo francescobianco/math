@@ -13,7 +13,7 @@ help: ## Show this help
 start: ## Serve files locally at http://127.0.0.1:$(PORT) (read-only)
 	$(PY) -m http.server $(PORT) --bind 127.0.0.1
 
-build: ## Rebuild content/index.json from the .md files
+build: ## Rebuild index.json from the .md files in library/
 	@$(PY) -c "$$BUILD_MANIFEST_PY"
 
 clean: ## Remove temporary files
@@ -23,7 +23,7 @@ clean: ## Remove temporary files
 # Tree manifest generator (also used by the GitHub Action).
 define BUILD_MANIFEST_PY
 import json, os
-content = "content"
+library = "library"
 def frontmatter(raw):
     meta = {}
     if raw.startswith("---"):
@@ -35,10 +35,10 @@ def frontmatter(raw):
                     meta[key.strip()] = value.strip()
     return meta
 docs = []
-for name in sorted(os.listdir(content)):
+for name in sorted(os.listdir(library)):
     if not name.endswith(".md"):
         continue
-    with open(os.path.join(content, name), encoding="utf-8") as fh:
+    with open(os.path.join(library, name), encoding="utf-8") as fh:
         meta = frontmatter(fh.read())
     docs.append({
         "slug": name[:-3],
@@ -48,7 +48,7 @@ for name in sorted(os.listdir(content)):
         "updated": meta.get("updated", ""),
     })
 docs.sort(key=lambda d: d.get("updated", ""), reverse=True)
-with open(os.path.join(content, "index.json"), "w", encoding="utf-8") as fh:
+with open("index.json", "w", encoding="utf-8") as fh:
     json.dump({"documents": docs}, fh, indent=2, ensure_ascii=False)
     fh.write("\n")
 print("index.json rebuilt: %d documents." % len(docs))

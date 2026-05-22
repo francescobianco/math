@@ -1,7 +1,7 @@
 # Math Wiki
 
 A static math wiki: a single-page app (`index.html`) you can publish on GitHub
-Pages. Every document is a Markdown file under `content/`, so **the repository
+Pages. Every document is a Markdown file under `library/`, so **the repository
 is both the application and the content store**.
 
 Documents have four standard types and appear in the tree on the left:
@@ -34,8 +34,8 @@ The target repo is configured at the top of the script in `index.html`
 detected automatically.
 
 When a `.md` file is committed, a **GitHub Action**
-(`.github/workflows/manifest.yml`) rebuilds `content/index.json` (the tree) and
-commits it back, so the site stays up to date with no manual step.
+(`.github/workflows/manifest.yml`) rebuilds `index.json` (the tree) at the
+project root and commits it back, so the site stays up to date with no manual step.
 
 ## Local development
 
@@ -45,11 +45,11 @@ dependencies. Saving still goes through GitHub, exactly like online.
 ```bash
 make start          # serves on http://127.0.0.1:5040
 make start PORT=9000
-make build          # rebuild content/index.json from the .md files (the Action does this too)
+make build          # rebuild index.json from the .md files in library/ (the Action does this too)
 make help
 ```
 
 ## Publishing on GitHub Pages
 
 Enable Pages for the repo (branch `main`, root folder). The `.nojekyll` file
-disables Jekyll, so the `.md` files under `content/` are served as raw files.
+disables Jekyll, so the `.md` files under `library/` are served as raw files.

@@ -15,7 +15,7 @@ container for all of the wiki's objects.
 
 - Press **+ New** to create a *page*, *book*, *paper*, or *note*.
 - Until you press **Save**, the document stays a **draft** in memory, not written to disk.
-- Pressing **Save** commits a `.md` file into `content/` on GitHub (you provide a token once per session), and the tree on the left updates.
+- Pressing **Save** commits a `.md` file into `library/` on GitHub (you provide a token once per session), and the tree on the left updates.
 
 ## Inline and display math
 

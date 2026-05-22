@@ -15,11 +15,11 @@
   <style>
     :root {
       --bg-chrome: #f3f4f6;
-      --bg-canvas: #54585c;
-      --sidebar: #1f2430;
-      --sidebar-soft: #2a3140;
-      --sidebar-text: #c7cdda;
-      --sidebar-muted: #7d869b;
+      --bg-canvas: #5b6066;        /* page area: lighter than the chrome */
+      --sidebar: #3a3d42;          /* sidebar + topbar: darker gray */
+      --sidebar-soft: #4a5057;
+      --sidebar-text: #d2d6dc;
+      --sidebar-muted: #969ca6;
       --accent: #2f6df0;
       --border: #e3e6eb;
       --page-w: 210mm;
@@ -79,17 +79,15 @@
       margin-left: auto; font-weight: 600; opacity: .7;
     }
     .tree-item {
-      display: flex; align-items: center; gap: 9px;
-      padding: 7px 10px; margin: 1px 2px; border-radius: 8px;
+      display: flex; align-items: center;
+      padding: 6px 10px 6px 30px; margin: 1px 2px; border-radius: 8px;
       font-size: 13.5px; cursor: pointer; color: var(--sidebar-text);
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .tree-item:hover { background: var(--sidebar-soft); }
     .tree-item.active { background: var(--accent); color: #fff; }
-    .tree-item .ico { flex: 0 0 auto; opacity: .9; }
     .tree-item .label { overflow: hidden; text-overflow: ellipsis; }
     .tree-item.draft { font-style: italic; color: #ffd479; }
-    .tree-item.draft .dot { color: #ffd479; }
     .tree-empty { padding: 14px 12px; font-size: 13px; color: var(--sidebar-muted); }
     .sidebar-foot { padding: 10px 12px; border-top: 1px solid #00000033; }
     .token-btn {
@@ -105,21 +103,22 @@
     .topbar {
       flex: 0 0 auto; height: 56px;
       display: flex; align-items: center; gap: 12px;
-      padding: 0 18px; background: #fff;
-      border-bottom: 1px solid #e3e6eb;
+      padding: 0 18px; background: var(--sidebar);
+      border-bottom: 1px solid #00000026;
     }
     .crumbs {
-      font-size: 14.5px; font-weight: 600; color: #2a2f37;
+      font-size: 14.5px; font-weight: 600; color: var(--sidebar-text);
       display: flex; align-items: center; gap: 10px;
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
     .actions { margin-left: auto; display: flex; gap: 8px; flex: 0 0 auto; }
     .btn {
-      padding: 7px 14px; border-radius: 8px; border: 1px solid #d4d8df;
-      background: #fff; font-size: 13.5px; font-weight: 600; cursor: pointer;
-      color: #2a2f37;
+      padding: 7px 14px; border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, .2);
+      background: rgba(255, 255, 255, .08); font-size: 13.5px; font-weight: 600;
+      cursor: pointer; color: var(--sidebar-text);
     }
-    .btn:hover { background: #f5f6f8; }
+    .btn:hover { background: rgba(255, 255, 255, .16); }
     .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
     .btn-primary:hover { background: #245fd6; }
     .badge {
@@ -135,12 +134,12 @@
       padding: 32px 24px 64px; display: flex; justify-content: center;
     }
     .page {
-      width: var(--page-w);
-      max-width: 100%;
+      width: 100%;
+      max-width: 1200px;
       min-height: 297mm;
       background: #fff;
       box-shadow: 0 4px 24px #00000059;
-      padding: 24mm 22mm;
+      padding: 26mm 30mm;
       align-self: flex-start;
       border-radius: 2px;
     }
@@ -274,6 +273,8 @@
     const TYPE_ORDER = ["page", "book", "paper", "notes"];
     const HOME_SLUG = "home";   // always-present page, shown on startup
     const DRAFT_KEY = "mathwiki:draft";
+    const LIBRARY = "library";       // folder that holds the documents
+    const MANIFEST = "index.json";   // tree manifest at the project root
 
     // GitHub repository to save into. Locally the defaults below are used;
     // if published on <user>.github.io/<repo>/ it is detected automatically.
@@ -384,7 +385,7 @@
     async function loadManifest() {
       let docs = [];
       try {
-        const res = await fetch("content/index.json", { cache: "no-store" });
+        const res = await fetch(MANIFEST, { cache: "no-store" });
         if (res.ok) docs = (await res.json()).documents || [];
       } catch (e) { /* manifest missing or invalid */ }
       state.documents = docs;
@@ -428,8 +429,7 @@
       const node = document.createElement("div");
       node.className = "tree-item";
       if (state.current && !state.current.isDraft && state.current.slug === doc.slug) node.classList.add("active");
-      const icon = doc.slug === HOME_SLUG ? "🏠" : TYPES[doc.type].icon;
-      node.innerHTML = `<span class="ico">${icon}</span><span class="label"></span>`;
+      node.innerHTML = `<span class="label"></span>`;
       node.querySelector(".label").textContent = doc.title;
       node.title = doc.title;
       node.addEventListener("click", () => openDocument(doc.slug));
@@ -439,7 +439,7 @@
     function makeDraftItem(draft) {
       const node = document.createElement("div");
       node.className = "tree-item draft active";
-      node.innerHTML = `<span class="ico dot">●</span><span class="label"></span>`;
+      node.innerHTML = `<span class="label"></span>`;
       node.querySelector(".label").textContent = (draft.title || "Untitled") + " (draft)";
       return node;
     }
@@ -548,7 +548,7 @@
         if (!confirmLeave()) return;
       } else if (!confirmLeave()) return;
       try {
-        const res = await fetch("content/" + slug + ".md", { cache: "no-store" });
+        const res = await fetch(LIBRARY + "/" + slug + ".md", { cache: "no-store" });
         if (!res.ok) throw new Error("HTTP " + res.status);
         const { meta, body } = parseDocument(await res.text());
         state.current = {
@@ -624,7 +624,7 @@
         if (d.slug) {
           // Updating an existing document: fetch its current sha.
           slug = d.slug;
-          path = "content/" + slug + ".md";
+          path = LIBRARY + "/" + slug + ".md";
           const res = await fetch(contentsUrl(path) + ref, { headers, cache: "no-store" });
           if (res.status === 200) { sha = (await res.json()).sha; existed = true; }
           else if (res.status !== 404) throw new Error(httpError(res.status));
@@ -633,8 +633,8 @@
           const baseSlug = slugify(d.title);
           for (let n = 1; ; n++) {
             const cand = n === 1 ? baseSlug : baseSlug + "-" + n;
-            const res = await fetch(contentsUrl("content/" + cand + ".md") + ref, { headers, cache: "no-store" });
-            if (res.status === 404) { slug = cand; path = "content/" + cand + ".md"; break; }
+            const res = await fetch(contentsUrl(LIBRARY + "/" + cand + ".md") + ref, { headers, cache: "no-store" });
+            if (res.status === 404) { slug = cand; path = LIBRARY + "/" + cand + ".md"; break; }
             if (res.status !== 200) throw new Error(httpError(res.status));
           }
         }
