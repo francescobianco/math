@@ -116,6 +116,7 @@
     .toc-item.toc-special i { width: 18px; text-align: center; }
     .tree-group-head i, .menu button i, .token-btn i { width: 18px; text-align: center; font-size: 15px; }
     .sidebar-foot { padding: 10px 12px; border-top: 1px solid #00000033; }
+    .toc-back { padding: 10px 12px; border-bottom: 1px solid #00000033; }
     .token-btn {
       width: 100%; display: flex; align-items: center; gap: 10px;
       padding: 9px 10px; border: 0; border-radius: 8px; cursor: pointer;
@@ -294,11 +295,11 @@
         </div>
 
         <div id="tocView" class="side-view hidden">
-          <div class="toc-head">On this page</div>
-          <nav id="toc" class="toc"></nav>
-          <div class="sidebar-foot">
+          <div class="toc-back">
             <button id="backBtn" class="token-btn"><i class="fa-solid fa-arrow-left"></i> Back to documents</button>
           </div>
+          <div class="toc-head">On this page</div>
+          <nav id="toc" class="toc"></nav>
         </div>
       </aside>
 
