@@ -109,9 +109,10 @@
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .toc-item:hover { background: var(--sidebar-soft); }
-    .toc-item.lvl-h1 { font-weight: 700; }
-    .toc-item.lvl-h2 { padding-left: 26px; }
-    .toc-item.lvl-h3 { padding-left: 40px; opacity: .82; }
+    .toc-item.lvl-1 { font-weight: 700; }
+    .toc-item.lvl-2 { padding-left: 26px; }
+    .toc-item.lvl-3 { padding-left: 40px; opacity: .82; }
+    .toc-num { color: var(--sidebar-muted); font-weight: 600; }
     .toc-item.toc-special { color: var(--sidebar-muted); font-style: italic; }
     .toc-item.toc-special i { width: 18px; text-align: center; }
     .tree-group-head i, .menu button i, .token-btn i { width: 18px; text-align: center; font-size: 15px; }
@@ -809,12 +810,26 @@
       tocEl.appendChild(makeTocSpecial("(top)", "fa-solid fa-angles-up",
         () => { const el = canvas(); if (el) el.scrollTo({ top: 0, behavior: "smooth" }); }));
 
-      pageEl.querySelectorAll(".doc-body h1, .doc-body h2, .doc-body h3").forEach((h, i) => {
+      const heads = Array.from(pageEl.querySelectorAll(".doc-body h1, .doc-body h2, .doc-body h3"));
+      const minLevel = heads.length ? Math.min.apply(null, heads.map((h) => +h.tagName[1])) : 1;
+      const counters = [0, 0, 0];
+
+      heads.forEach((h, i) => {
         if (!h.id) h.id = "h-" + i;
+        const lvl = +h.tagName[1] - minLevel + 1;        // normalized: 1..3
+        counters[lvl - 1]++;
+        for (let k = lvl; k < counters.length; k++) counters[k] = 0;
+        const number = counters.slice(0, lvl).join(".");
+
         const item = document.createElement("a");
-        item.className = "toc-item lvl-" + h.tagName.toLowerCase();
-        item.textContent = h.textContent;
+        item.className = "toc-item lvl-" + lvl;
         item.href = "#" + h.id;
+        const num = document.createElement("span");
+        num.className = "toc-num";
+        num.textContent = number;
+        item.appendChild(num);
+        item.appendChild(document.createTextNode(" " + h.textContent));
+        item.title = number + " " + h.textContent;
         item.addEventListener("click", (e) => {
           e.preventDefault();
           h.scrollIntoView({ behavior: "smooth", block: "start" });
