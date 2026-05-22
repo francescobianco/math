@@ -1,25 +1,32 @@
 {
   "documents": [
     {
-      "slug": "benvenuto-nel-math-wiki",
-      "title": "Benvenuto nel Math Wiki",
-      "type": "notes",
-      "created": "2026-05-22T09:00:00+00:00",
-      "updated": "2026-05-22T20:40:46+00:00"
-    },
-    {
-      "slug": "analisi-reale",
-      "title": "Analisi Reale",
+      "slug": "real-analysis",
+      "title": "Real Analysis",
       "type": "book",
       "created": "2026-05-22T11:00:00+00:00",
       "updated": "2026-05-22T11:00:00+00:00"
     },
     {
-      "slug": "il-teorema-fondamentale-del-calcolo",
-      "title": "Il Teorema Fondamentale del Calcolo",
+      "slug": "the-fundamental-theorem-of-calculus",
+      "title": "The Fundamental Theorem of Calculus",
       "type": "paper",
       "created": "2026-05-22T10:00:00+00:00",
       "updated": "2026-05-22T10:00:00+00:00"
+    },
+    {
+      "slug": "welcome-to-the-math-wiki",
+      "title": "Welcome to the Math Wiki",
+      "type": "notes",
+      "created": "2026-05-22T09:00:00+00:00",
+      "updated": "2026-05-22T09:00:00+00:00"
+    },
+    {
+      "slug": "home",
+      "title": "Home",
+      "type": "page",
+      "created": "2026-05-22T08:00:00+00:00",
+      "updated": "2026-05-22T08:00:00+00:00"
     }
   ]
 }

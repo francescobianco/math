@@ -2,7 +2,7 @@
 title: The Fundamental Theorem of Calculus
 type: paper
 created: 2026-05-22T10:00:00+00:00
-updated: 2026-05-22T21:28:46.757Z
+updated: 2026-05-22T10:00:00+00:00
 ---
 
 ## Statement

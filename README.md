@@ -1,43 +1,55 @@
 # Math Wiki
 
-Un wiki matematico statico: una single-page app (`index.html`) pubblicabile su
-GitHub Pages. Ogni documento è un file Markdown dentro `content/`, quindi **la
-repository è sia l'applicazione sia il contenitore dei contenuti**.
+A static math wiki: a single-page app (`index.html`) you can publish on GitHub
+Pages. Every document is a Markdown file under `content/`, so **the repository
+is both the application and the content store**.
 
-I documenti sono di tre tipi — **libro**, **paper**, **note** — e compaiono
-nell'albero a sinistra. Il foglio centrale è impaginato come un A4, a mo' di
-anteprima PDF. Il rendering matematico usa [KaTeX](https://katex.org) e il
-Markdown è gestito da [marked](https://marked.js.org) (entrambi via CDN).
+Documents have four standard types and appear in the tree on the left:
 
-## Sviluppo locale
+- 📃 **page** — the **home** page is always present and is the landing document.
+- 📕 **book**
+- 📄 **paper**
+- 📝 **notes**
 
-Serve solo Python 3 (nessuna dipendenza esterna).
+The central sheet is laid out like an A4 page, as a PDF-style preview. Math is
+rendered with [KaTeX](https://katex.org) and Markdown is handled by
+[marked](https://marked.js.org) (both via CDN).
+
+## Saving (via the GitHub API)
+
+There is no write backend. Pressing **Save** commits the matching `.md` file
+straight to GitHub through the
+[Contents API](https://docs.github.com/rest/repos/contents): one click for both
+**new** and **existing** documents (for updates the file's current `sha` is
+fetched first).
+
+This needs a **token**: a fine-grained Personal Access Token with
+*Contents: Read and write* on this repository. The first time you save you are
+asked for it via a prompt; it is stored only in the browser's **sessionStorage**
+(cleared when the tab closes) and never committed. Use the 🔑 button at the
+bottom of the sidebar to set, replace, or remove it.
+
+The target repo is configured at the top of the script in `index.html`
+(`const GITHUB = …`); if the site runs on `<user>.github.io/<repo>/` it is
+detected automatically.
+
+When a `.md` file is committed, a **GitHub Action**
+(`.github/workflows/manifest.yml`) rebuilds `content/index.json` (the tree) and
+commits it back, so the site stays up to date with no manual step.
+
+## Local development
+
+The local server only serves files (read-only): it needs Python 3, no
+dependencies. Saving still goes through GitHub, exactly like online.
 
 ```bash
-make start          # avvia http://127.0.0.1:8080
+make start          # serves on http://127.0.0.1:5040
 make start PORT=9000
-make build          # rigenera content/index.json dai file .md
+make build          # rebuild content/index.json from the .md files (the Action does this too)
 make help
 ```
 
-Il server locale (`server.py`) serve `index.html` ed espone una piccola API che
-**scrive davvero** i documenti: premendo *Salva* viene creato il file `.md` in
-`content/` e il manifesto `content/index.json` viene rigenerato.
+## Publishing on GitHub Pages
 
-## Flusso di lavoro
-
-1. **+ Nuovo** → scegli *Paper*, *Libro* o *Note*: nasce una **bozza** in memoria
-   (autosalvata nel browser, ma non ancora su disco).
-2. Scrivi in Markdown; usa `$...$` per la matematica inline e `$$...$$` per il
-   display. Il pulsante *Anteprima* mostra il foglio impaginato.
-3. **Salva** → in locale scrive `content/<slug>.md`; committa il file per
-   pubblicarlo.
-
-## Pubblicazione su GitHub Pages
-
-Abilita Pages dalla repo (branch `main`, cartella root). Il file `.nojekyll`
-disattiva Jekyll così i `.md` in `content/` sono serviti come file raw.
-
-Su Pages non c'è backend: il *Salva* non può scrivere su disco, quindi fa da
-*fallback* scaricando il file `.md`, che poi metti in `content/`, committi e
-infine rigeneri il manifesto con `make build`.
+Enable Pages for the repo (branch `main`, root folder). The `.nojekyll` file
+disables Jekyll, so the `.md` files under `content/` are served as raw files.

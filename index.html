@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Math Wiki</title>
 
-  <!-- KaTeX: rendering matematico -->
+  <!-- KaTeX: math rendering -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
-  <!-- marked: parsing Markdown -->
+  <!-- marked: Markdown parsing -->
   <script defer src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
 
   <style>
@@ -91,6 +91,14 @@
     .tree-item.draft { font-style: italic; color: #ffd479; }
     .tree-item.draft .dot { color: #ffd479; }
     .tree-empty { padding: 14px 12px; font-size: 13px; color: var(--sidebar-muted); }
+    .sidebar-foot { padding: 10px 12px; border-top: 1px solid #00000033; }
+    .token-btn {
+      width: 100%; display: flex; align-items: center; gap: 8px;
+      padding: 8px 10px; border: 0; border-radius: 8px; cursor: pointer;
+      background: transparent; color: var(--sidebar-muted);
+      font-size: 12.5px; text-align: left;
+    }
+    .token-btn:hover { background: var(--sidebar-soft); color: var(--sidebar-text); }
 
     /* ---------- Main ---------- */
     .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
@@ -121,7 +129,7 @@
     }
     .badge-warn { background: #ffe8e8; color: #a3261f; border-color: #f3c0bc; }
 
-    /* ---------- Canvas / foglio A4 ---------- */
+    /* ---------- Canvas / A4 sheet ---------- */
     .canvas {
       flex: 1; overflow: auto; background: var(--bg-canvas);
       padding: 32px 24px 64px; display: flex; justify-content: center;
@@ -137,7 +145,7 @@
       border-radius: 2px;
     }
 
-    /* tipografia "foglio" */
+    /* "sheet" typography */
     .doc-head { text-align: center; margin-bottom: 26px; }
     .doc-kicker {
       font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
@@ -230,14 +238,18 @@
         <span class="brand-name">Math Wiki</span>
       </div>
       <div class="new-doc">
-        <button id="newBtn" class="btn btn-primary" style="width:100%">+ Nuovo</button>
+        <button id="newBtn" class="btn btn-primary" style="width:100%">+ New</button>
         <div id="newMenu" class="menu hidden">
+          <button data-type="page">📃 Page</button>
           <button data-type="paper">📄 Paper</button>
-          <button data-type="book">📕 Libro</button>
-          <button data-type="notes">📝 Note</button>
+          <button data-type="book">📕 Book</button>
+          <button data-type="notes">📝 Notes</button>
         </div>
       </div>
       <nav id="tree" class="tree"></nav>
+      <div class="sidebar-foot">
+        <button id="tokenBtn" class="token-btn">🔑 <span id="tokenLabel">Set GitHub token</span></button>
+      </div>
     </aside>
 
     <main class="main">
@@ -254,12 +266,27 @@
     "use strict";
 
     const TYPES = {
-      paper: { label: "Paper", plural: "Paper", icon: "📄" },
-      book:  { label: "Libro", plural: "Libri", icon: "📕" },
-      notes: { label: "Note",  plural: "Note",  icon: "📝" },
+      page:  { label: "Page",  plural: "Pages",  icon: "📃" },
+      book:  { label: "Book",  plural: "Books",  icon: "📕" },
+      paper: { label: "Paper", plural: "Papers", icon: "📄" },
+      notes: { label: "Note",  plural: "Notes",  icon: "📝" },
     };
-    const TYPE_ORDER = ["book", "paper", "notes"];
+    const TYPE_ORDER = ["page", "book", "paper", "notes"];
+    const HOME_SLUG = "home";   // always-present page, shown on startup
     const DRAFT_KEY = "mathwiki:draft";
+
+    // GitHub repository to save into. Locally the defaults below are used;
+    // if published on <user>.github.io/<repo>/ it is detected automatically.
+    const GITHUB = (function () {
+      const cfg = { owner: "francescobianco", repo: "math", branch: "main" };
+      const host = location.hostname;
+      if (host.endsWith("github.io")) {
+        cfg.owner = host.split(".")[0];
+        const seg = location.pathname.split("/").filter(Boolean)[0];
+        if (seg) cfg.repo = seg;
+      }
+      return cfg;
+    })();
 
     const state = {
       documents: [],
@@ -296,12 +323,12 @@
       if (!iso) return "";
       const d = new Date(iso);
       if (isNaN(d)) return "";
-      return d.toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
+      return d.toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" });
     }
 
     function slugify(text) {
       return (text || "").trim().toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "") || "senza-titolo";
+        .replace(/[^a-z0-9]+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "") || "untitled";
     }
 
     let toastTimer;
@@ -355,18 +382,12 @@
 
     /* ---------- data ---------- */
     async function loadManifest() {
-      let docs = null;
+      let docs = [];
       try {
-        const res = await fetch("/api/documents", { cache: "no-store" });
-        if (res.ok) docs = (await res.json()).documents;
-      } catch (e) { /* nessun server: provo il manifesto statico */ }
-      if (!docs) {
-        try {
-          const res = await fetch("content/index.json", { cache: "no-store" });
-          if (res.ok) docs = (await res.json()).documents;
-        } catch (e) { docs = []; }
-      }
-      state.documents = docs || [];
+        const res = await fetch("content/index.json", { cache: "no-store" });
+        if (res.ok) docs = (await res.json()).documents || [];
+      } catch (e) { /* manifest missing or invalid */ }
+      state.documents = docs;
       renderTree();
     }
 
@@ -390,13 +411,16 @@
                          `<span class="count">${items.length}</span>`;
         group.appendChild(head);
 
+        if (type === "page") {
+          items.sort((a, b) => (a.slug === HOME_SLUG ? -1 : b.slug === HOME_SLUG ? 1 : 0));
+        }
         if (draftHere) group.appendChild(makeDraftItem(draft));
         items.forEach((doc) => group.appendChild(makeItem(doc)));
         treeEl.appendChild(group);
       });
 
       if (!total && !draft) {
-        treeEl.innerHTML = `<div class="tree-empty">Nessun documento.<br>Premi <b>+ Nuovo</b> per iniziare.</div>`;
+        treeEl.innerHTML = `<div class="tree-empty">No documents yet.<br>Press <b>+ New</b> to start.</div>`;
       }
     }
 
@@ -404,7 +428,8 @@
       const node = document.createElement("div");
       node.className = "tree-item";
       if (state.current && !state.current.isDraft && state.current.slug === doc.slug) node.classList.add("active");
-      node.innerHTML = `<span class="ico">${TYPES[doc.type].icon}</span><span class="label"></span>`;
+      const icon = doc.slug === HOME_SLUG ? "🏠" : TYPES[doc.type].icon;
+      node.innerHTML = `<span class="ico">${icon}</span><span class="label"></span>`;
       node.querySelector(".label").textContent = doc.title;
       node.title = doc.title;
       node.addEventListener("click", () => openDocument(doc.slug));
@@ -415,37 +440,37 @@
       const node = document.createElement("div");
       node.className = "tree-item draft active";
       node.innerHTML = `<span class="ico dot">●</span><span class="label"></span>`;
-      node.querySelector(".label").textContent = (draft.title || "Senza titolo") + " (bozza)";
+      node.querySelector(".label").textContent = (draft.title || "Untitled") + " (draft)";
       return node;
     }
 
     /* ---------- topbar ---------- */
     function renderTopbar() {
       if (state.mode === "empty") {
-        topbarEl.innerHTML = `<div class="crumbs">Seleziona o crea un documento</div>`;
+        topbarEl.innerHTML = `<div class="crumbs">Select or create a document</div>`;
         return;
       }
       const d = state.current;
       if (state.mode === "view") {
         topbarEl.innerHTML =
           `<div class="crumbs">${TYPES[d.type].icon} <span></span></div>` +
-          `<div class="actions"><button id="editBtn" class="btn">Modifica</button></div>`;
+          `<div class="actions"><button id="editBtn" class="btn">Edit</button></div>`;
         topbarEl.querySelector(".crumbs span").textContent = d.title;
         $("#editBtn").onclick = enterEdit;
         return;
       }
       // edit
       const badge = d.isDraft
-        ? `<span class="badge">Bozza • non salvata</span>`
-        : (state.dirty ? `<span class="badge badge-warn">Modifiche non salvate</span>` : "");
+        ? `<span class="badge">Draft • unsaved</span>`
+        : (state.dirty ? `<span class="badge badge-warn">Unsaved changes</span>` : "");
       topbarEl.innerHTML =
         `<div class="crumbs">${TYPES[d.type].icon} <span></span> ${badge}</div>` +
         `<div class="actions">` +
-        `<button id="previewBtn" class="btn">${state.preview ? "Modifica" : "Anteprima"}</button>` +
-        `<button id="discardBtn" class="btn">Annulla</button>` +
-        `<button id="saveBtn" class="btn btn-primary">Salva</button>` +
+        `<button id="previewBtn" class="btn">${state.preview ? "Edit" : "Preview"}</button>` +
+        `<button id="discardBtn" class="btn">Discard</button>` +
+        `<button id="saveBtn" class="btn btn-primary">Save</button>` +
         `</div>`;
-      topbarEl.querySelector(".crumbs span").textContent = d.title || "Senza titolo";
+      topbarEl.querySelector(".crumbs span").textContent = d.title || "Untitled";
       $("#previewBtn").onclick = togglePreview;
       $("#discardBtn").onclick = discard;
       $("#saveBtn").onclick = save;
@@ -456,7 +481,7 @@
       if (state.mode === "empty") {
         pageEl.innerHTML =
           `<div class="empty"><div class="big">∑</div>` +
-          `<h2>Math Wiki</h2><p>Scegli un documento a sinistra<br>oppure crea qualcosa di nuovo.</p></div>`;
+          `<h2>Math Wiki</h2><p>Pick a document on the left<br>or create something new.</p></div>`;
         return;
       }
       if (state.mode === "edit") return renderEditor();
@@ -480,15 +505,15 @@
           `<div class="doc-head">` +
           `<div class="doc-kicker">${TYPES[d.type].icon} ${TYPES[d.type].label}</div>` +
           `<h1 class="doc-title"></h1></div><div class="doc-body"></div>`;
-        pageEl.querySelector(".doc-title").textContent = d.title || "Senza titolo";
+        pageEl.querySelector(".doc-title").textContent = d.title || "Untitled";
         pageEl.querySelector(".doc-body").innerHTML = renderMarkdown(d.content);
         typesetMath(pageEl);
         return;
       }
       pageEl.innerHTML =
-        `<input id="titleInput" class="title-input" placeholder="Titolo del documento" />` +
+        `<input id="titleInput" class="title-input" placeholder="Document title" />` +
         `<textarea id="bodyInput" class="body-input" spellcheck="false" ` +
-        `placeholder="Scrivi qui in Markdown.\nMath inline con $...$ e in display con $$...$$"></textarea>`;
+        `placeholder="Write in Markdown here.\nInline math with $...$ and display math with $$...$$"></textarea>`;
       const ti = $("#titleInput"), bi = $("#bodyInput");
       ti.value = d.title;
       bi.value = d.content;
@@ -506,7 +531,7 @@
 
     function confirmLeave() {
       if (!state.dirty) return true;
-      return window.confirm("Hai modifiche non salvate. Vuoi continuare e perderle?");
+      return window.confirm("You have unsaved changes. Continue and lose them?");
     }
 
     function newDocument(type) {
@@ -540,7 +565,7 @@
         state.dirty = false;
         renderAll();
       } catch (e) {
-        toast("Impossibile aprire il documento.");
+        toast("Could not open the document.");
       }
     }
 
@@ -577,28 +602,86 @@
 
     async function save() {
       const d = state.current;
-      if (!d.title.trim()) { toast("Dai un titolo al documento prima di salvare."); return; }
-      const payload = {
-        title: d.title.trim(), type: d.type, content: d.content,
-        slug: d.slug || undefined, created: d.created || undefined,
+      if (!d.title.trim()) { toast("Give the document a title before saving."); return; }
+
+      let token = getToken();
+      if (!token) { manageToken(); token = getToken(); }
+      if (!token) { toast("A GitHub token is required to save."); return; }
+
+      const headers = {
+        "Authorization": "Bearer " + token,
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
       };
+      const contentsUrl = (p) =>
+        "https://api.github.com/repos/" + GITHUB.owner + "/" + GITHUB.repo + "/contents/" + p;
+      const ref = "?ref=" + encodeURIComponent(GITHUB.branch);
+
+      toast("Saving to GitHub…");
       try {
-        const res = await fetch("/api/documents", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const saved = await res.json();
+        let slug, path, sha = null, existed = false;
+
+        if (d.slug) {
+          // Updating an existing document: fetch its current sha.
+          slug = d.slug;
+          path = "content/" + slug + ".md";
+          const res = await fetch(contentsUrl(path) + ref, { headers, cache: "no-store" });
+          if (res.status === 200) { sha = (await res.json()).sha; existed = true; }
+          else if (res.status !== 404) throw new Error(httpError(res.status));
+        } else {
+          // New document: pick the first free slug so we never clobber a file.
+          const baseSlug = slugify(d.title);
+          for (let n = 1; ; n++) {
+            const cand = n === 1 ? baseSlug : baseSlug + "-" + n;
+            const res = await fetch(contentsUrl("content/" + cand + ".md") + ref, { headers, cache: "no-store" });
+            if (res.status === 404) { slug = cand; path = "content/" + cand + ".md"; break; }
+            if (res.status !== 200) throw new Error(httpError(res.status));
+          }
+        }
+
+        if (!d.created) d.created = new Date().toISOString();
+        const body = {
+          message: (existed ? "Update " : "Create ") + path,
+          content: toBase64(buildMarkdown(d)),
+          branch: GITHUB.branch,
+        };
+        if (sha) body.sha = sha;
+
+        const put = await fetch(contentsUrl(path), { method: "PUT", headers, body: JSON.stringify(body) });
+        if (!put.ok) throw new Error(httpError(put.status));
+
+        // Optimistic local update (the Action rebuilds the manifest on push).
         clearDraftLocal();
+        d.slug = slug;
+        d.isDraft = false;
+        d.updated = new Date().toISOString();
         state.dirty = false;
-        await loadManifest();
-        await openDocumentNoGuard(saved.slug);
-        toast("Salvato in content/" + saved.slug + ".md");
+        upsertDocument({ slug, title: d.title.trim(), type: d.type, created: d.created, updated: d.updated });
+        state.mode = "view";
+        state.preview = false;
+        renderAll();
+        toast((existed ? "Updated " : "Created ") + path + " on GitHub.");
       } catch (e) {
-        // Hosting statico (es. GitHub Pages): nessun backend → scarico il file.
-        downloadMarkdown(d);
+        toast("Save failed: " + e.message);
       }
+    }
+
+    function httpError(status) {
+      if (status === 401 || status === 403) return "token rejected (needs Contents: write on this repo)";
+      if (status === 422) return "invalid request (422)";
+      return "HTTP " + status;
+    }
+
+    function toBase64(str) {
+      const bytes = new TextEncoder().encode(str);
+      let bin = "";
+      bytes.forEach((b) => { bin += String.fromCharCode(b); });
+      return btoa(bin);
+    }
+
+    function upsertDocument(doc) {
+      const i = state.documents.findIndex((x) => x.slug === doc.slug);
+      if (i >= 0) state.documents[i] = doc; else state.documents.push(doc);
     }
 
     function buildMarkdown(d) {
@@ -606,22 +689,6 @@
       const updated = new Date().toISOString();
       return `---\ntitle: ${d.title.trim()}\ntype: ${d.type}\n` +
              `created: ${created}\nupdated: ${updated}\n---\n\n${(d.content || "").trim()}\n`;
-    }
-
-    function downloadMarkdown(d) {
-      const slug = d.slug || slugify(d.title);
-      const blob = new Blob([buildMarkdown(d)], { type: "text/markdown" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = slug + ".md";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(a.href);
-      clearDraftLocal();
-      state.dirty = false;
-      toast("Server non disponibile: scaricato " + slug + ".md — mettilo in content/ e committa (poi: make build).");
-      renderTopbar();
     }
 
     /* ---------- draft persistence ---------- */
@@ -643,6 +710,29 @@
       return null;
     }
 
+    /* ---------- GitHub token (kept only in sessionStorage) ---------- */
+    const TOKEN_KEY = "mathwiki:token";
+    function getToken() {
+      try { return sessionStorage.getItem(TOKEN_KEY) || ""; } catch (e) { return ""; }
+    }
+    function renderTokenStatus() {
+      const lbl = $("#tokenLabel");
+      if (lbl) lbl.textContent = getToken() ? "GitHub token set ✓" : "Set GitHub token";
+    }
+    function manageToken() {
+      const msg = getToken()
+        ? "GitHub token is set for this session. Paste a new token to replace it, or leave empty and press OK to remove it."
+        : "Paste a fine-grained Personal Access Token with 'Contents: Read and write' on "
+          + GITHUB.owner + "/" + GITHUB.repo + ".\nIt is kept only for this browser session.";
+      const val = window.prompt(msg, "");
+      if (val === null) return;
+      try {
+        if (val.trim() === "") { sessionStorage.removeItem(TOKEN_KEY); toast("Token removed."); }
+        else { sessionStorage.setItem(TOKEN_KEY, val.trim()); toast("Token saved for this session."); }
+      } catch (e) { toast("Could not store the token."); }
+      renderTokenStatus();
+    }
+
     /* ---------- orchestration ---------- */
     function renderAll() { renderTree(); renderTopbar(); renderPage(); }
 
@@ -653,6 +743,7 @@
         b.addEventListener("click", () => { menu.classList.add("hidden"); newDocument(b.dataset.type); });
       });
       document.addEventListener("click", () => menu.classList.add("hidden"));
+      $("#tokenBtn").onclick = manageToken;
     }
 
     function setupShortcuts() {
@@ -669,6 +760,7 @@
     async function init() {
       setupMenu();
       setupShortcuts();
+      renderTokenStatus();
       await loadManifest();
       const draft = loadDraftLocal();
       if (draft) {
@@ -677,13 +769,15 @@
         state.mode = "edit";
         state.dirty = !!(draft.title || draft.content);
         renderAll();
-        toast("Ripristinata una bozza non salvata.");
+        toast("Restored an unsaved draft.");
+      } else if (state.documents.some((d) => d.slug === HOME_SLUG)) {
+        await openDocument(HOME_SLUG);   // the home page is present by definition
       } else {
         renderAll();
       }
     }
 
-    // KaTeX/marked sono caricati con defer: attendo il load completo.
+    // KaTeX/marked are loaded with defer: wait for full load.
     if (document.readyState === "complete") init();
     else window.addEventListener("load", init);
   })();
