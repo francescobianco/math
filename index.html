@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Wiki</title>
+
+  <!-- KaTeX: rendering matematico -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+  <!-- marked: parsing Markdown -->
+  <script defer src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+
+  <style>
+    :root {
+      --bg-chrome: #f3f4f6;
+      --bg-canvas: #54585c;
+      --sidebar: #1f2430;
+      --sidebar-soft: #2a3140;
+      --sidebar-text: #c7cdda;
+      --sidebar-muted: #7d869b;
+      --accent: #2f6df0;
+      --border: #e3e6eb;
+      --page-w: 210mm;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1b1f24;
+      background: var(--bg-chrome);
+      overflow: hidden;
+    }
+    .app { display: flex; height: 100vh; }
+
+    /* ---------- Sidebar ---------- */
+    .sidebar {
+      width: 290px;
+      flex: 0 0 290px;
+      background: var(--sidebar);
+      color: var(--sidebar-text);
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #00000033;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+      padding: 18px 18px 12px;
+      font-weight: 700; font-size: 17px; letter-spacing: .2px;
+    }
+    .brand-mark {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 30px; height: 30px; border-radius: 8px;
+      background: var(--accent); color: #fff; font-size: 19px;
+    }
+    .new-doc { position: relative; padding: 4px 14px 14px; }
+    .menu {
+      position: absolute; top: 46px; left: 14px; right: 14px; z-index: 20;
+      background: #fff; color: #1b1f24; border-radius: 10px;
+      box-shadow: 0 12px 30px #00000040; overflow: hidden; padding: 6px;
+    }
+    .menu button {
+      display: flex; width: 100%; gap: 10px; align-items: center;
+      padding: 9px 10px; border: 0; background: transparent;
+      font-size: 14px; border-radius: 7px; cursor: pointer; text-align: left;
+    }
+    .menu button:hover { background: #eef1f6; }
+    .hidden { display: none !important; }
+
+    .tree { flex: 1; overflow-y: auto; padding: 6px 8px 24px; }
+    .tree-group { margin-bottom: 6px; }
+    .tree-group-head {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 10px 6px; font-size: 11.5px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .6px; color: var(--sidebar-muted);
+    }
+    .tree-group-head .count {
+      margin-left: auto; font-weight: 600; opacity: .7;
+    }
+    .tree-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 7px 10px; margin: 1px 2px; border-radius: 8px;
+      font-size: 13.5px; cursor: pointer; color: var(--sidebar-text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .tree-item:hover { background: var(--sidebar-soft); }
+    .tree-item.active { background: var(--accent); color: #fff; }
+    .tree-item .ico { flex: 0 0 auto; opacity: .9; }
+    .tree-item .label { overflow: hidden; text-overflow: ellipsis; }
+    .tree-item.draft { font-style: italic; color: #ffd479; }
+    .tree-item.draft .dot { color: #ffd479; }
+    .tree-empty { padding: 14px 12px; font-size: 13px; color: var(--sidebar-muted); }
+
+    /* ---------- Main ---------- */
+    .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .topbar {
+      flex: 0 0 auto; height: 56px;
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 18px; background: #fff;
+      border-bottom: 1px solid #e3e6eb;
+    }
+    .crumbs {
+      font-size: 14.5px; font-weight: 600; color: #2a2f37;
+      display: flex; align-items: center; gap: 10px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .actions { margin-left: auto; display: flex; gap: 8px; flex: 0 0 auto; }
+    .btn {
+      padding: 7px 14px; border-radius: 8px; border: 1px solid #d4d8df;
+      background: #fff; font-size: 13.5px; font-weight: 600; cursor: pointer;
+      color: #2a2f37;
+    }
+    .btn:hover { background: #f5f6f8; }
+    .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #245fd6; }
+    .badge {
+      font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px;
+      background: #fff4d6; color: #8a6300; border: 1px solid #f0d999;
+      text-transform: none; letter-spacing: 0;
+    }
+    .badge-warn { background: #ffe8e8; color: #a3261f; border-color: #f3c0bc; }
+
+    /* ---------- Canvas / foglio A4 ---------- */
+    .canvas {
+      flex: 1; overflow: auto; background: var(--bg-canvas);
+      padding: 32px 24px 64px; display: flex; justify-content: center;
+    }
+    .page {
+      width: var(--page-w);
+      max-width: 100%;
+      min-height: 297mm;
+      background: #fff;
+      box-shadow: 0 4px 24px #00000059;
+      padding: 24mm 22mm;
+      align-self: flex-start;
+      border-radius: 2px;
+    }
+
+    /* tipografia "foglio" */
+    .doc-head { text-align: center; margin-bottom: 26px; }
+    .doc-kicker {
+      font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+      color: #8a909a; font-weight: 600; margin-bottom: 8px;
+    }
+    .doc-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 30px; line-height: 1.2; margin: 0; color: #14181d;
+    }
+    .doc-meta { font-size: 12.5px; color: #9aa0a8; margin-top: 10px; }
+
+    .doc-body {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 16px; line-height: 1.7; color: #1d2127;
+    }
+    .doc-body h1, .doc-body h2, .doc-body h3 {
+      font-family: Georgia, "Times New Roman", serif; line-height: 1.3;
+      margin: 1.6em 0 .5em; color: #14181d;
+    }
+    .doc-body h1 { font-size: 25px; border-bottom: 1px solid #ebedf0; padding-bottom: .25em; }
+    .doc-body h2 { font-size: 21px; }
+    .doc-body h3 { font-size: 18px; }
+    .doc-body p { margin: 0 0 1em; }
+    .doc-body ul, .doc-body ol { margin: 0 0 1em; padding-left: 1.5em; }
+    .doc-body li { margin: .25em 0; }
+    .doc-body blockquote {
+      margin: 1em 0; padding: .4em 1.1em; border-left: 3px solid #d6dae0;
+      color: #565d66; font-style: italic;
+    }
+    .doc-body code {
+      font-family: "SFMono-Regular", Consolas, monospace; font-size: .88em;
+      background: #f1f3f5; padding: .12em .4em; border-radius: 4px;
+    }
+    .doc-body pre {
+      background: #f6f8fa; padding: 14px 16px; border-radius: 8px;
+      overflow-x: auto; border: 1px solid #ebedf0;
+    }
+    .doc-body pre code { background: none; padding: 0; }
+    .doc-body table { border-collapse: collapse; margin: 1em 0; width: 100%; }
+    .doc-body th, .doc-body td { border: 1px solid #dfe2e6; padding: 6px 11px; text-align: left; }
+    .doc-body th { background: #f6f8fa; }
+    .doc-body hr { border: 0; border-top: 1px solid #e7e9ec; margin: 1.8em 0; }
+    .katex-display { margin: 1.1em 0; overflow-x: auto; overflow-y: hidden; }
+
+    /* ---------- Editor ---------- */
+    .title-input {
+      width: 100%; border: 0; outline: none;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 30px; font-weight: 700; color: #14181d;
+      margin-bottom: 18px; padding: 0;
+    }
+    .title-input::placeholder { color: #c2c7ce; }
+    .body-input {
+      width: 100%; border: 0; outline: none; resize: none;
+      font-family: "SFMono-Regular", Consolas, "Courier New", monospace;
+      font-size: 14px; line-height: 1.7; color: #1d2127;
+      min-height: 220mm; overflow: hidden;
+    }
+    .body-input::placeholder { color: #c2c7ce; }
+
+    /* ---------- Empty state ---------- */
+    .empty {
+      text-align: center; color: #aab0b8;
+      font-family: Georgia, serif; padding-top: 60px;
+    }
+    .empty .big { font-size: 54px; margin-bottom: 10px; }
+    .empty h2 { color: #767c85; font-weight: 600; margin: 0 0 6px; }
+
+    /* ---------- Toast ---------- */
+    #toast {
+      position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: #1f2430; color: #fff; padding: 11px 18px; border-radius: 10px;
+      font-size: 13.5px; box-shadow: 0 8px 24px #0006; opacity: 0;
+      transition: opacity .2s, transform .2s; pointer-events: none; z-index: 50;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media print {
+      .sidebar, .topbar, #toast { display: none !important; }
+      .canvas { overflow: visible; background: #fff; padding: 0; }
+      .page { box-shadow: none; width: auto; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">∑</span>
+        <span class="brand-name">Math Wiki</span>
+      </div>
+      <div class="new-doc">
+        <button id="newBtn" class="btn btn-primary" style="width:100%">+ Nuovo</button>
+        <div id="newMenu" class="menu hidden">
+          <button data-type="paper">📄 Paper</button>
+          <button data-type="book">📕 Libro</button>
+          <button data-type="notes">📝 Note</button>
+        </div>
+      </div>
+      <nav id="tree" class="tree"></nav>
+    </aside>
+
+    <main class="main">
+      <header id="topbar" class="topbar"></header>
+      <div class="canvas">
+        <article id="page" class="page"></article>
+      </div>
+    </main>
+  </div>
+  <div id="toast"></div>
+
+  <script>
+  (function () {
+    "use strict";
+
+    const TYPES = {
+      paper: { label: "Paper", plural: "Paper", icon: "📄" },
+      book:  { label: "Libro", plural: "Libri", icon: "📕" },
+      notes: { label: "Note",  plural: "Note",  icon: "📝" },
+    };
+    const TYPE_ORDER = ["book", "paper", "notes"];
+    const DRAFT_KEY = "mathwiki:draft";
+
+    const state = {
+      documents: [],
+      current: null,            // {slug, title, type, content, created, updated, isDraft}
+      mode: "empty",            // empty | view | edit
+      dirty: false,
+      preview: false,
+    };
+
+    const $ = (sel) => document.querySelector(sel);
+    const treeEl = $("#tree");
+    const topbarEl = $("#topbar");
+    const pageEl = $("#page");
+    const toastEl = $("#toast");
+
+    const KATEX_OPTS = {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "\\[", right: "\\]", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false },
+      ],
+      throwOnError: false,
+      ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+    };
+
+    /* ---------- helpers ---------- */
+    function escapeHtml(s) {
+      return (s || "").replace(/[&<>"]/g, (c) =>
+        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    }
+
+    function formatDate(iso) {
+      if (!iso) return "";
+      const d = new Date(iso);
+      if (isNaN(d)) return "";
+      return d.toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
+    }
+
+    function slugify(text) {
+      return (text || "").trim().toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "") || "senza-titolo";
+    }
+
+    let toastTimer;
+    function toast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove("show"), 3200);
+    }
+
+    function autosize(ta) {
+      ta.style.height = "auto";
+      ta.style.height = Math.max(ta.scrollHeight, 800) + "px";
+    }
+
+    /* ---------- Markdown + math ---------- */
+    function renderMarkdown(src) {
+      const store = [];
+      const mask = (m) => { store.push(m); return "@@MATH" + (store.length - 1) + "@@"; };
+      let masked = (src || "")
+        .replace(/\$\$[\s\S]+?\$\$/g, mask)
+        .replace(/\\\[[\s\S]+?\\\]/g, mask)
+        .replace(/\\\([\s\S]+?\\\)/g, mask)
+        .replace(/\$(?!\s)(?:\\\$|[^$\n])+?\$/g, mask);
+      let html = window.marked ? window.marked.parse(masked) : escapeHtml(masked);
+      html = html.replace(/@@MATH(\d+)@@/g, (_, i) => store[+i]);
+      return html;
+    }
+
+    function typesetMath(el) {
+      if (window.renderMathInElement) {
+        try { window.renderMathInElement(el, KATEX_OPTS); } catch (e) { /* noop */ }
+      }
+    }
+
+    function parseDocument(raw) {
+      const meta = {};
+      let body = raw;
+      if (raw.startsWith("---")) {
+        const parts = raw.split("---");
+        if (parts.length >= 3) {
+          parts[1].trim().split("\n").forEach((line) => {
+            const i = line.indexOf(":");
+            if (i > -1) meta[line.slice(0, i).trim()] = line.slice(i + 1).trim();
+          });
+          body = parts.slice(2).join("---").replace(/^\n+/, "");
+        }
+      }
+      return { meta, body };
+    }
+
+    /* ---------- data ---------- */
+    async function loadManifest() {
+      let docs = null;
+      try {
+        const res = await fetch("/api/documents", { cache: "no-store" });
+        if (res.ok) docs = (await res.json()).documents;
+      } catch (e) { /* nessun server: provo il manifesto statico */ }
+      if (!docs) {
+        try {
+          const res = await fetch("content/index.json", { cache: "no-store" });
+          if (res.ok) docs = (await res.json()).documents;
+        } catch (e) { docs = []; }
+      }
+      state.documents = docs || [];
+      renderTree();
+    }
+
+    /* ---------- sidebar tree ---------- */
+    function renderTree() {
+      treeEl.innerHTML = "";
+      const draft = state.current && state.current.isDraft ? state.current : null;
+      let total = 0;
+
+      TYPE_ORDER.forEach((type) => {
+        const items = state.documents.filter((d) => d.type === type);
+        const draftHere = draft && draft.type === type;
+        if (!items.length && !draftHere) return;
+        total += items.length;
+
+        const group = document.createElement("div");
+        group.className = "tree-group";
+        const head = document.createElement("div");
+        head.className = "tree-group-head";
+        head.innerHTML = `<span>${TYPES[type].icon}</span><span>${TYPES[type].plural}</span>` +
+                         `<span class="count">${items.length}</span>`;
+        group.appendChild(head);
+
+        if (draftHere) group.appendChild(makeDraftItem(draft));
+        items.forEach((doc) => group.appendChild(makeItem(doc)));
+        treeEl.appendChild(group);
+      });
+
+      if (!total && !draft) {
+        treeEl.innerHTML = `<div class="tree-empty">Nessun documento.<br>Premi <b>+ Nuovo</b> per iniziare.</div>`;
+      }
+    }
+
+    function makeItem(doc) {
+      const node = document.createElement("div");
+      node.className = "tree-item";
+      if (state.current && !state.current.isDraft && state.current.slug === doc.slug) node.classList.add("active");
+      node.innerHTML = `<span class="ico">${TYPES[doc.type].icon}</span><span class="label"></span>`;
+      node.querySelector(".label").textContent = doc.title;
+      node.title = doc.title;
+      node.addEventListener("click", () => openDocument(doc.slug));
+      return node;
+    }
+
+    function makeDraftItem(draft) {
+      const node = document.createElement("div");
+      node.className = "tree-item draft active";
+      node.innerHTML = `<span class="ico dot">●</span><span class="label"></span>`;
+      node.querySelector(".label").textContent = (draft.title || "Senza titolo") + " (bozza)";
+      return node;
+    }
+
+    /* ---------- topbar ---------- */
+    function renderTopbar() {
+      if (state.mode === "empty") {
+        topbarEl.innerHTML = `<div class="crumbs">Seleziona o crea un documento</div>`;
+        return;
+      }
+      const d = state.current;
+      if (state.mode === "view") {
+        topbarEl.innerHTML =
+          `<div class="crumbs">${TYPES[d.type].icon} <span></span></div>` +
+          `<div class="actions"><button id="editBtn" class="btn">Modifica</button></div>`;
+        topbarEl.querySelector(".crumbs span").textContent = d.title;
+        $("#editBtn").onclick = enterEdit;
+        return;
+      }
+      // edit
+      const badge = d.isDraft
+        ? `<span class="badge">Bozza • non salvata</span>`
+        : (state.dirty ? `<span class="badge badge-warn">Modifiche non salvate</span>` : "");
+      topbarEl.innerHTML =
+        `<div class="crumbs">${TYPES[d.type].icon} <span></span> ${badge}</div>` +
+        `<div class="actions">` +
+        `<button id="previewBtn" class="btn">${state.preview ? "Modifica" : "Anteprima"}</button>` +
+        `<button id="discardBtn" class="btn">Annulla</button>` +
+        `<button id="saveBtn" class="btn btn-primary">Salva</button>` +
+        `</div>`;
+      topbarEl.querySelector(".crumbs span").textContent = d.title || "Senza titolo";
+      $("#previewBtn").onclick = togglePreview;
+      $("#discardBtn").onclick = discard;
+      $("#saveBtn").onclick = save;
+    }
+
+    /* ---------- page rendering ---------- */
+    function renderPage() {
+      if (state.mode === "empty") {
+        pageEl.innerHTML =
+          `<div class="empty"><div class="big">∑</div>` +
+          `<h2>Math Wiki</h2><p>Scegli un documento a sinistra<br>oppure crea qualcosa di nuovo.</p></div>`;
+        return;
+      }
+      if (state.mode === "edit") return renderEditor();
+
+      const d = state.current;
+      pageEl.innerHTML =
+        `<div class="doc-head">` +
+        `<div class="doc-kicker">${TYPES[d.type].icon} ${TYPES[d.type].label}</div>` +
+        `<h1 class="doc-title"></h1>` +
+        `<div class="doc-meta">${formatDate(d.created)}</div>` +
+        `</div><div class="doc-body"></div>`;
+      pageEl.querySelector(".doc-title").textContent = d.title;
+      pageEl.querySelector(".doc-body").innerHTML = renderMarkdown(d.content);
+      typesetMath(pageEl);
+    }
+
+    function renderEditor() {
+      const d = state.current;
+      if (state.preview) {
+        pageEl.innerHTML =
+          `<div class="doc-head">` +
+          `<div class="doc-kicker">${TYPES[d.type].icon} ${TYPES[d.type].label}</div>` +
+          `<h1 class="doc-title"></h1></div><div class="doc-body"></div>`;
+        pageEl.querySelector(".doc-title").textContent = d.title || "Senza titolo";
+        pageEl.querySelector(".doc-body").innerHTML = renderMarkdown(d.content);
+        typesetMath(pageEl);
+        return;
+      }
+      pageEl.innerHTML =
+        `<input id="titleInput" class="title-input" placeholder="Titolo del documento" />` +
+        `<textarea id="bodyInput" class="body-input" spellcheck="false" ` +
+        `placeholder="Scrivi qui in Markdown.\nMath inline con $...$ e in display con $$...$$"></textarea>`;
+      const ti = $("#titleInput"), bi = $("#bodyInput");
+      ti.value = d.title;
+      bi.value = d.content;
+      ti.addEventListener("input", () => { d.title = ti.value; markDirty(); renderTopbar(); renderTree(); });
+      bi.addEventListener("input", () => { d.content = bi.value; autosize(bi); markDirty(); });
+      autosize(bi);
+      if (!d.title) ti.focus(); else bi.focus();
+    }
+
+    /* ---------- actions ---------- */
+    function markDirty() {
+      state.dirty = true;
+      if (state.current && state.current.isDraft) saveDraftLocal();
+    }
+
+    function confirmLeave() {
+      if (!state.dirty) return true;
+      return window.confirm("Hai modifiche non salvate. Vuoi continuare e perderle?");
+    }
+
+    function newDocument(type) {
+      if (!confirmLeave()) return;
+      state.current = { slug: null, title: "", content: "", type, created: null, isDraft: true };
+      state.mode = "edit";
+      state.preview = false;
+      state.dirty = false;
+      renderAll();
+    }
+
+    async function openDocument(slug) {
+      if (state.current && state.current.isDraft && state.current.slug === null && state.dirty) {
+        if (!confirmLeave()) return;
+      } else if (!confirmLeave()) return;
+      try {
+        const res = await fetch("content/" + slug + ".md", { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const { meta, body } = parseDocument(await res.text());
+        state.current = {
+          slug,
+          title: meta.title || slug,
+          type: TYPES[meta.type] ? meta.type : "notes",
+          content: body,
+          created: meta.created || "",
+          updated: meta.updated || "",
+          isDraft: false,
+        };
+        state.mode = "view";
+        state.preview = false;
+        state.dirty = false;
+        renderAll();
+      } catch (e) {
+        toast("Impossibile aprire il documento.");
+      }
+    }
+
+    function enterEdit() {
+      state.mode = "edit";
+      state.preview = false;
+      state.dirty = false;
+      renderAll();
+    }
+
+    function togglePreview() {
+      state.preview = !state.preview;
+      renderTopbar();
+      renderPage();
+    }
+
+    function discard() {
+      if (!confirmLeave()) return;
+      clearDraftLocal();
+      state.dirty = false;
+      if (state.current && state.current.slug) {
+        openDocumentNoGuard(state.current.slug);
+      } else {
+        state.current = null;
+        state.mode = "empty";
+        renderAll();
+      }
+    }
+
+    async function openDocumentNoGuard(slug) {
+      state.dirty = false;
+      await openDocument(slug);
+    }
+
+    async function save() {
+      const d = state.current;
+      if (!d.title.trim()) { toast("Dai un titolo al documento prima di salvare."); return; }
+      const payload = {
+        title: d.title.trim(), type: d.type, content: d.content,
+        slug: d.slug || undefined, created: d.created || undefined,
+      };
+      try {
+        const res = await fetch("/api/documents", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const saved = await res.json();
+        clearDraftLocal();
+        state.dirty = false;
+        await loadManifest();
+        await openDocumentNoGuard(saved.slug);
+        toast("Salvato in content/" + saved.slug + ".md");
+      } catch (e) {
+        // Hosting statico (es. GitHub Pages): nessun backend → scarico il file.
+        downloadMarkdown(d);
+      }
+    }
+
+    function buildMarkdown(d) {
+      const created = d.created || new Date().toISOString();
+      const updated = new Date().toISOString();
+      return `---\ntitle: ${d.title.trim()}\ntype: ${d.type}\n` +
+             `created: ${created}\nupdated: ${updated}\n---\n\n${(d.content || "").trim()}\n`;
+    }
+
+    function downloadMarkdown(d) {
+      const slug = d.slug || slugify(d.title);
+      const blob = new Blob([buildMarkdown(d)], { type: "text/markdown" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = slug + ".md";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+      clearDraftLocal();
+      state.dirty = false;
+      toast("Server non disponibile: scaricato " + slug + ".md — mettilo in content/ e committa (poi: make build).");
+      renderTopbar();
+    }
+
+    /* ---------- draft persistence ---------- */
+    function saveDraftLocal() {
+      const d = state.current;
+      if (!d || !d.isDraft) return;
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify({ title: d.title, content: d.content, type: d.type }));
+      } catch (e) { /* noop */ }
+    }
+    function clearDraftLocal() { try { localStorage.removeItem(DRAFT_KEY); } catch (e) {} }
+    function loadDraftLocal() {
+      try {
+        const raw = localStorage.getItem(DRAFT_KEY);
+        if (!raw) return null;
+        const d = JSON.parse(raw);
+        if (d && (d.title || d.content)) return d;
+      } catch (e) {}
+      return null;
+    }
+
+    /* ---------- orchestration ---------- */
+    function renderAll() { renderTree(); renderTopbar(); renderPage(); }
+
+    function setupMenu() {
+      const btn = $("#newBtn"), menu = $("#newMenu");
+      btn.addEventListener("click", (e) => { e.stopPropagation(); menu.classList.toggle("hidden"); });
+      menu.querySelectorAll("button").forEach((b) => {
+        b.addEventListener("click", () => { menu.classList.add("hidden"); newDocument(b.dataset.type); });
+      });
+      document.addEventListener("click", () => menu.classList.add("hidden"));
+    }
+
+    function setupShortcuts() {
+      document.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
+          if (state.mode === "edit") { e.preventDefault(); save(); }
+        }
+      });
+      window.addEventListener("beforeunload", (e) => {
+        if (state.dirty) { e.preventDefault(); e.returnValue = ""; }
+      });
+    }
+
+    async function init() {
+      setupMenu();
+      setupShortcuts();
+      await loadManifest();
+      const draft = loadDraftLocal();
+      if (draft) {
+        state.current = { slug: null, title: draft.title || "", content: draft.content || "",
+                          type: TYPES[draft.type] ? draft.type : "notes", created: null, isDraft: true };
+        state.mode = "edit";
+        state.dirty = !!(draft.title || draft.content);
+        renderAll();
+        toast("Ripristinata una bozza non salvata.");
+      } else {
+        renderAll();
+      }
+    }
+
+    // KaTeX/marked sono caricati con defer: attendo il load completo.
+    if (document.readyState === "complete") init();
+    else window.addEventListener("load", init);
+  })();
+  </script>
+</body>
+</html>
