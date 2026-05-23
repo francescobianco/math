@@ -146,6 +146,32 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         self.send_response(405)
         self.end_headers()
 
+    def do_DELETE(self):
+        if self.path.startswith("/_delete/"):
+            rel = self.path[len("/_delete/"):]
+            import posixpath
+            rel = posixpath.normpath(rel).lstrip("/")
+            allowed = (
+                rel.startswith("library/") and rel.endswith(".md")
+                and "/" not in rel[len("library/"):]
+            )
+            if not allowed:
+                self.send_response(403)
+                self.end_headers()
+                return
+            try:
+                os.remove(rel)
+                print(f"  ✗ deleted: {rel}")
+            except FileNotFoundError:
+                pass
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(b'{"ok":true}')
+            return
+        self.send_response(405)
+        self.end_headers()
+
     def end_headers(self):
         self.send_header("Cache-Control", "no-store")
         super().end_headers()

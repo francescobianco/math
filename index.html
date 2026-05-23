@@ -1400,7 +1400,7 @@
           const inList = state.documents.find((x) => x.slug === d.slug);
           if (inList) delete inList.refcode;
         }
-        if (newSlug && newSlug !== d.slug) d.slug = newSlug;
+        if (newSlug && newSlug !== d.slug) { d._oldSlug = d.slug; d.slug = newSlug; }
         closeSettings();
         markDirty();
         renderAll();
@@ -1766,12 +1766,13 @@
 
       toast("Saving to GitHub…");
       try {
+        const oldSlug = d._oldSlug || null;
         let slug, path, existed = false;
 
         if (d.slug) {
           slug = d.slug; path = LIBRARY + "/" + slug + ".md";
           const res = await fetch(contentsUrl(path) + ref, { headers, cache: "no-store" });
-          if (res.status === 200) { existed = true; }
+          if (res.status === 200) { existed = !oldSlug; }
           else if (res.status !== 404) throw new Error(httpError(res.status));
         } else {
           const baseSlug = slugify(d.title);
@@ -1788,6 +1789,7 @@
         d.slug = slug;
 
         // Update in-memory manifest, then serialize it for the commit
+        if (oldSlug) state.documents = state.documents.filter((x) => x.slug !== oldSlug);
         const manifestEntry = { slug, title: d.title.trim(), type: d.type, created: d.created, updated: d.updated };
         if (d.meta && d.meta.refcode) manifestEntry.refcode = d.meta.refcode;
         upsertDocument(manifestEntry);
@@ -1811,16 +1813,15 @@
 
         const [mdBlob, idxBlob] = await Promise.all([mkBlob(buildMarkdown(d)), mkBlob(indexJson)]);
 
-        // Create new tree referencing both blobs
+        // Create new tree referencing both blobs (delete old file if renamed)
+        const treeEntries = [
+          { path, mode: "100644", type: "blob", sha: mdBlob.sha },
+          { path: "index.json", mode: "100644", type: "blob", sha: idxBlob.sha },
+        ];
+        if (oldSlug) treeEntries.push({ path: LIBRARY + "/" + oldSlug + ".md", mode: "100644", type: "blob", sha: null });
         const treeRes = await fetch(api + "/git/trees", {
           method: "POST", headers,
-          body: JSON.stringify({
-            base_tree: baseSha,
-            tree: [
-              { path, mode: "100644", type: "blob", sha: mdBlob.sha },
-              { path: "index.json", mode: "100644", type: "blob", sha: idxBlob.sha },
-            ],
-          }),
+          body: JSON.stringify({ base_tree: baseSha, tree: treeEntries }),
         });
         if (!treeRes.ok) throw new Error(httpError(treeRes.status));
         const newTreeSha = (await treeRes.json()).sha;
@@ -1842,6 +1843,7 @@
         });
         if (!refRes.ok) throw new Error(httpError(refRes.status));
 
+        delete d._oldSlug;
         clearDraftLocal();
         d.isDraft = false;
         state.dirty = false;
@@ -1859,12 +1861,13 @@
     async function saveLocal(d) {
       toast("Saving locally…");
       try {
+        const oldSlug = d._oldSlug || null;
         let slug, existed = false;
 
         if (d.slug) {
           slug = d.slug;
           const probe = await fetch(LIBRARY + "/" + slug + ".md", { cache: "no-store" });
-          existed = probe.ok;
+          existed = probe.ok && !oldSlug; // renamed: always "new" at the new path
         } else {
           const baseSlug = slugify(d.title);
           for (let n = 1; ; n++) {
@@ -1878,6 +1881,7 @@
         d.updated = new Date().toISOString();
         d.slug = slug;
 
+        if (oldSlug) state.documents = state.documents.filter((x) => x.slug !== oldSlug);
         const manifestEntry = { slug, title: d.title.trim(), type: d.type, created: d.created, updated: d.updated };
         if (d.meta && d.meta.refcode) manifestEntry.refcode = d.meta.refcode;
         upsertDocument(manifestEntry);
@@ -1890,10 +1894,16 @@
           body,
         }).then((r) => { if (!r.ok) throw new Error("PUT /" + path + " failed: HTTP " + r.status); });
 
-        await Promise.all([
+        const ops = [
           put(LIBRARY + "/" + slug + ".md", buildMarkdown(d)),
           put("index.json", indexJson),
-        ]);
+        ];
+        if (oldSlug) ops.push(
+          fetch("/_delete/" + LIBRARY + "/" + oldSlug + ".md", { method: "DELETE" })
+            .then((r) => { if (!r.ok && r.status !== 404) throw new Error("DELETE old file failed: HTTP " + r.status); })
+        );
+        await Promise.all(ops);
+        delete d._oldSlug;
 
         clearDraftLocal();
         d.isDraft = false;
