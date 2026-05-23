@@ -644,8 +644,13 @@
       const forced = new Set();
       // First pass: explicit refcode overrides
       docs.forEach((d) => {
-        const rc = (d.refcode || "").toUpperCase();
-        if (rc) { forced.add(rc); codeToSlug[rc] = d.slug; slugToCode[d.slug] = rc; }
+        const rc = (d.refcode || "").trim();
+        if (rc) {
+          const rcUpper = rc.toUpperCase();
+          forced.add(rcUpper);
+          codeToSlug[rcUpper] = d.slug; // uppercase key for case-insensitive lookup
+          slugToCode[d.slug] = rc;      // original case for display
+        }
       });
       // Second pass: auto-assign
       docs.forEach((d) => {
