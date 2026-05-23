@@ -517,7 +517,7 @@
         </div>
         <div class="setting-row">
           <label>Reference Code</label>
-          <input id="stgRefcode" type="text" placeholder="Auto — e.g. B1, P2, N3" style="text-transform:uppercase" />
+          <input id="stgRefcode" type="text" placeholder="Auto — e.g. B1, P2, N3" />
         </div>
         <div class="setting-row">
           <label>Section Numbering</label>
@@ -1341,7 +1341,7 @@
       document.getElementById("stgAuthor").value  = meta.author || meta.authors || "";
       document.getElementById("stgSlug").value    = d.slug   || "";
       document.getElementById("stgColor").value   = meta.color || "#2f6df0";
-      document.getElementById("stgRefcode").value       = (meta.refcode || "").toUpperCase();
+      document.getElementById("stgRefcode").value       = meta.refcode || "";
       document.getElementById("stgSectionPrefix").value = meta.section_prefix || "";
       document.getElementById("settingsModal").classList.remove("hidden");
       state.modal = "settings";
@@ -1365,7 +1365,7 @@
         const newSlug    = document.getElementById("stgSlug").value.trim()
           .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || d.slug;
         const newColor   = document.getElementById("stgColor").value;
-        const newRefcode       = document.getElementById("stgRefcode").value.trim().toUpperCase();
+        const newRefcode       = document.getElementById("stgRefcode").value.trim();
         const newSectionPrefix = document.getElementById("stgSectionPrefix").value;
         if (newTitle)  { d.title = newTitle; }
         if (newAuthor) { d.meta.author = newAuthor; } else { delete d.meta.author; }
