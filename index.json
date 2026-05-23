@@ -1,6 +1,13 @@
 {
   "documents": [
     {
+      "slug": "the-derivative-mystery-of-the-logarithm",
+      "title": "The Derivative Mystery of the Logarithm",
+      "type": "paper",
+      "created": "2026-05-23T16:25:00+00:00",
+      "updated": "2026-05-23T16:45:00+00:00"
+    },
+    {
       "slug": "semilogarithmic-chain-algebra",
       "title": "Semilogarithmic Chain Algebra",
       "type": "paper",
