@@ -2,7 +2,7 @@
 title: The Semilogarithm
 type: paper
 created: 2026-05-23T13:00:00+00:00
-updated: 2026-05-23T13:15:00+00:00
+updated: 2026-05-23T13:30:00+00:00
 ---
 
 # The Semilogarithm
@@ -340,6 +340,144 @@ $$
 This is a meaningful value map. The equation alone still does not determine the
 initial half-step $H_0=s(e)$, but once $H_0$ is chosen, the higher half-step
 values are forced by the commutation relation.
+
+## A Normalization Through Zero
+
+A natural way to reduce the freedom of the semilogarithm is to impose a
+normalization. We now choose the condition
+
+$$
+s\left(\frac{1}{2}\right)=0.
+$$
+
+This means that the semilogarithm passes through zero at the value $1/2$. This
+single choice has several consequences.
+
+First, applying the defining equation at $x=1/2$ gives
+
+$$
+s\left(s\left(\frac{1}{2}\right)\right)=\log\left(\frac{1}{2}\right).
+$$
+
+Since $s(1/2)=0$, we obtain
+
+$$
+s(0)=-\log 2.
+$$
+
+Thus the value that follows zero under the semilogarithm is not $-\infty$, but
+rather the finite negative number $-\log 2$.
+
+Second, using the commutation law
+
+$$
+s(\log x)=\log(s(x)),
+$$
+
+with $x=1$, we get
+
+$$
+s(0)=\log(s(1)).
+$$
+
+Since $s(0)=-\log 2$, this gives
+
+$$
+\log(s(1))=-\log 2,
+$$
+
+and therefore
+
+$$
+s(1)=\frac{1}{2}.
+$$
+
+So the normalization produces the chain
+
+$$
+1 \longmapsto \frac{1}{2} \longmapsto 0 \longmapsto -\log 2.
+$$
+
+The next step is singular. Since
+
+$$
+s(s(0))=\log 0,
+$$
+
+and
+
+$$
+\log 0=-\infty
+$$
+
+as a limit from the positive side, we obtain
+
+$$
+s(-\log 2)=-\infty.
+$$
+
+Thus the finite negative value that is sent to $-\infty$ is
+
+$$
+-\log 2.
+$$
+
+This answers the boundary question: under this normalization, the point before
+$-\infty$ in the semilogarithmic chain is $-\log 2$.
+
+The same normalization also determines the first positive half-step above $1$.
+From the earlier relation
+
+$$
+s(1)=\log(s(e)),
+$$
+
+we get
+
+$$
+\frac{1}{2}=\log(s(e)).
+$$
+
+Therefore,
+
+$$
+s(e)=e^{1/2}=\sqrt e.
+$$
+
+Consequently,
+
+$$
+s(\sqrt e)=1.
+$$
+
+The normalized semilogarithmic chain around the elementary constants is then
+
+$$
+e \longmapsto \sqrt e \longmapsto 1 \longmapsto \frac{1}{2}
+\longmapsto 0 \longmapsto -\log 2 \longmapsto -\infty.
+$$
+
+More generally, the half-step constants become fixed. Since
+
+$$
+H_0=s(e)=\sqrt e,
+$$
+
+and
+
+$$
+H_n=e^{H_{n-1}},
+$$
+
+we obtain
+
+$$
+H_1=e^{\sqrt e}, \qquad H_2=e^{e^{\sqrt e}}, \qquad
+H_3=e^{e^{e^{\sqrt e}}}, \ldots
+$$
+
+Thus the normalization $s(1/2)=0$ selects a concrete value map from the family
+of possible semilogarithms.
 
 ## Mapping Around Known Values
 
