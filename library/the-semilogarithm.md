@@ -2,7 +2,7 @@
 title: The Semilogarithm
 type: paper
 created: 2026-05-23T13:00:00+00:00
-updated: 2026-05-23T13:30:00+00:00
+updated: 2026-05-23T13:45:00+00:00
 ---
 
 # The Semilogarithm
@@ -478,6 +478,121 @@ $$
 
 Thus the normalization $s(1/2)=0$ selects a concrete value map from the family
 of possible semilogarithms.
+
+## Comparing $\log x$, $\log(s(x))$, and $\log(\log x)$
+
+The commutation law
+
+$$
+s(\log x)=\log(s(x))
+$$
+
+suggests comparing three quantities:
+
+$$
+\log x, \qquad \log(s(x)), \qquad \log(\log x).
+$$
+
+One possible question is whether the order
+
+$$
+\log x < \log(s(x)) < \log(\log x)
+$$
+
+can hold. On the positive real line, this order is not the natural one for
+large values of $x$. Indeed, for $x>e$, we have
+
+$$
+\log x>1,
+$$
+
+and therefore
+
+$$
+\log(\log x)<\log x.
+$$
+
+Thus the inequality
+
+$$
+\log x < \log(s(x)) < \log(\log x)
+$$
+
+cannot hold for $x>e$, because its left and right endpoints are already in the
+opposite order.
+
+The normalized value chain instead suggests the reversed ordering
+
+$$
+\log(\log x)<\log(s(x))<\log x,
+$$
+
+at least along the forced anchor values. For example, at $x=e$,
+
+$$
+\log(\log e)=\log 1=0,
+$$
+
+$$
+\log(s(e))=\log(\sqrt e)=\frac{1}{2},
+$$
+
+and
+
+$$
+\log e=1.
+$$
+
+Therefore,
+
+$$
+0<\frac{1}{2}<1.
+$$
+
+At the next forced value, $x=e^{\sqrt e}$, we have
+
+$$
+s(e^{\sqrt e})=e,
+$$
+
+so
+
+$$
+\log(s(e^{\sqrt e}))=1.
+$$
+
+Also,
+
+$$
+\log(e^{\sqrt e})=\sqrt e,
+$$
+
+and
+
+$$
+\log(\log(e^{\sqrt e}))=\log(\sqrt e)=\frac{1}{2}.
+$$
+
+Hence
+
+$$
+\frac{1}{2}<1<\sqrt e.
+$$
+
+This supports the ordering
+
+$$
+\log(\log x)<\log(s(x))<\log x
+$$
+
+on the positive region where all three expressions are defined and where the
+normalized semilogarithm behaves as a monotone half-step between $x$ and
+$\log x$.
+
+The graphical script in `library/scripts/plot_semilogarithm.py` plots these
+three quantities together with an interpolated model of $s(x)$ based on the
+forced values. The plot is exploratory: it visualizes the consequences of the
+normalization, but it is not a proof of a unique analytic semilogarithm.
 
 ## Mapping Around Known Values
 
