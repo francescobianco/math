@@ -1,6 +1,13 @@
 {
   "documents": [
     {
+      "slug": "syntax-guide",
+      "title": "Syntax Guide",
+      "type": "page",
+      "created": "2026-05-23T12:00:00+00:00",
+      "updated": "2026-05-23T12:00:00+00:00"
+    },
+    {
       "slug": "about",
       "title": "About Me",
       "type": "page",

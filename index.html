@@ -305,6 +305,13 @@
     }
     .setting-row input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px #2f6df018; }
     .setting-row input[type="color"] { padding: 4px 6px; height: 36px; width: 100%; cursor: pointer; }
+    .refcode-badge {
+      display: inline-block; padding: 1px 8px; border-radius: 10px;
+      background: #eef1f7; color: #5a6070; font-size: 11px; font-weight: 700;
+      letter-spacing: .5px; font-family: monospace; vertical-align: middle; margin-left: 6px; cursor: default;
+    }
+    .wiki-ref { color: var(--accent); text-decoration: none; border-bottom: 1px dotted currentColor; }
+    .wiki-ref:hover { border-bottom-style: solid; }
     .modal-actions .btn { border: 1px solid #d4d8df; background: #fff; color: #2a2f37; }
     .modal-actions .btn:hover { background: #f5f6f8; }
     .modal-actions .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -476,6 +483,10 @@
           <label>Primary color</label>
           <input id="stgColor" type="color" value="#2f6df0" />
         </div>
+        <div class="setting-row">
+          <label>Reference Code</label>
+          <input id="stgRefcode" type="text" placeholder="Auto — e.g. B1, P2, N3" style="text-transform:uppercase" />
+        </div>
       </div>
       <div class="modal-actions">
         <button id="stgCancel" class="btn">Cancel</button>
@@ -533,6 +544,7 @@
       preview: false,
       inlineEdit: false,
       sidebarView: "tree",      // tree | toc
+      modal: null,              // null | "settings" | {name:"formula", fi:N}
     };
 
     const $ = (sel) => document.querySelector(sel);
@@ -582,6 +594,130 @@
     function autosize(ta) {
       ta.style.height = "auto";
       ta.style.height = Math.max(ta.scrollHeight, 800) + "px";
+    }
+
+    /* ---------- reference codes ---------- */
+    const REF_PREFIX = { book: "B", paper: "P", notes: "N" };
+
+    function computeRefCodes(docs) {
+      const codeToSlug = {}, slugToCode = {}, counters = {};
+      const forced = new Set();
+      // First pass: explicit refcode overrides
+      docs.forEach((d) => {
+        const rc = (d.refcode || "").toUpperCase();
+        if (rc) { forced.add(rc); codeToSlug[rc] = d.slug; slugToCode[d.slug] = rc; }
+      });
+      // Second pass: auto-assign
+      docs.forEach((d) => {
+        if (slugToCode[d.slug]) return;
+        let code;
+        if (d.type === "page") {
+          // Pages use their slug as the ref code
+          code = d.slug;
+        } else {
+          const p = REF_PREFIX[d.type] || "N";
+          counters[p] = (counters[p] || 0);
+          do { counters[p]++; code = p + counters[p]; } while (forced.has(code));
+        }
+        forced.add(code);
+        codeToSlug[code] = d.slug; slugToCode[d.slug] = code;
+      });
+      return { codeToSlug, slugToCode };
+    }
+
+    /* ---------- URL hash routing ---------- */
+    let _inHistoryRestore = false;
+
+    function stateToHash() {
+      if (!state.current || !state.current.slug) return "";
+      let h = "doc=" + encodeURIComponent(state.current.slug);
+      if (state.sidebarView === "toc") h += "&toc=1";
+      if (state.modal === "settings") h += "&modal=settings";
+      if (state.modal && typeof state.modal === "object" && state.modal.name === "formula")
+        h += "&modal=formula&fi=" + state.modal.fi;
+      return h;
+    }
+
+    function pushHistory() {
+      if (_inHistoryRestore) return;
+      const h = stateToHash();
+      history.pushState(null, "", h ? "#" + h : "#");
+    }
+
+    function replaceHistory() {
+      if (_inHistoryRestore) return;
+      const h = stateToHash();
+      history.replaceState(null, "", h ? "#" + h : "#");
+    }
+
+    function parseHash(hash) {
+      const h = (hash || "").replace(/^#/, "");
+      if (!h) return {};
+      const p = {};
+      h.split("&").forEach((seg) => {
+        const eq = seg.indexOf("=");
+        if (eq > -1) p[decodeURIComponent(seg.slice(0, eq))] = decodeURIComponent(seg.slice(eq + 1));
+        else if (seg) p[decodeURIComponent(seg)] = true;
+      });
+      return p;
+    }
+
+    async function applyFromParams(params) {
+      _inHistoryRestore = true;
+      try {
+        if (!params.doc) {
+          state.current = null; state.mode = "empty"; state.modal = null;
+          renderAll(); return;
+        }
+        await openDocumentNoGuard(params.doc, params.toc === "1");
+        if (params.modal === "settings") openSettingsModal();
+      } finally {
+        _inHistoryRestore = false;
+      }
+    }
+
+    /* ---------- wiki-ref navigation ---------- */
+    function navigateRef(code) {
+      const parts = code.split("/");
+      const docCode = parts[0].toUpperCase();
+      const chapterStr = parts[1]; // e.g. "C2"
+      const { codeToSlug } = computeRefCodes(state.documents);
+      const slug = codeToSlug[docCode];
+      if (!slug) { toast("Reference not found: #" + code); return; }
+      const doc = state.documents.find((d) => d.slug === slug);
+      const asToc = doc && doc.type !== "page";
+      openDocument(slug, asToc).then(() => {
+        if (chapterStr) {
+          const chNum = parseInt(chapterStr.slice(1));
+          if (chNum > 0) requestAnimationFrame(() => {
+            const heads = Array.from(pageEl.querySelectorAll(".doc-body h1, .doc-body h2, .doc-body h3"));
+            if (heads[chNum - 1]) heads[chNum - 1].scrollIntoView({ behavior: "smooth" });
+          });
+        }
+      });
+    }
+
+    function activateWikiRefs(el) {
+      el.querySelectorAll("a.wiki-ref").forEach((a) => {
+        a.addEventListener("click", (e) => { e.preventDefault(); navigateRef(a.dataset.ref); });
+      });
+    }
+
+    /* ---------- marked setup (wiki links + external links) ---------- */
+    function setupMarked() {
+      if (!window.marked) return;
+      const renderer = new marked.Renderer();
+      const _origLink = renderer.link.bind(renderer);
+      renderer.link = function (href, title, text) {
+        if (href && /^#(B|P|N|Pg)\d+(?:\/C\d+)?$/i.test(href)) {
+          const code = href.slice(1).toUpperCase();
+          return `<a href="javascript:void(0)" class="wiki-ref" data-ref="${escapeHtml(code)}" title="${escapeHtml(title || code)}">${text}</a>`;
+        }
+        const out = _origLink(href, title, text);
+        if (href && /^https?:\/\//.test(href)) return out.replace("<a ", '<a target="_blank" rel="noopener" ');
+        return out;
+      };
+      marked.use({ renderer });
     }
 
     /* ---------- Markdown + math ---------- */
@@ -690,14 +826,17 @@
         return;
       }
       const d = state.current;
+      const { slugToCode } = computeRefCodes(state.documents);
+      const refCode = d.slug ? (slugToCode[d.slug] || "") : "";
+      const refBadge = refCode ? `<span class="refcode-badge" title="Reference code — use #${escapeHtml(refCode)} in wiki links">${escapeHtml(refCode)}</span>` : "";
       const settingsBtn = `<button id="settingsBtn" class="btn" title="Settings"><i class="fa-solid fa-sliders"></i></button>`;
       if (state.mode === "view") {
         topbarEl.innerHTML =
-          `<div class="doc-name"></div>` +
+          `<div class="doc-name">${refBadge}</div>` +
           `<div class="actions">` +
           `<button id="editBtn" class="btn"><i class="fa-solid fa-pen-to-square"></i> Edit</button>` +
           settingsBtn + `</div>`;
-        topbarEl.querySelector(".doc-name").textContent = d.title;
+        topbarEl.querySelector(".doc-name").prepend(document.createTextNode(d.title));
         $("#editBtn").onclick = enterEdit;
         $("#settingsBtn").onclick = openSettingsModal;
         return;
@@ -707,14 +846,14 @@
         ? `<span class="badge">Draft • unsaved</span>`
         : (state.dirty ? `<span class="badge badge-warn">Unsaved changes</span>` : "");
       topbarEl.innerHTML =
-        `<div class="doc-name"></div>` +
+        `<div class="doc-name">${refBadge}</div>` +
         `<div class="actions">${badge}` +
         `<button id="previewBtn" class="btn">${state.preview ? "<i class=\"fa-solid fa-code\"></i> Markdown" : "<i class=\"fa-solid fa-eye\"></i> Preview"}</button>` +
         `<button id="discardBtn" class="btn"><i class="fa-solid fa-rotate-left"></i> Discard</button>` +
         settingsBtn +
         `<button id="saveBtn" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save</button>` +
         `</div>`;
-      topbarEl.querySelector(".doc-name").textContent = d.title || "Untitled";
+      topbarEl.querySelector(".doc-name").prepend(document.createTextNode(d.title || "Untitled"));
       $("#previewBtn").onclick = togglePreview;
       $("#discardBtn").onclick = discard;
       $("#settingsBtn").onclick = openSettingsModal;
@@ -749,6 +888,7 @@
       pageEl.querySelector(".doc-body").innerHTML = renderMarkdown(d.content);
       typesetMath(pageEl);
       numberAndActivateFormulas(pageEl);
+      activateWikiRefs(pageEl);
       activateInlineEdit(pageEl);
     }
 
@@ -764,6 +904,7 @@
         pageEl.querySelector(".doc-body").innerHTML = renderMarkdown(d.content);
         typesetMath(pageEl);
         numberAndActivateFormulas(pageEl);
+        activateWikiRefs(pageEl);
         if (state.inlineEdit) makeDocBodyEditable(pageEl);
         return;
       }
@@ -942,6 +1083,7 @@
       });
 
       numberAndActivateFormulas(pageEl);
+      activateWikiRefs(pageEl);
       activateInlineEdit(pageEl);
     }
 
@@ -956,6 +1098,8 @@
       document.getElementById("mathInput").value = latex;
       _renderFormulaPreview(latex);
       modal.classList.remove("hidden");
+      state.modal = { name: "formula", fi: idx };
+      pushHistory();
     }
 
     function _renderFormulaPreview(latex) {
@@ -1047,7 +1191,29 @@
       if (tag === "h1") return "# "  + node.textContent.trim() + "\n\n";
       if (tag === "h2") return "## " + node.textContent.trim() + "\n\n";
       if (tag === "h3") return "### "+ node.textContent.trim() + "\n\n";
-      if (tag === "p")  return _inlineMd(node) + "\n\n";
+      if (tag === "p") {
+        // split at <br> elements → each segment becomes its own markdown paragraph
+        const segs = [];
+        let buf = [];
+        for (const child of node.childNodes) {
+          if ((child.tagName || "").toLowerCase() === "br") {
+            segs.push(buf); buf = [];
+          } else {
+            buf.push(child);
+          }
+        }
+        segs.push(buf);
+        const result = segs
+          .map(nodes => {
+            const tmp = document.createElement("span");
+            nodes.forEach(n => tmp.appendChild(n.cloneNode(true)));
+            return _inlineMd(tmp);
+          })
+          .filter(s => s.trim())
+          .map(s => s + "\n\n")
+          .join("");
+        return result || "\n\n";
+      }
       if (node.classList && node.classList.contains("formula-row")) {
         const ann = node.querySelector('annotation[encoding="application/x-tex"]');
         return ann ? "$$" + ann.textContent.trim() + "$$\n\n" : "";
@@ -1074,7 +1240,11 @@
         if (t === "strong" || t === "b")   { md += "**" + child.textContent + "**"; continue; }
         if (t === "em"     || t === "i")   { md += "*"  + child.textContent + "*";  continue; }
         if (t === "code")                  { md += "`"  + child.textContent + "`";  continue; }
-        if (t === "a") { md += "[" + child.textContent + "](" + (child.getAttribute("href") || "") + ")"; continue; }
+        if (t === "a") {
+          const ref = child.getAttribute("data-ref");
+          const href = ref ? "#" + ref : (child.getAttribute("href") || "");
+          md += "[" + child.textContent + "](" + href + ")"; continue;
+        }
         if (child.classList && child.classList.contains("katex")) {
           const ann = child.querySelector('annotation[encoding="application/x-tex"]');
           md += ann ? "$" + ann.textContent.trim() + "$" : child.textContent;
@@ -1090,44 +1260,67 @@
       if (!state.current) return;
       const d = state.current;
       const meta = d.meta || {};
-      document.getElementById("stgTitle").value  = d.title  || "";
-      document.getElementById("stgAuthor").value = meta.author || meta.authors || "";
-      document.getElementById("stgSlug").value   = d.slug   || "";
-      document.getElementById("stgColor").value  = meta.color || "#2f6df0";
+      document.getElementById("stgTitle").value   = d.title  || "";
+      document.getElementById("stgAuthor").value  = meta.author || meta.authors || "";
+      document.getElementById("stgSlug").value    = d.slug   || "";
+      document.getElementById("stgColor").value   = meta.color || "#2f6df0";
+      document.getElementById("stgRefcode").value = (meta.refcode || "").toUpperCase();
       document.getElementById("settingsModal").classList.remove("hidden");
+      state.modal = "settings";
+      pushHistory();
     }
 
     function setupSettingsModal() {
       const modal = document.getElementById("settingsModal");
-      document.getElementById("stgCancel").onclick = () => modal.classList.add("hidden");
+      const closeSettings = () => {
+        modal.classList.add("hidden");
+        state.modal = null;
+        replaceHistory();
+      };
+      document.getElementById("stgCancel").onclick = closeSettings;
       document.getElementById("stgApply").onclick = () => {
         const d = state.current;
         if (!d) return;
         d.meta = d.meta || {};
-        const newTitle  = document.getElementById("stgTitle").value.trim();
-        const newAuthor = document.getElementById("stgAuthor").value.trim();
-        const newSlug   = document.getElementById("stgSlug").value.trim()
+        const newTitle   = document.getElementById("stgTitle").value.trim();
+        const newAuthor  = document.getElementById("stgAuthor").value.trim();
+        const newSlug    = document.getElementById("stgSlug").value.trim()
           .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || d.slug;
-        const newColor  = document.getElementById("stgColor").value;
+        const newColor   = document.getElementById("stgColor").value;
+        const newRefcode = document.getElementById("stgRefcode").value.trim().toUpperCase();
         if (newTitle)  { d.title = newTitle; }
         if (newAuthor) { d.meta.author = newAuthor; } else { delete d.meta.author; }
         d.meta.color = newColor;
+        if (newRefcode) {
+          d.meta.refcode = newRefcode;
+          const inList = state.documents.find((x) => x.slug === d.slug);
+          if (inList) inList.refcode = newRefcode;
+        } else {
+          delete d.meta.refcode;
+          const inList = state.documents.find((x) => x.slug === d.slug);
+          if (inList) delete inList.refcode;
+        }
         if (newSlug && newSlug !== d.slug) d.slug = newSlug;
-        modal.classList.add("hidden");
+        closeSettings();
         markDirty();
         renderAll();
       };
-      modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.add("hidden"); });
+      modal.addEventListener("click", (e) => { if (e.target === modal) closeSettings(); });
     }
 
     function setupFormulaModal() {
       const modal = document.getElementById("mathModal");
       const input = document.getElementById("mathInput");
+      const closeFormulaModal = () => {
+        modal.classList.add("hidden");
+        state.modal = null;
+        replaceHistory();
+      };
       input.addEventListener("input", () => _renderFormulaPreview(input.value));
-      document.getElementById("mathCancel").onclick = () => modal.classList.add("hidden");
+      document.getElementById("mathCancel").onclick = closeFormulaModal;
       document.getElementById("mathSave").onclick = () => {
         const newLatex = input.value.trim();
-        modal.classList.add("hidden");
+        closeFormulaModal();
         if (newLatex === _fState.origLatex || !state.current) return;
         const newContent = _replaceNthDisplayFormula(state.current.content, _fState.idx, newLatex);
         if (newContent === null) { toast("Formula not found in source."); return; }
@@ -1137,7 +1330,7 @@
         markDirty();
         renderAll();
       };
-      modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.add("hidden"); });
+      modal.addEventListener("click", (e) => { if (e.target === modal) closeFormulaModal(); });
     }
 
     /* ---------- actions ---------- */
@@ -1161,29 +1354,29 @@
       renderAll();
     }
 
+    async function _doLoadDocument(slug, asToc) {
+      const res = await fetch(LIBRARY + "/" + slug + ".md", { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const { meta, body } = parseDocument(await res.text());
+      state.current = {
+        slug, title: meta.title || slug,
+        type: TYPES[meta.type] ? meta.type : "notes",
+        content: body, created: meta.created || "", updated: meta.updated || "",
+        isDraft: false, meta,
+      };
+      // Sync refcode into documents list so computeRefCodes stays accurate
+      const inList = state.documents.find((d) => d.slug === slug);
+      if (inList) inList.refcode = meta.refcode || inList.refcode || "";
+      state.mode = "view"; state.preview = false; state.dirty = false; state.modal = null;
+      state.sidebarView = asToc ? "toc" : "tree";
+      renderAll();
+    }
+
     async function openDocument(slug, asToc) {
-      if (state.current && state.current.isDraft && state.current.slug === null && state.dirty) {
-        if (!confirmLeave()) return;
-      } else if (!confirmLeave()) return;
+      if (!confirmLeave()) return;
       try {
-        const res = await fetch(LIBRARY + "/" + slug + ".md", { cache: "no-store" });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const { meta, body } = parseDocument(await res.text());
-        state.current = {
-          slug,
-          title: meta.title || slug,
-          type: TYPES[meta.type] ? meta.type : "notes",
-          content: body,
-          created: meta.created || "",
-          updated: meta.updated || "",
-          isDraft: false,
-          meta,
-        };
-        state.mode = "view";
-        state.preview = false;
-        state.dirty = false;
-        if (asToc) state.sidebarView = "toc";
-        renderAll();
+        await _doLoadDocument(slug, asToc);
+        pushHistory();
       } catch (e) {
         toast("Could not open the document.");
       }
@@ -1222,7 +1415,12 @@
 
     async function openDocumentNoGuard(slug, asToc) {
       state.dirty = false;
-      await openDocument(slug, asToc);
+      try {
+        await _doLoadDocument(slug, asToc);
+        // No pushHistory — caller manages URL (init, popstate, discard)
+      } catch (e) {
+        toast("Could not open the document.");
+      }
     }
 
     async function save() {
@@ -1238,24 +1436,22 @@
         "Authorization": "Bearer " + token,
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
+        "Content-Type": "application/json",
       };
-      const contentsUrl = (p) =>
-        "https://api.github.com/repos/" + GITHUB.owner + "/" + GITHUB.repo + "/contents/" + p;
+      const api = "https://api.github.com/repos/" + GITHUB.owner + "/" + GITHUB.repo;
+      const contentsUrl = (p) => api + "/contents/" + p;
       const ref = "?ref=" + encodeURIComponent(GITHUB.branch);
 
       toast("Saving to GitHub…");
       try {
-        let slug, path, sha = null, existed = false;
+        let slug, path, existed = false;
 
         if (d.slug) {
-          // Updating an existing document: fetch its current sha.
-          slug = d.slug;
-          path = LIBRARY + "/" + slug + ".md";
+          slug = d.slug; path = LIBRARY + "/" + slug + ".md";
           const res = await fetch(contentsUrl(path) + ref, { headers, cache: "no-store" });
-          if (res.status === 200) { sha = (await res.json()).sha; existed = true; }
+          if (res.status === 200) { existed = true; }
           else if (res.status !== 404) throw new Error(httpError(res.status));
         } else {
-          // New document: pick the first free slug so we never clobber a file.
           const baseSlug = slugify(d.title);
           for (let n = 1; ; n++) {
             const cand = n === 1 ? baseSlug : baseSlug + "-" + n;
@@ -1266,27 +1462,72 @@
         }
 
         if (!d.created) d.created = new Date().toISOString();
-        const body = {
-          message: (existed ? "Update " : "Create ") + path,
-          content: toBase64(buildMarkdown(d)),
-          branch: GITHUB.branch,
-        };
-        if (sha) body.sha = sha;
-
-        const put = await fetch(contentsUrl(path), { method: "PUT", headers, body: JSON.stringify(body) });
-        if (!put.ok) throw new Error(httpError(put.status));
-
-        // Optimistic local update (the Action rebuilds the manifest on push).
-        clearDraftLocal();
-        d.slug = slug;
-        d.isDraft = false;
         d.updated = new Date().toISOString();
+        d.slug = slug;
+
+        // Update in-memory manifest, then serialize it for the commit
+        const manifestEntry = { slug, title: d.title.trim(), type: d.type, created: d.created, updated: d.updated };
+        if (d.meta && d.meta.refcode) manifestEntry.refcode = d.meta.refcode;
+        upsertDocument(manifestEntry);
+        const sorted = [...state.documents].sort((a, b) => (b.updated || "") > (a.updated || "") ? 1 : -1);
+        const indexJson = JSON.stringify({ documents: sorted }, null, 2) + "\n";
+
+        // Get HEAD commit + base tree for atomic multi-file commit
+        const headRes = await fetch(api + "/git/refs/heads/" + encodeURIComponent(GITHUB.branch), { headers, cache: "no-store" });
+        if (!headRes.ok) throw new Error(httpError(headRes.status));
+        const headSha = (await headRes.json()).object.sha;
+
+        const baseCommitRes = await fetch(api + "/git/commits/" + headSha, { headers, cache: "no-store" });
+        if (!baseCommitRes.ok) throw new Error(httpError(baseCommitRes.status));
+        const baseSha = (await baseCommitRes.json()).tree.sha;
+
+        // Create blobs for both files in parallel
+        const mkBlob = (content) => fetch(api + "/git/blobs", {
+          method: "POST", headers,
+          body: JSON.stringify({ content: toBase64(content), encoding: "base64" }),
+        }).then((r) => r.ok ? r.json() : Promise.reject(new Error(httpError(r.status))));
+
+        const [mdBlob, idxBlob] = await Promise.all([mkBlob(buildMarkdown(d)), mkBlob(indexJson)]);
+
+        // Create new tree referencing both blobs
+        const treeRes = await fetch(api + "/git/trees", {
+          method: "POST", headers,
+          body: JSON.stringify({
+            base_tree: baseSha,
+            tree: [
+              { path, mode: "100644", type: "blob", sha: mdBlob.sha },
+              { path: "index.json", mode: "100644", type: "blob", sha: idxBlob.sha },
+            ],
+          }),
+        });
+        if (!treeRes.ok) throw new Error(httpError(treeRes.status));
+        const newTreeSha = (await treeRes.json()).sha;
+
+        // Create commit
+        const commitRes = await fetch(api + "/git/commits", {
+          method: "POST", headers,
+          body: JSON.stringify({
+            message: (existed ? "docs: update " : "docs: create ") + path,
+            tree: newTreeSha, parents: [headSha],
+          }),
+        });
+        if (!commitRes.ok) throw new Error(httpError(commitRes.status));
+        const newCommitSha = (await commitRes.json()).sha;
+
+        // Advance branch ref
+        const refRes = await fetch(api + "/git/refs/heads/" + encodeURIComponent(GITHUB.branch), {
+          method: "PATCH", headers, body: JSON.stringify({ sha: newCommitSha }),
+        });
+        if (!refRes.ok) throw new Error(httpError(refRes.status));
+
+        clearDraftLocal();
+        d.isDraft = false;
         state.dirty = false;
-        upsertDocument({ slug, title: d.title.trim(), type: d.type, created: d.created, updated: d.updated });
         state.mode = "view";
         state.preview = false;
         state.sidebarView = "toc";
         renderAll();
+        pushHistory();
         toast((existed ? "Updated " : "Created ") + path + " on GitHub.");
       } catch (e) {
         toast("Save failed: " + e.message);
@@ -1451,12 +1692,25 @@
     }
 
     async function init() {
+      setupMarked();
       setupMenu();
       setupSettingsModal();
       setupFormulaModal();
       setupShortcuts();
       renderTokenStatus();
       await loadManifest();
+
+      window.addEventListener("popstate", async () => {
+        const params = parseHash(window.location.hash);
+        await applyFromParams(params);
+      });
+
+      const initParams = parseHash(window.location.hash);
+      if (initParams.doc) {
+        await applyFromParams(initParams);
+        return;
+      }
+
       const draft = loadDraftLocal();
       if (draft) {
         state.current = { slug: null, title: draft.title || "", content: draft.content || "",

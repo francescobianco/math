@@ -3,7 +3,7 @@ PY   ?= python3
 
 .DEFAULT_GOAL := help
 
-.PHONY: help start build clean
+.PHONY: help start pull clean
 
 help: ## Show this help
 	@echo "Math Wiki — available commands:"
@@ -16,44 +16,6 @@ start: ## Serve files locally at http://127.0.0.1:$(PORT) with live reload
 pull: ## Pull latest changes from remote before pushing
 	git pull --rebase origin main
 
-build: ## Rebuild index.json from the .md files in library/
-	@$(PY) -c "$$BUILD_MANIFEST_PY"
-
 clean: ## Remove temporary files
 	@find . -name '__pycache__' -type d -prune -exec rm -rf {} + 2>/dev/null || true
 	@echo "Done."
-
-# Tree manifest generator (also used by the GitHub Action).
-define BUILD_MANIFEST_PY
-import json, os
-library = "library"
-def frontmatter(raw):
-    meta = {}
-    if raw.startswith("---"):
-        parts = raw.split("---", 2)
-        if len(parts) >= 3:
-            for line in parts[1].strip().splitlines():
-                if ":" in line:
-                    key, value = line.split(":", 1)
-                    meta[key.strip()] = value.strip()
-    return meta
-docs = []
-for name in sorted(os.listdir(library)):
-    if not name.endswith(".md"):
-        continue
-    with open(os.path.join(library, name), encoding="utf-8") as fh:
-        meta = frontmatter(fh.read())
-    docs.append({
-        "slug": name[:-3],
-        "title": meta.get("title", name[:-3]),
-        "type": meta.get("type", "notes"),
-        "created": meta.get("created", ""),
-        "updated": meta.get("updated", ""),
-    })
-docs.sort(key=lambda d: d.get("updated", ""), reverse=True)
-with open("index.json", "w", encoding="utf-8") as fh:
-    json.dump({"documents": docs}, fh, indent=2, ensure_ascii=False)
-    fh.write("\n")
-print("index.json rebuilt: %d documents." % len(docs))
-endef
-export BUILD_MANIFEST_PY
