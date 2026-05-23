@@ -2,7 +2,7 @@
 title: The Semilogarithm
 type: paper
 created: 2026-05-23T13:00:00+00:00
-updated: 2026-05-23T14:35:00+00:00
+updated: 2026-05-23T14:50:00+00:00
 ---
 
 # The Semilogarithm
@@ -637,6 +637,171 @@ $$
 
 Thus the normalization $s(1/2)=0$ selects a concrete value map from the family
 of possible semilogarithms.
+
+## Alternative Normalization: $s(1/\sqrt e)=0$
+
+The previous normalization was
+
+$$
+s\left(\frac{1}{2}\right)=0.
+$$
+
+We now compare it with the alternative condition
+
+$$
+s\left(\frac{1}{\sqrt e}\right)=0.
+$$
+
+This choice is especially natural because
+
+$$
+\log\left(\frac{1}{\sqrt e}\right)=-\frac{1}{2}.
+$$
+
+Applying the defining equation at $x=1/\sqrt e$ gives
+
+$$
+s\left(s\left(\frac{1}{\sqrt e}\right)\right)
+=\log\left(\frac{1}{\sqrt e}\right).
+$$
+
+Since $s(1/\sqrt e)=0$, we obtain
+
+$$
+s(0)=-\frac{1}{2}.
+$$
+
+Thus, under this alternative normalization, the value following zero is exactly
+$-1/2$ rather than $-\log 2$.
+
+Using the commutation law
+
+$$
+s(\log x)=\log(s(x)),
+$$
+
+with $x=1$, we get
+
+$$
+s(0)=\log(s(1)).
+$$
+
+Since $s(0)=-1/2$, this gives
+
+$$
+\log(s(1))=-\frac{1}{2},
+$$
+
+and therefore
+
+$$
+s(1)=e^{-1/2}=\frac{1}{\sqrt e}.
+$$
+
+So this normalization produces the chain
+
+$$
+1 \longmapsto \frac{1}{\sqrt e} \longmapsto 0 \longmapsto -\frac{1}{2}.
+$$
+
+The next step is singular. Since
+
+$$
+s(s(0))=\log 0,
+$$
+
+we obtain
+
+$$
+s\left(-\frac{1}{2}\right)=-\infty.
+$$
+
+Therefore the negative finite point sent to $-\infty$ is exactly
+
+$$
+-\frac{1}{2}.
+$$
+
+This explains why the value $-1/2$ is structurally important: it appears if the
+zero of the semilogarithm is placed at $1/\sqrt e$ instead of at $1/2$.
+
+The positive side also changes. From
+
+$$
+s(1)=\log(s(e)),
+$$
+
+we get
+
+$$
+\frac{1}{\sqrt e}=\log(s(e)),
+$$
+
+so
+
+$$
+s(e)=e^{1/\sqrt e}.
+$$
+
+Consequently,
+
+$$
+s(e^{1/\sqrt e})=1.
+$$
+
+The normalized chain becomes
+
+$$
+e \longmapsto e^{1/\sqrt e} \longmapsto 1
+\longmapsto \frac{1}{\sqrt e} \longmapsto 0
+\longmapsto -\frac{1}{2} \longmapsto -\infty.
+$$
+
+### Comparison of the Two Normalizations
+
+The two choices can be compared directly:
+
+| Normalization | $s(0)$ | Point sent to $-\infty$ | $s(1)$ | $s(e)$ |
+|---|---:|---:|---:|---:|
+| $s(1/2)=0$ | $-\log 2$ | $-\log 2$ | $1/2$ | $\sqrt e$ |
+| $s(1/\sqrt e)=0$ | $-1/2$ | $-1/2$ | $1/\sqrt e$ | $e^{1/\sqrt e}$ |
+
+The first normalization is arithmetically simple at the zero point because it
+uses $1/2$. The second normalization is logarithmically simple because
+$\log(1/\sqrt e)=-1/2$, making the negative singular point exactly $-1/2$.
+
+More generally, if one imposes
+
+$$
+s(c)=0,
+$$
+
+then the defining equation gives
+
+$$
+s(0)=\log c.
+$$
+
+The commutation law gives
+
+$$
+s(1)=c,
+$$
+
+and the singular point is
+
+$$
+s(\log c)=-\infty.
+$$
+
+Thus the choice of the zero $c$ determines the chain
+
+$$
+1 \longmapsto c \longmapsto 0 \longmapsto \log c \longmapsto -\infty.
+$$
+
+For $c=1/2$, this gives $\log c=-\log 2$. For $c=1/\sqrt e$, it gives
+$\log c=-1/2$.
 
 ## Comparing $\log x$, $\log(s(x))$, and $\log(\log x)$
 
