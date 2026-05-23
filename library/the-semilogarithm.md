@@ -2,7 +2,7 @@
 title: The Semilogarithm
 type: paper
 created: 2026-05-23T13:00:00+00:00
-updated: 2026-05-23T14:20:00+00:00
+updated: 2026-05-23T14:35:00+00:00
 ---
 
 # The Semilogarithm
@@ -340,6 +340,165 @@ $$
 This is a meaningful value map. The equation alone still does not determine the
 initial half-step $H_0=s(e)$, but once $H_0$ is chosen, the higher half-step
 values are forced by the commutation relation.
+
+## Derivative Relations
+
+Since the derivative of the logarithm is known, the defining equation of the
+semilogarithm gives information about the derivative of $s$. Starting from
+
+$$
+s(s(x))=\log x,
+$$
+
+and differentiating both sides, we obtain
+
+$$
+s'(s(x))s'(x)=\frac{1}{x}.
+$$
+
+Thus the derivative of $s$ at $x$ is coupled with the derivative of $s$ at the
+shifted point $s(x)$. Equivalently,
+
+$$
+s'(s(x))=\frac{1}{xs'(x)}.
+$$
+
+This is a functional equation for the derivative of the semilogarithm.
+
+The commutation law gives a second relation. Since
+
+$$
+s(\log x)=\log(s(x)),
+$$
+
+we may differentiate both sides. The derivative of the left-hand side is
+
+$$
+\frac{s'(\log x)}{x},
+$$
+
+while the derivative of the right-hand side is
+
+$$
+\frac{s'(x)}{s(x)}.
+$$
+
+Therefore,
+
+$$
+\frac{s'(\log x)}{x}=\frac{s'(x)}{s(x)},
+$$
+
+or
+
+$$
+s'(\log x)=\frac{x s'(x)}{s(x)}.
+$$
+
+This is the special relation that emerges by equating the derivatives of
+$s(\log x)$ and $\log(s(x))$. It says that the derivative at the logarithmic
+point $\log x$ is determined by the derivative at $x$, scaled by the ratio
+$x/s(x)$.
+
+Combining the two derivative identities gives two equivalent ways to transport
+local slope information:
+
+$$
+s'(s(x))s'(x)=\frac{1}{x},
+$$
+
+and
+
+$$
+s'(\log x)=\frac{x s'(x)}{s(x)}.
+$$
+
+The first relation moves from $x$ to the semilogarithmic point $s(x)$. The
+second relation moves from $x$ to the logarithmic point $\log x$.
+
+### Consequences at Normalized Values
+
+Under the normalization
+
+$$
+s\left(\frac{1}{2}\right)=0,
+$$
+
+we also have
+
+$$
+s(1)=\frac{1}{2}, \qquad s(e)=\sqrt e, \qquad s(\sqrt e)=1.
+$$
+
+Let
+
+$$
+a=s'(1).
+$$
+
+The derivative equation at $x=1$ gives
+
+$$
+s'\left(s(1)\right)s'(1)=1,
+$$
+
+hence
+
+$$
+s'\left(\frac{1}{2}\right)=\frac{1}{a}.
+$$
+
+The derivative equation at $x=\frac{1}{2}$ gives
+
+$$
+s'(0)s'\left(\frac{1}{2}\right)=2,
+$$
+
+so
+
+$$
+s'(0)=2a.
+$$
+
+The commutation derivative at $x=e$ gives
+
+$$
+s'(1)=\frac{e s'(e)}{s(e)}.
+$$
+
+Since $s(e)=\sqrt e$, we obtain
+
+$$
+s'(e)=\frac{a}{\sqrt e}.
+$$
+
+Finally, using
+
+$$
+s'(s(e))s'(e)=\frac{1}{e},
+$$
+
+we get
+
+$$
+s'(\sqrt e)=\frac{1}{\sqrt e\,a}.
+$$
+
+Thus the local derivatives around the normalized chain are not arbitrary. They
+are determined by a single parameter $a=s'(1)$:
+
+| Point | Value of the derivative |
+|---:|---:|
+| $0$ | $2a$ |
+| $1/2$ | $1/a$ |
+| $1$ | $a$ |
+| $\sqrt e$ | $1/(\sqrt e\,a)$ |
+| $e$ | $a/\sqrt e$ |
+
+The parameter $a$ remains free because the functional equation determines how
+slopes are transported, but it does not by itself fix the initial slope. A full
+analytic construction of the semilogarithm would need to determine or normalize
+this value.
 
 ## A Normalization Through Zero
 
