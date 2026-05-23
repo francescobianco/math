@@ -884,15 +884,29 @@
         `<button id="expText"><i class="fa-solid fa-align-left"></i> Copy as plain text</button>` +
         `</div></div>`;
       if (state.mode === "view") {
-        topbarEl.innerHTML =
-          `<div class="doc-name">${refBadge}</div>` +
-          `<div class="actions">` +
-          `<button id="editBtn" class="btn"><i class="fa-solid fa-pen-to-square"></i> Edit</button>` +
-          exportBtn + settingsBtn + `</div>`;
-        topbarEl.querySelector(".doc-name").prepend(document.createTextNode(d.title));
-        $("#editBtn").onclick = enterEdit;
-        $("#settingsBtn").onclick = openSettingsModal;
-        setupExportMenu(d);
+        if (state.dirty) {
+          topbarEl.innerHTML =
+            `<div class="doc-name">${refBadge}</div>` +
+            `<div class="actions"><span class="badge badge-warn">Unsaved changes</span>` +
+            `<button id="discardBtn" class="btn"><i class="fa-solid fa-rotate-left"></i> Discard</button>` +
+            settingsBtn +
+            `<button id="saveBtn" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save</button>` +
+            `</div>`;
+          topbarEl.querySelector(".doc-name").prepend(document.createTextNode(d.title));
+          $("#discardBtn").onclick = discard;
+          $("#settingsBtn").onclick = openSettingsModal;
+          $("#saveBtn").onclick = save;
+        } else {
+          topbarEl.innerHTML =
+            `<div class="doc-name">${refBadge}</div>` +
+            `<div class="actions">` +
+            `<button id="editBtn" class="btn"><i class="fa-solid fa-pen-to-square"></i> Edit</button>` +
+            exportBtn + settingsBtn + `</div>`;
+          topbarEl.querySelector(".doc-name").prepend(document.createTextNode(d.title));
+          $("#editBtn").onclick = enterEdit;
+          $("#settingsBtn").onclick = openSettingsModal;
+          setupExportMenu(d);
+        }
         return;
       }
       // edit
