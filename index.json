@@ -1,6 +1,13 @@
 {
   "documents": [
     {
+      "slug": "about",
+      "title": "About Me",
+      "type": "page",
+      "created": "2026-05-23T10:00:00+00:00",
+      "updated": "2026-05-23T10:00:00+00:00"
+    },
+    {
       "slug": "real-analysis",
       "title": "Real Analysis",
       "type": "book",
@@ -27,13 +34,6 @@
       "type": "page",
       "created": "2026-05-22T08:00:00+00:00",
       "updated": "2026-05-22T08:00:00+00:00"
-    },
-    {
-      "slug": "about",
-      "title": "About Me",
-      "type": "page",
-      "created": "2026-05-23T10:00:00+00:00",
-      "updated": "2026-05-23T10:00:00+00:00"
     }
   ]
 }
