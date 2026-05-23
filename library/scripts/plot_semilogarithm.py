@@ -51,11 +51,30 @@ def forced_positive_anchors() -> list[tuple[float, float, str]]:
     ]
 
 
-def interpolated_semilogarithm(xs: np.ndarray, anchors: list[tuple[float, float, str]]) -> np.ndarray:
-    """Approximate s(x) by linear interpolation through known anchors."""
+def s_approx(xs: np.ndarray, anchors: list[tuple[float, float, str]]) -> np.ndarray:
+    """Approximate the semilogarithm s(x) through the forced anchors.
+
+    This is not the analytic semilogarithm. It is the visual candidate we use
+    to see how s(x) could look under the normalization s(1/2)=0.
+    """
     ax = np.array([x for x, _, _ in anchors], dtype=float)
     ay = np.array([y for _, y, _ in anchors], dtype=float)
     return np.interp(xs, ax, ay)
+
+
+def interpolated_semilogarithm(xs: np.ndarray, anchors: list[tuple[float, float, str]]) -> np.ndarray:
+    """Backward-compatible alias for the plotted approximation."""
+    return s_approx(xs, anchors)
+
+
+def negative_singularity_branch(xs: np.ndarray, singular_x: float) -> np.ndarray:
+    """Heuristic branch with s(x)->-infinity as x approaches -log(2).
+
+    It is anchored by s(0)=-log(2). This is drawn only to visualize the
+    boundary behavior forced by s(-log(2))=-infinity.
+    """
+    width = -singular_x
+    return singular_x + np.log((xs - singular_x) / width)
 
 
 def main() -> None:
@@ -69,7 +88,10 @@ def main() -> None:
 
     semi = np.full_like(xs, np.nan)
     semi_mask = xs >= 0.0
-    semi[semi_mask] = interpolated_semilogarithm(xs[semi_mask], anchors)
+    semi[semi_mask] = s_approx(xs[semi_mask], anchors)
+
+    branch_xs = np.linspace(singular_x + 1e-4, 0.0, 260)
+    branch_values = negative_singularity_branch(branch_xs, singular_x)
 
     log_values = np.full_like(xs, np.nan)
     log_mask = xs > 0.0
@@ -91,16 +113,25 @@ def main() -> None:
     print("\nSampled comparison")
     print("x\ts_approx(x)\tlog(x)\tlog(s_approx(x))\tlog(log(x))")
     for x in [singular_x, 0.0, 0.05, 0.1, 0.25, 0.5, 1.0, math.sqrt(math.e), math.e, anchors[-1][0]]:
-        sx = interpolated_semilogarithm(np.array([x]), anchors)[0] if x >= 0 else float("nan")
+        sx = s_approx(np.array([x]), anchors)[0] if x >= 0 else float("nan")
         lx = math.log(x) if x > 0 else float("nan")
         lsx = math.log(sx) if sx > 0 else float("nan")
         llx = math.log(lx) if lx > 0 else float("nan")
         print(f"{x:.12g}\t{sx:.12g}\t{lx:.12g}\t{lsx:.12g}\t{llx:.12g}")
 
     fig, ax = plt.subplots(figsize=(11, 7))
-    ax.plot(xs, semi, linewidth=2.4, color="#1f77b4", label=r"normalized $s(x)$ approximation")
+    ax.plot(xs, semi, linewidth=2.4, color="#1f77b4", label=r"$s_{\mathrm{approx}}(x)$")
+    ax.plot(
+        branch_xs,
+        branch_values,
+        linewidth=2.0,
+        color="#1f77b4",
+        linestyle="--",
+        alpha=0.8,
+        label=r"heuristic $s(x)\to-\infty$ branch",
+    )
     ax.plot(xs, log_values, linewidth=2.0, color="#d62728", linestyle="--", label=r"$\log(x)$")
-    ax.plot(xs, log_semi_values, linewidth=2.0, color="#2ca02c", linestyle="-.", label=r"$\log(s(x))$")
+    ax.plot(xs, log_semi_values, linewidth=2.0, color="#2ca02c", linestyle="-.", label=r"$\log(s_{\mathrm{approx}}(x))$")
     ax.plot(xs, loglog_values, linewidth=2.0, color="#9467bd", linestyle=":", label=r"$\log(\log(x))$")
 
     anchor_x = [x for x, _, _ in anchors if x > 0]
@@ -122,6 +153,7 @@ def main() -> None:
     ax.axhline(0, color="#333333", linewidth=0.8, alpha=0.5)
     ax.axhline(singular_x, color="#7f7f7f", linewidth=0.9, linestyle="--", alpha=0.7)
     ax.axvline(1, color="#333333", linewidth=0.8, alpha=0.35)
+    ax.axvline(0.5, color="#2ca02c", linewidth=1.0, linestyle=":", alpha=0.85)
     ax.axvline(singular_x, color="#111111", linewidth=1.1, linestyle=":", alpha=0.85)
     ax.annotate(
         r"$x=-\log 2$, $s(x)\to-\infty$",
@@ -131,6 +163,15 @@ def main() -> None:
         arrowprops={"arrowstyle": "->", "color": "#111111", "linewidth": 0.9},
         fontsize=9,
         color="#111111",
+    )
+    ax.annotate(
+        r"$\log(s(x))\to-\infty$ at $x=1/2$",
+        xy=(0.5, -2.5),
+        xytext=(18, -14),
+        textcoords="offset points",
+        arrowprops={"arrowstyle": "->", "color": "#2ca02c", "linewidth": 0.9},
+        fontsize=9,
+        color="#2ca02c",
     )
     ax.annotate(
         r"$s(0)=-\log 2$",
@@ -147,6 +188,7 @@ def main() -> None:
     ax.set_xlim(x_min, x_max)
     finite_curves = np.concatenate([
         semi[np.isfinite(semi)],
+        branch_values[np.isfinite(branch_values)],
         log_values[np.isfinite(log_values)],
         log_semi_values[np.isfinite(log_semi_values)],
         loglog_values[np.isfinite(loglog_values)],

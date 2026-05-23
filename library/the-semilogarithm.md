@@ -2,7 +2,7 @@
 title: The Semilogarithm
 type: paper
 created: 2026-05-23T13:00:00+00:00
-updated: 2026-05-23T13:45:00+00:00
+updated: 2026-05-23T14:20:00+00:00
 ---
 
 # The Semilogarithm
@@ -493,41 +493,66 @@ $$
 \log x, \qquad \log(s(x)), \qquad \log(\log x).
 $$
 
-One possible question is whether the order
+This comparison must be made carefully, because each expression has its own
+domain restrictions. The expression $\log x$ is real for $x>0$. The expression
+$\log(\log x)$ is real only for
 
 $$
-\log x < \log(s(x)) < \log(\log x)
+x>1,
 $$
 
-can hold. On the positive real line, this order is not the natural one for
-large values of $x$. Indeed, for $x>e$, we have
+and it is positive only for $x>e$. The expression $\log(s(x))$ is real only
+where
 
 $$
-\log x>1,
+s(x)>0.
 $$
 
-and therefore
+Under the normalization $s(1/2)=0$, the forced values give
+
+$$
+s(1)=\frac{1}{2}, \qquad s(\sqrt e)=1, \qquad s(e)=\sqrt e.
+$$
+
+Therefore $\log(s(x))$ becomes real along the forced positive chain once
+$s(x)>0$.
+
+### The Containment Region
+
+For $x>e$, the two logarithmic curves satisfy
 
 $$
 \log(\log x)<\log x.
 $$
 
-Thus the inequality
+Thus the natural bounded region is the vertical band
 
 $$
-\log x < \log(s(x)) < \log(\log x)
+\mathcal{R}=\left\{(x,y):x>e,\ \log(\log x)<y<\log x\right\}.
 $$
 
-cannot hold for $x>e$, because its left and right endpoints are already in the
-opposite order.
-
-The normalized value chain instead suggests the reversed ordering
+The question is whether the semilogarithmic curve
 
 $$
-\log(\log x)<\log(s(x))<\log x,
+y=\log(s(x))
 $$
 
-at least along the forced anchor values. For example, at $x=e$,
+lies inside this region, namely whether
+
+$$
+\log(\log x)<\log(s(x))<\log x.
+$$
+
+The opposite ordering
+
+$$
+\log x<\log(s(x))<\log(\log x)
+$$
+
+cannot hold for $x>e$, because the endpoints are already ordered as
+$\log(\log x)<\log x$.
+
+At the forced value $x=e$, we obtain
 
 $$
 \log(\log e)=\log 1=0,
@@ -543,7 +568,7 @@ $$
 \log e=1.
 $$
 
-Therefore,
+Thus
 
 $$
 0<\frac{1}{2}<1.
@@ -579,20 +604,132 @@ $$
 \frac{1}{2}<1<\sqrt e.
 $$
 
-This supports the ordering
+These anchor values support the containment
 
 $$
 \log(\log x)<\log(s(x))<\log x
 $$
 
-on the positive region where all three expressions are defined and where the
-normalized semilogarithm behaves as a monotone half-step between $x$ and
-$\log x$.
+on the positive region where all three quantities are defined, provided the
+chosen semilogarithm is monotone and behaves as a genuine half-step between the
+identity and the logarithm in Abel coordinates.
 
-The graphical script in `library/scripts/plot_semilogarithm.py` plots these
-three quantities together with an interpolated model of $s(x)$ based on the
-forced values. The plot is exploratory: it visualizes the consequences of the
-normalization, but it is not a proof of a unique analytic semilogarithm.
+### What the Graph Shows
+
+The generated graph is included below.
+
+![Normalized semilogarithm plot](library/images/semilogarithm-normalized.png)
+
+The curve labelled $s(x)$ in the graph is not an analytic construction of the
+semilogarithm. It is an interpolated model through the forced values
+
+$$
+0\mapsto -\log 2,
+\quad
+\frac{1}{2}\mapsto 0,
+\quad
+1\mapsto \frac{1}{2},
+\quad
+\sqrt e\mapsto 1,
+\quad
+e\mapsto \sqrt e.
+$$
+
+The script uses monotone linear interpolation between these anchors. Therefore
+the plotted green curve is not the true analytic object
+
+$$
+\log(s(x)),
+$$
+
+but rather
+
+$$
+\log(s_{\mathrm{interp}}(x)).
+$$
+
+This explains why it appears continuous and regular in the graph: the continuity
+comes from interpolation, not from an analytic solution of the semilogarithm
+problem.
+
+### Two Different Descents to $-\infty$
+
+There are two different descents in the picture, and they must not be confused.
+
+First, the normalization gives
+
+$$
+s(0)=-\log 2
+$$
+
+and
+
+$$
+s(-\log 2)=-\infty.
+$$
+
+So the semilogarithm itself has a singular descent at
+
+$$
+x=-\log 2\approx -0.6931.
+$$
+
+This is a statement about $s(x)$.
+
+Second, because
+
+$$
+s\left(\frac{1}{2}\right)=0,
+$$
+
+the expression $\log(s(x))$ has its own logarithmic descent at
+
+$$
+x=\frac{1}{2}.
+$$
+
+Indeed, if $s(x)\to 0^+$, then
+
+$$
+\log(s(x))\to -\infty.
+$$
+
+This is a statement about $\log(s(x))$, not about $s(x)$ itself.
+
+Therefore the apparent descent near $x=1/2$ belongs to the plotted curve
+$\log(s_{\mathrm{interp}}(x))$. The negative singular value of the
+semilogarithm is instead
+
+$$
+-\log 2,
+$$
+
+not $-1/2$. If the picture visually suggests $-1/2$, that is because the
+vertical line $x=1/2$ is the positive zero of $s(x)$, where the logarithm of
+$s(x)$ becomes singular. It is not the negative point where $s(x)$ itself is
+sent to $-\infty$.
+
+The updated plot therefore shows both features: a dashed heuristic branch for
+$s(x)\to-\infty$ as $x\to-\log 2^+$, and a separate vertical marker at
+$x=1/2$ for $\log(s(x))\to-\infty$.
+
+Nevertheless, the graph is useful as a geometric map. It shows the expected
+position of the semilogarithmic half-step curve between the two bounding curves
+$\log(\log x)$ and $\log x$ at the forced values. A proof for a genuine analytic
+semilogarithm would require constructing an Abel coordinate $\Phi$ satisfying
+
+$$
+\Phi(\log x)=\Phi(x)+1
+$$
+
+and then defining
+
+$$
+s(x)=\Phi^{-1}\left(\Phi(x)+\frac{1}{2}\right).
+$$
+
+Only after that construction could the containment inequality be studied as an
+analytic theorem rather than as an interpolation-supported observation.
 
 ## Mapping Around Known Values
 
