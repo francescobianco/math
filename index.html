@@ -306,6 +306,13 @@
     }
     .setting-row input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px #2f6df018; }
     .setting-row input[type="color"] { padding: 4px 6px; height: 36px; width: 100%; cursor: pointer; }
+    .setting-row select {
+      border: 1px solid #d4d8df; border-radius: 7px; padding: 8px 11px;
+      font-size: 14px; color: #1d2127; outline: none;
+      font-family: inherit; background: #fff; cursor: pointer;
+    }
+    .setting-row select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px #2f6df018; }
+    .section-num { color: #9aa0a8; font-weight: 400; margin-right: .35em; font-variant-numeric: tabular-nums; }
     .refcode-badge {
       display: inline-block; padding: 1px 8px; border-radius: 10px;
       background: #eef1f7; color: #5a6070; font-size: 11px; font-weight: 700;
@@ -445,7 +452,7 @@
   <div class="app">
     <header class="topbar">
       <div class="brand" id="brandBtn" style="cursor:pointer;" title="Go to Home">
-        <span class="brand-mark" style="font-size:15px;letter-spacing:-.5px">e<sup>x</sup></span>
+        <span class="brand-mark">M</span>
         <span class="brand-name">Math Wiki</span>
       </div>
       <div id="topbar" class="topbar-content"></div>
@@ -511,6 +518,14 @@
         <div class="setting-row">
           <label>Reference Code</label>
           <input id="stgRefcode" type="text" placeholder="Auto — e.g. B1, P2, N3" style="text-transform:uppercase" />
+        </div>
+        <div class="setting-row">
+          <label>Section Numbering</label>
+          <select id="stgSectionPrefix">
+            <option value="">None (default)</option>
+            <option value="dot">1. &nbsp;/&nbsp; 1.2. &nbsp;/&nbsp; 1.2.3.</option>
+            <option value="nodot">1 &nbsp;/&nbsp; 1.2 &nbsp;/&nbsp; 1.2.3</option>
+          </select>
         </div>
       </div>
       <div class="modal-actions">
@@ -857,10 +872,11 @@
       const settingsBtn = `<button id="settingsBtn" class="btn" title="Settings"><i class="fa-solid fa-sliders"></i></button>`;
       const exportBtn =
         `<div class="export-wrap">` +
-        `<button id="exportBtn" class="btn" title="Export / Share"><i class="fa-solid fa-file-export"></i></button>` +
+        `<button id="exportBtn" class="btn" title="Export / Share"><i class="fa-solid fa-download"></i></button>` +
         `<div id="exportMenu" class="export-menu hidden">` +
         `<button id="expPrint"><i class="fa-solid fa-print"></i> Print / Save as PDF</button>` +
         `<button id="expMd"><i class="fa-solid fa-file-lines"></i> Download Markdown</button>` +
+        `<button id="expLatex"><i class="fa-solid fa-file-invoice"></i> Export as LaTeX (.tex)</button>` +
         `<button id="expHtml"><i class="fa-solid fa-file-code"></i> Export as HTML</button>` +
         `<hr>` +
         `<button id="expLink"><i class="fa-solid fa-link"></i> Copy shareable link</button>` +
@@ -902,7 +918,7 @@
     function renderPage() {
       if (state.mode === "empty") {
         pageEl.innerHTML =
-          `<div class="empty"><div class="big">e<sup>x</sup></div>` +
+          `<div class="empty"><div class="big">M</div>` +
           `<h2>Math Wiki</h2><p>Pick a document on the left<br>or create something new.</p></div>`;
         return;
       }
@@ -925,6 +941,7 @@
       pageEl.querySelector(".doc-title").textContent = d.title;
       pageEl.querySelector(".doc-body").innerHTML = renderMarkdown(d.content);
       typesetMath(pageEl);
+      applyHeadingNumbers(pageEl, (d.meta || {}).section_prefix);
       numberAndActivateFormulas(pageEl);
       activateWikiRefs(pageEl);
       activateInlineEdit(pageEl);
@@ -941,6 +958,7 @@
         pageEl.querySelector(".doc-title").textContent = d.title || "Untitled";
         pageEl.querySelector(".doc-body").innerHTML = renderMarkdown(d.content);
         typesetMath(pageEl);
+        applyHeadingNumbers(pageEl, (d.meta || {}).section_prefix);
         numberAndActivateFormulas(pageEl);
         activateWikiRefs(pageEl);
         if (state.inlineEdit) makeDocBodyEditable(pageEl);
@@ -1120,6 +1138,7 @@
         pageEl.appendChild(sheet);
       });
 
+      applyHeadingNumbers(pageEl, (d.meta || {}).section_prefix);
       numberAndActivateFormulas(pageEl);
       activateWikiRefs(pageEl);
       activateInlineEdit(pageEl);
@@ -1164,6 +1183,26 @@
     }
 
     /* ---------- inline WYSIWYG ---------- */
+    function applyHeadingNumbers(el, style) {
+      if (!style) return;
+      const heads = Array.from(el.querySelectorAll(".doc-body h1, .doc-body h2, .doc-body h3"));
+      if (!heads.length) return;
+      const minLevel = Math.min(...heads.map((h) => +h.tagName[1]));
+      const counters = [0, 0, 0];
+      heads.forEach((h) => {
+        const lvl = +h.tagName[1] - minLevel;
+        counters[lvl]++;
+        for (let k = lvl + 1; k < counters.length; k++) counters[k] = 0;
+        const num = counters.slice(0, lvl + 1).join(".");
+        const prefix = style === "dot" ? num + "." : num;
+        if (!h.dataset.rawTitle) h.dataset.rawTitle = h.textContent.trim();
+        const span = document.createElement("span");
+        span.className = "section-num";
+        span.textContent = prefix;
+        h.prepend(span);
+      });
+    }
+
     let _inlineTarget = 0;
 
     function activateInlineEdit(el) {
@@ -1302,7 +1341,8 @@
       document.getElementById("stgAuthor").value  = meta.author || meta.authors || "";
       document.getElementById("stgSlug").value    = d.slug   || "";
       document.getElementById("stgColor").value   = meta.color || "#2f6df0";
-      document.getElementById("stgRefcode").value = (meta.refcode || "").toUpperCase();
+      document.getElementById("stgRefcode").value       = (meta.refcode || "").toUpperCase();
+      document.getElementById("stgSectionPrefix").value = meta.section_prefix || "";
       document.getElementById("settingsModal").classList.remove("hidden");
       state.modal = "settings";
       pushHistory();
@@ -1325,10 +1365,13 @@
         const newSlug    = document.getElementById("stgSlug").value.trim()
           .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || d.slug;
         const newColor   = document.getElementById("stgColor").value;
-        const newRefcode = document.getElementById("stgRefcode").value.trim().toUpperCase();
+        const newRefcode       = document.getElementById("stgRefcode").value.trim().toUpperCase();
+        const newSectionPrefix = document.getElementById("stgSectionPrefix").value;
         if (newTitle)  { d.title = newTitle; }
         if (newAuthor) { d.meta.author = newAuthor; } else { delete d.meta.author; }
         d.meta.color = newColor;
+        if (newSectionPrefix) d.meta.section_prefix = newSectionPrefix;
+        else delete d.meta.section_prefix;
         if (newRefcode) {
           d.meta.refcode = newRefcode;
           const inList = state.documents.find((x) => x.slug === d.slug);
@@ -1371,6 +1414,148 @@
       modal.addEventListener("click", (e) => { if (e.target === modal) closeFormulaModal(); });
     }
 
+    /* ---------- LaTeX export ---------- */
+    function latexEscapeText(s) {
+      return s
+        .replace(/\\/g, " BSLASH ")
+        .replace(/\{/g, "\\{").replace(/\}/g, "\\}")
+        .replace(/&/g, "\\&").replace(/%/g, "\\%")
+        .replace(/\$/g, "\\$").replace(/#/g, "\\#")
+        .replace(/\^/g, "\\^{}").replace(/~/g, "\\textasciitilde{}")
+        .replace(/ BSLASH /g, "\\textbackslash{}");
+    }
+
+    function inlineToLatex(text) {
+      // Mask inline math before escaping
+      const store = [];
+      const mask = (m) => { store.push(m); return " M" + (store.length - 1) + " "; };
+      text = text.replace(/\$(?!\s)(?:\\\$|[^$\n])+?\$/g, mask);
+      text = latexEscapeText(text);
+      // Markdown inline markup
+      text = text
+        .replace(/\*\*(.+?)\*\*/g, "\\textbf{$1}")
+        .replace(/\*(.+?)\*/g, "\\textit{$1}")
+        .replace(/__(.+?)__/g, "\\textbf{$1}")
+        .replace(/_([^_]+)_/g, "\\textit{$1}")
+        .replace(/`([^`]+)`/g, "\\texttt{$1}")
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, "\\href{$2}{$1}");
+      // Restore math
+      return text.replace(/ M(\d+) /g, (_, i) => store[+i]);
+    }
+
+    function mdToLatex(d) {
+      const meta  = d.meta || {};
+      const author = meta.author || meta.authors || "Anonymous";
+      const src = d.content || "";
+
+      // Mask all display and inline math before processing
+      const store = [];
+      const mask = (m) => { store.push(m); return " MATH" + (store.length - 1) + " "; };
+      let text = src
+        .replace(/\$\$([\s\S]+?)\$\$/g, mask)
+        .replace(/\\\[([\s\S]+?)\\\]/g, mask)
+        .replace(/\\\([\s\S]+?\\\)/g, mask)
+        .replace(/\$(?!\s)(?:\\\$|[^$\n])+?\$/g, mask);
+
+      const lines = text.split("\n");
+      let body = "";
+      let listType = null;  // "ul" | "ol"
+      let inCode = false, codeLang = "", codeAcc = [];
+
+      const flushList = () => {
+        if (listType === "ul") { body += "\\end{itemize}\n\n"; listType = null; }
+        else if (listType === "ol") { body += "\\end{enumerate}\n\n"; listType = null; }
+      };
+
+      const SECTIONS = ["section", "subsection", "subsubsection", "paragraph", "subparagraph", "subparagraph"];
+
+      for (const line of lines) {
+        // Fenced code block
+        if (/^```/.test(line)) {
+          if (!inCode) { inCode = true; codeLang = line.slice(3).trim(); codeAcc = []; }
+          else {
+            inCode = false; flushList();
+            body += (codeLang ? `\\begin{verbatim}  % ${codeLang}\n` : "\\begin{verbatim}\n") +
+                    codeAcc.join("\n") + "\n\\end{verbatim}\n\n";
+          }
+          continue;
+        }
+        if (inCode) { codeAcc.push(line); continue; }
+
+        // Horizontal rule
+        if (/^---+\s*$/.test(line) && !listType) { body += "\n\\noindent\\rule{\\linewidth}{0.4pt}\n\n"; continue; }
+
+        // Heading
+        const hm = line.match(/^(#{1,6})\s+(.*)/);
+        if (hm) {
+          flushList();
+          body += "\\" + SECTIONS[hm[1].length - 1] + "{" + inlineToLatex(hm[2]) + "}\n\n";
+          continue;
+        }
+
+        // Blockquote
+        const bqm = line.match(/^>\s*(.*)/);
+        if (bqm) {
+          flushList();
+          body += "\\begin{quote}\n" + inlineToLatex(bqm[1]) + "\n\\end{quote}\n\n";
+          continue;
+        }
+
+        // Unordered list
+        const ulm = line.match(/^[-*+]\s+(.*)/);
+        if (ulm) {
+          if (listType !== "ul") { flushList(); body += "\\begin{itemize}\n"; listType = "ul"; }
+          body += "\\item " + inlineToLatex(ulm[1]) + "\n";
+          continue;
+        }
+
+        // Ordered list
+        const olm = line.match(/^\d+\.\s+(.*)/);
+        if (olm) {
+          if (listType !== "ol") { flushList(); body += "\\begin{enumerate}\n"; listType = "ol"; }
+          body += "\\item " + inlineToLatex(olm[1]) + "\n";
+          continue;
+        }
+
+        // Empty line
+        if (line.trim() === "") { flushList(); body += "\n"; continue; }
+
+        // Regular line
+        body += inlineToLatex(line) + "\n";
+      }
+      flushList();
+
+      // Restore math: $$ → \[ \], inline $…$ stays as-is
+      body = body.replace(/ MATH(\d+) /g, (_, i) => {
+        const m = store[+i];
+        if (m.startsWith("$$"))   return "\n\\[\n" + m.slice(2, -2).trim() + "\n\\]\n";
+        if (m.startsWith("\\[")) return "\n" + m + "\n";
+        return m; // inline math
+      });
+
+      return [
+        "\\documentclass[12pt,a4paper]{article}",
+        "\\usepackage[utf8]{inputenc}",
+        "\\usepackage[T1]{fontenc}",
+        "\\usepackage{amsmath,amssymb,amsthm}",
+        "\\usepackage{hyperref}",
+        "\\usepackage{geometry}",
+        "\\usepackage{parskip}",
+        "\\geometry{a4paper, margin=2.5cm}",
+        "",
+        "\\title{"  + latexEscapeText(d.title || "Untitled") + "}",
+        "\\author{" + latexEscapeText(author) + "}",
+        "\\date{\\today}",
+        "",
+        "\\begin{document}",
+        "\\maketitle",
+        "",
+        body.trim(),
+        "",
+        "\\end{document}",
+      ].join("\n");
+    }
+
     /* ---------- export menu ---------- */
     function setupExportMenu(d) {
       const btn  = document.getElementById("exportBtn");
@@ -1390,6 +1575,15 @@
         const a = document.createElement("a");
         a.href = URL.createObjectURL(new Blob([src], { type: "text/markdown" }));
         a.download = (d.slug || "document") + ".md";
+        a.click(); URL.revokeObjectURL(a.href);
+      };
+
+      document.getElementById("expLatex").onclick = () => {
+        menu.classList.add("hidden");
+        const tex = mdToLatex(d);
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([tex], { type: "application/x-tex" }));
+        a.download = (d.slug || "document") + ".tex";
         a.click(); URL.revokeObjectURL(a.href);
       };
 
@@ -1523,10 +1717,19 @@
       }
     }
 
+    function isLocalDev() {
+      return location.hostname === "localhost" || location.hostname === "127.0.0.1";
+    }
+
     async function save() {
       if (state.inlineEdit) { syncInlineEdits(); state.inlineEdit = false; }
       const d = state.current;
       if (!d.title.trim()) { toast("Give the document a title before saving."); return; }
+
+      if (isLocalDev()) {
+        await saveLocal(d);
+        return;
+      }
 
       let token = getToken();
       if (!token) { manageToken(); token = getToken(); }
@@ -1629,6 +1832,59 @@
         renderAll();
         pushHistory();
         toast((existed ? "Updated " : "Created ") + path + " on GitHub.");
+      } catch (e) {
+        toast("Save failed: " + e.message);
+      }
+    }
+
+    async function saveLocal(d) {
+      toast("Saving locally…");
+      try {
+        let slug, existed = false;
+
+        if (d.slug) {
+          slug = d.slug;
+          const probe = await fetch(LIBRARY + "/" + slug + ".md", { cache: "no-store" });
+          existed = probe.ok;
+        } else {
+          const baseSlug = slugify(d.title);
+          for (let n = 1; ; n++) {
+            const cand = n === 1 ? baseSlug : baseSlug + "-" + n;
+            const probe = await fetch(LIBRARY + "/" + cand + ".md", { cache: "no-store" });
+            if (!probe.ok) { slug = cand; break; }
+          }
+        }
+
+        if (!d.created) d.created = new Date().toISOString();
+        d.updated = new Date().toISOString();
+        d.slug = slug;
+
+        const manifestEntry = { slug, title: d.title.trim(), type: d.type, created: d.created, updated: d.updated };
+        if (d.meta && d.meta.refcode) manifestEntry.refcode = d.meta.refcode;
+        upsertDocument(manifestEntry);
+        const sorted = [...state.documents].sort((a, b) => (b.updated || "") > (a.updated || "") ? 1 : -1);
+        const indexJson = JSON.stringify({ documents: sorted }, null, 2) + "\n";
+
+        const put = (path, body) => fetch("/_save/" + path, {
+          method: "PUT",
+          headers: { "Content-Type": "text/plain; charset=utf-8" },
+          body,
+        }).then((r) => { if (!r.ok) throw new Error("PUT /" + path + " failed: HTTP " + r.status); });
+
+        await Promise.all([
+          put(LIBRARY + "/" + slug + ".md", buildMarkdown(d)),
+          put("index.json", indexJson),
+        ]);
+
+        clearDraftLocal();
+        d.isDraft = false;
+        state.dirty = false;
+        state.mode = "view";
+        state.preview = false;
+        state.sidebarView = "toc";
+        renderAll();
+        pushHistory();
+        toast((existed ? "Updated" : "Created") + " " + slug + " locally.");
       } catch (e) {
         toast("Save failed: " + e.message);
       }
@@ -1751,8 +2007,9 @@
         num.className = "toc-num";
         num.textContent = number;
         item.appendChild(num);
-        item.appendChild(document.createTextNode(" " + h.textContent));
-        item.title = number + " " + h.textContent;
+        const hText = h.dataset.rawTitle || h.textContent;
+        item.appendChild(document.createTextNode(" " + hText));
+        item.title = number + " " + hText;
         item.addEventListener("click", (e) => {
           e.preventDefault();
           h.scrollIntoView({ behavior: "smooth", block: "start" });

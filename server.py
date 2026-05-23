@@ -116,6 +116,36 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
         super().do_GET()
 
+    def do_PUT(self):
+        if self.path.startswith("/_save/"):
+            rel = self.path[len("/_save/"):]
+            # Normalise and restrict to library/*.md and index.json only
+            import posixpath
+            rel = posixpath.normpath(rel).lstrip("/")
+            allowed = rel == "index.json" or (
+                rel.startswith("library/") and rel.endswith(".md")
+                and "/" not in rel[len("library/"):]
+            )
+            if not allowed:
+                self.send_response(403)
+                self.end_headers()
+                return
+            length = int(self.headers.get("Content-Length", 0))
+            data = self.rfile.read(length)
+            parent = os.path.dirname(rel)
+            if parent:
+                os.makedirs(parent, exist_ok=True)
+            with open(rel, "wb") as fh:
+                fh.write(data)
+            print(f"  ✎ saved: {rel}")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(b'{"ok":true}')
+            return
+        self.send_response(405)
+        self.end_headers()
+
     def end_headers(self):
         self.send_header("Cache-Control", "no-store")
         super().end_headers()
