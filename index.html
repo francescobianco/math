@@ -201,10 +201,12 @@
     .doc-body h1, .doc-body h2, .doc-body h3 {
       font-family: Georgia, "Times New Roman", serif; line-height: 1.3;
       margin: 1.6em 0 .5em; color: #14181d;
+      font-weight: 400; letter-spacing: .01em;
+      text-shadow: 0 0 .3px #14181d;
     }
-    .doc-body h1 { font-size: 25px; border-bottom: 1px solid #ebedf0; padding-bottom: .25em; }
-    .doc-body h2 { font-size: 21px; }
-    .doc-body h3 { font-size: 18px; }
+    .doc-body h1 { font-size: 24px; border-bottom: 1px solid #ebedf0; padding-bottom: .25em; }
+    .doc-body h2 { font-size: 19px; }
+    .doc-body h3 { font-size: 16.5px; font-style: italic; }
     .doc-body p { margin: 0 0 1em; }
     .doc-body ul, .doc-body ol { margin: 0 0 1em; padding-left: 1.5em; }
     .doc-body li { margin: .25em 0; }
@@ -291,6 +293,68 @@
     .modal-actions .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
     .modal-actions .btn-primary:hover { background: #245fd6; }
 
+    /* ---------- paginated view (book / paper) ---------- */
+    .pages-container {
+      display: flex; flex-direction: column; gap: 32px;
+      width: 100%; align-items: center; align-self: flex-start;
+    }
+    .page-sheet {
+      width: 100%; max-width: 1200px; min-height: 297mm;
+      background: #fff; box-shadow: 0 4px 24px #00000059;
+      padding: 26mm 30mm 22mm; position: relative; border-radius: 2px;
+    }
+    .page-num {
+      position: absolute; bottom: 10mm; left: 30mm; right: 30mm;
+      text-align: center; font-family: Georgia, "Times New Roman", serif;
+      font-size: 11px; color: #c0c6ce; user-select: none;
+    }
+
+    /* book cover */
+    .page-cover {
+      width: 100%; max-width: 1200px; min-height: 297mm;
+      background: #fff; box-shadow: 0 4px 24px #00000059;
+      border-radius: 2px; display: flex; flex-direction: column; overflow: hidden;
+    }
+    .cover-edition {
+      padding: 12mm 30mm 0; font-size: 10.5px; letter-spacing: 1.2px;
+      text-transform: uppercase; color: #9aa0a8;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .cover-body {
+      flex: 1; padding: 0 30mm 28px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+    }
+    .cover-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 52px; font-weight: 300; line-height: 1.1;
+      margin: 0; letter-spacing: -.4px;
+    }
+    .cover-band {
+      flex: 0 0 calc(297mm / 3); padding: 28px 30mm 22px;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .cover-author {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 19px; font-weight: 400; color: rgba(255,255,255,.92);
+    }
+    .cover-publisher {
+      text-align: center; font-size: 10px; letter-spacing: 2.5px;
+      text-transform: uppercase; color: rgba(255,255,255,.55);
+    }
+
+    /* ---------- formula row + counter ---------- */
+    .formula-row { display: flex; align-items: center; gap: 16px; cursor: pointer; }
+    .formula-row .katex-display {
+      flex: 1; margin: 0; border-radius: 4px; padding: 4px 6px;
+      transition: background .12s;
+    }
+    .formula-row:hover .katex-display { background: #eaf1ff; }
+    .formula-counter {
+      flex-shrink: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 15px; color: #6b737e; user-select: none;
+    }
+
     @media print {
       .sidebar, .topbar, #toast { display: none !important; }
       .canvas { overflow: visible; background: #fff; padding: 0; }
@@ -301,7 +365,7 @@
 <body>
   <div class="app">
     <header class="topbar">
-      <div class="brand">
+      <div class="brand" id="brandBtn" style="cursor:pointer;" title="Go to Home">
         <span class="brand-mark">∑</span>
         <span class="brand-name">Math Wiki</span>
       </div>
@@ -351,7 +415,7 @@
       <textarea id="mathInput" class="math-input" spellcheck="false" placeholder="LaTeX…"></textarea>
       <div class="modal-actions">
         <button id="mathCancel" class="btn">Cancel</button>
-        <button id="mathSave" class="btn btn-primary">Save</button>
+        <button id="mathSave" class="btn btn-primary">Confirm</button>
       </div>
     </div>
   </div>
@@ -530,7 +594,7 @@
       node.innerHTML = `<span class="label"></span>`;
       node.querySelector(".label").textContent = doc.title;
       node.title = doc.title;
-      node.addEventListener("click", () => openDocument(doc.slug, true));
+      node.addEventListener("click", () => openDocument(doc.slug, doc.type !== "page"));
       return node;
     }
 
@@ -585,6 +649,13 @@
       if (state.mode === "edit") return renderEditor();
 
       const d = state.current;
+
+      if (d.type === "book" || d.type === "paper") {
+        renderPaginatedPage(d);
+        return;
+      }
+
+      pageEl.className = "page";
       pageEl.innerHTML =
         `<div class="doc-head">` +
         `<div class="doc-kicker"><i class="${TYPES[d.type].icon}"></i> ${TYPES[d.type].label}</div>` +
@@ -594,6 +665,7 @@
       pageEl.querySelector(".doc-title").textContent = d.title;
       pageEl.querySelector(".doc-body").innerHTML = renderMarkdown(d.content);
       typesetMath(pageEl);
+      numberAndActivateFormulas(pageEl);
     }
 
     function renderEditor() {
@@ -606,6 +678,7 @@
         pageEl.querySelector(".doc-title").textContent = d.title || "Untitled";
         pageEl.querySelector(".doc-body").innerHTML = renderMarkdown(d.content);
         typesetMath(pageEl);
+        numberAndActivateFormulas(pageEl);
         return;
       }
       pageEl.innerHTML =
@@ -621,6 +694,207 @@
       if (!d.title) ti.focus(); else bi.focus();
     }
 
+    /* ---------- formula numbering + modal ---------- */
+    function numberAndActivateFormulas(el) {
+      const docBody = el.querySelector(".doc-body");
+      if (!docBody) return;
+      const heads = Array.from(docBody.querySelectorAll("h1, h2, h3"));
+      const displayFormulas = Array.from(docBody.querySelectorAll(".katex-display"));
+      if (!displayFormulas.length) return;
+      const minLevel = heads.length ? Math.min(...heads.map((h) => +h.tagName[1])) : 1;
+      let chapterCounter = 0, formulaCounter = 0, globalIdx = 0;
+      const all = [...heads, ...displayFormulas].sort((a, b) =>
+        a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1
+      );
+      all.forEach((node) => {
+        if (node.matches("h1, h2, h3")) {
+          const lvl = +node.tagName[1] - minLevel + 1;
+          if (lvl === 1) { chapterCounter++; formulaCounter = 0; }
+        } else {
+          if (chapterCounter === 0) chapterCounter = 1;
+          formulaCounter++;
+          const label = "(" + chapterCounter + "." + formulaCounter + ")";
+          const idx = globalIdx++;
+          const row = document.createElement("div");
+          row.className = "formula-row";
+          node.parentNode.insertBefore(row, node);
+          row.appendChild(node);
+          const badge = document.createElement("span");
+          badge.className = "formula-counter";
+          badge.textContent = label;
+          row.appendChild(badge);
+          row.addEventListener("click", () => openFormulaModal(node, idx, label));
+        }
+      });
+    }
+
+    /* ---------- pagination (book / paper) ---------- */
+    function getPageContentHeight() {
+      const el = document.createElement("div");
+      el.style.cssText = "position:fixed;top:-9999px;left:0;visibility:hidden;width:1px;height:calc(297mm - 74mm);";
+      document.body.appendChild(el);
+      const h = el.getBoundingClientRect().height;
+      el.remove();
+      return h;
+    }
+
+    function paginateNodes(containerEl, maxH, firstMaxH) {
+      const pages = [[]];
+      let used = 0;
+      let limit = (firstMaxH !== undefined) ? firstMaxH : maxH;
+      for (const child of Array.from(containerEl.children)) {
+        const s = window.getComputedStyle(child);
+        const h = child.getBoundingClientRect().height +
+                  (parseFloat(s.marginTop) || 0) + (parseFloat(s.marginBottom) || 0);
+        if (used > 0 && used + h > limit) { pages.push([]); used = 0; limit = maxH; }
+        pages[pages.length - 1].push(child);
+        used += h;
+      }
+      return pages;
+    }
+
+    function buildCoverPage(d) {
+      const meta = d.meta || {};
+      const color   = meta.color     || "#2f6df0";
+      const author  = meta.author    || meta.authors   || "";
+      const pub     = meta.publisher || "Math Wiki";
+      const ed      = meta.edition ? "Ed. " + meta.edition : "";
+      const ver     = meta.version  ? "v" + meta.version         : "";
+      const edLine  = [ed, ver].filter(Boolean).join(" · ");
+      const cover = document.createElement("div");
+      cover.className = "page-cover";
+      cover.innerHTML =
+        `<div class="cover-edition">${edLine ? escapeHtml(edLine) : "&nbsp;"}</div>` +
+        `<div class="cover-body">` +
+        `<h1 class="cover-title" style="color:${color}">${escapeHtml(d.title)}</h1>` +
+        `</div>` +
+        `<div class="cover-band" style="background:${color}">` +
+        `<div class="cover-author">${escapeHtml(author)}</div>` +
+        `<div class="cover-publisher">${escapeHtml(pub)}</div>` +
+        `</div>`;
+      return cover;
+    }
+
+    function renderPaginatedPage(d) {
+      // Phase 1 — render & measure in a hidden off-screen sheet
+      const measurer = document.createElement("div");
+      measurer.className = "page-sheet";
+      measurer.style.cssText = "position:fixed;left:-9999px;top:0;visibility:hidden;";
+
+      let docHeadEl = null;
+      if (d.type === "paper") {
+        docHeadEl = document.createElement("div");
+        docHeadEl.className = "doc-head";
+        docHeadEl.innerHTML =
+          `<div class="doc-kicker"><i class="${TYPES[d.type].icon}"></i> ${TYPES[d.type].label}</div>` +
+          `<h1 class="doc-title"></h1><div class="doc-meta">${formatDate(d.created)}</div>`;
+        docHeadEl.querySelector(".doc-title").textContent = d.title;
+        measurer.appendChild(docHeadEl);
+      }
+
+      const measBody = document.createElement("div");
+      measBody.className = "doc-body";
+      measBody.innerHTML = renderMarkdown(d.content);
+      measurer.appendChild(measBody);
+      document.body.appendChild(measurer);
+      typesetMath(measurer);
+
+      const fullH  = getPageContentHeight();
+      const firstH = docHeadEl
+        ? Math.max(60, fullH - docHeadEl.getBoundingClientRect().height - 28)
+        : fullH;
+      const groups = paginateNodes(measBody, fullH, firstH);
+      document.body.removeChild(measurer);
+
+      // Phase 2 — build final DOM
+      pageEl.className = "pages-container";
+      pageEl.innerHTML = "";
+      let pageNum = 1;
+
+      if (d.type === "book") { pageEl.appendChild(buildCoverPage(d)); pageNum = 2; }
+
+      groups.forEach((nodes, gi) => {
+        const sheet = document.createElement("div");
+        sheet.className = "page-sheet";
+        if (d.type === "paper" && gi === 0) {
+          const head = document.createElement("div");
+          head.className = "doc-head";
+          head.innerHTML =
+            `<div class="doc-kicker"><i class="${TYPES[d.type].icon}"></i> ${TYPES[d.type].label}</div>` +
+            `<h1 class="doc-title"></h1><div class="doc-meta">${formatDate(d.created)}</div>`;
+          head.querySelector(".doc-title").textContent = d.title;
+          sheet.appendChild(head);
+        }
+        const body = document.createElement("div");
+        body.className = "doc-body";
+        nodes.forEach((n) => body.appendChild(n));
+        sheet.appendChild(body);
+        const footer = document.createElement("div");
+        footer.className = "page-num";
+        footer.textContent = String(pageNum++);
+        sheet.appendChild(footer);
+        pageEl.appendChild(sheet);
+      });
+
+      numberAndActivateFormulas(pageEl);
+    }
+
+    let _fState = { idx: -1, origLatex: "" };
+
+    function openFormulaModal(katexEl, idx, label) {
+      const ann = katexEl.querySelector('annotation[encoding="application/x-tex"]');
+      const latex = ann ? ann.textContent.trim() : "";
+      _fState = { idx, origLatex: latex };
+      const modal = document.getElementById("mathModal");
+      modal.querySelector(".modal-title").textContent = "Formula " + label;
+      document.getElementById("mathInput").value = latex;
+      _renderFormulaPreview(latex);
+      modal.classList.remove("hidden");
+    }
+
+    function _renderFormulaPreview(latex) {
+      const preview = document.getElementById("mathPreview");
+      if (!latex.trim()) { preview.innerHTML = ""; return; }
+      try {
+        preview.innerHTML = window.katex
+          ? window.katex.renderToString(latex, { displayMode: true, throwOnError: false })
+          : latex;
+      } catch (e) { preview.textContent = e.message; }
+    }
+
+    function _replaceNthDisplayFormula(content, idx, newLatex) {
+      const re = /\$\$([\s\S]+?)\$\$|\\\[([\s\S]+?)\\\]/g;
+      let count = 0, m;
+      while ((m = re.exec(content)) !== null) {
+        if (count === idx) {
+          const repl = m[0].startsWith("$$") ? "$$" + newLatex + "$$" : "\\[" + newLatex + "\\]";
+          return content.slice(0, m.index) + repl + content.slice(m.index + m[0].length);
+        }
+        count++;
+      }
+      return null;
+    }
+
+    function setupFormulaModal() {
+      const modal = document.getElementById("mathModal");
+      const input = document.getElementById("mathInput");
+      input.addEventListener("input", () => _renderFormulaPreview(input.value));
+      document.getElementById("mathCancel").onclick = () => modal.classList.add("hidden");
+      document.getElementById("mathSave").onclick = () => {
+        const newLatex = input.value.trim();
+        modal.classList.add("hidden");
+        if (newLatex === _fState.origLatex || !state.current) return;
+        const newContent = _replaceNthDisplayFormula(state.current.content, _fState.idx, newLatex);
+        if (newContent === null) { toast("Formula not found in source."); return; }
+        state.current.content = newContent;
+        state.mode = "edit";
+        state.preview = true;
+        markDirty();
+        renderAll();
+      };
+      modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.add("hidden"); });
+    }
+
     /* ---------- actions ---------- */
     function markDirty() {
       state.dirty = true;
@@ -634,7 +908,7 @@
 
     function newDocument(type) {
       if (!confirmLeave()) return;
-      state.current = { slug: null, title: "", content: "", type, created: null, isDraft: true };
+      state.current = { slug: null, title: "", content: "", type, created: null, isDraft: true, meta: {} };
       state.mode = "edit";
       state.preview = false;
       state.dirty = false;
@@ -658,6 +932,7 @@
           created: meta.created || "",
           updated: meta.updated || "",
           isDraft: false,
+          meta,
         };
         state.mode = "view";
         state.preview = false;
@@ -902,6 +1177,9 @@
       document.addEventListener("click", () => menu.classList.add("hidden"));
       $("#tokenBtn").onclick = manageToken;
       $("#backBtn").onclick = () => { state.sidebarView = "tree"; renderSidebar(); };
+      $("#brandBtn").onclick = () => {
+        if (state.documents.some((d) => d.slug === HOME_SLUG)) openDocument(HOME_SLUG);
+      };
     }
 
     function setupShortcuts() {
@@ -917,13 +1195,14 @@
 
     async function init() {
       setupMenu();
+      setupFormulaModal();
       setupShortcuts();
       renderTokenStatus();
       await loadManifest();
       const draft = loadDraftLocal();
       if (draft) {
         state.current = { slug: null, title: draft.title || "", content: draft.content || "",
-                          type: TYPES[draft.type] ? draft.type : "notes", created: null, isDraft: true };
+                          type: TYPES[draft.type] ? draft.type : "notes", created: null, isDraft: true, meta: {} };
         state.mode = "edit";
         state.dirty = !!(draft.title || draft.content);
         renderAll();

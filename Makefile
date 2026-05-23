@@ -10,8 +10,8 @@ help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2}'
 
-start: ## Serve files locally at http://127.0.0.1:$(PORT) (read-only)
-	$(PY) -m http.server $(PORT) --bind 127.0.0.1
+start: ## Serve files locally at http://127.0.0.1:$(PORT) with live reload
+	PORT=$(PORT) $(PY) server.py
 
 build: ## Rebuild index.json from the .md files in library/
 	@$(PY) -c "$$BUILD_MANIFEST_PY"

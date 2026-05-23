@@ -13,7 +13,7 @@ you see on startup: use it as an index and a starting point.
 ## What you'll find here
 
 - 📃 **Pages** — stable content like this home page.
-- 📕 **Books** — collections organized into chapters.
+- 📖 **Books** — collections organized into chapters.
 - 📄 **Papers** — single articles or proofs.
 - 📝 **Notes** — quick jottings.
 
