@@ -1,6 +1,13 @@
 {
   "documents": [
     {
+      "slug": "aritmetica-delle-tetrazioni",
+      "title": "Aritmetica delle Tetrazioni",
+      "type": "book",
+      "created": "2026-05-22T11:00:00+00:00",
+      "updated": "2026-05-23T10:20:49.143Z"
+    },
+    {
       "slug": "syntax-guide",
       "title": "Syntax Guide",
       "type": "page",
@@ -16,13 +23,6 @@
       "updated": "2026-05-23T10:00:00+00:00"
     },
     {
-      "slug": "real-analysis",
-      "title": "Real Analysis",
-      "type": "book",
-      "created": "2026-05-22T11:00:00+00:00",
-      "updated": "2026-05-22T11:00:00+00:00"
-    },
-    {
       "slug": "the-fundamental-theorem-of-calculus",
       "title": "The Fundamental Theorem of Calculus",
       "type": "paper",
@@ -34,7 +34,8 @@
       "title": "Welcome to the Math Wiki",
       "type": "notes",
       "created": "2026-05-22T09:00:00+00:00",
-      "updated": "2026-05-22T09:00:00+00:00"
+      "updated": "2026-05-22T09:00:00+00:00",
+      "refcode": ""
     },
     {
       "slug": "home",
