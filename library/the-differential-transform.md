@@ -2,7 +2,7 @@
 title: The Differential Transform
 type: paper
 created: 2026-05-23T12:00:00+00:00
-updated: 2026-05-23T12:30:00+00:00
+updated: 2026-05-23T12:45:00+00:00
 ---
 
 # The Differential Transform
@@ -167,6 +167,104 @@ $$\mathcal{D}[\sin x](x) = \frac{\cos x}{\sin x} = \cot x.$$
 For $f(x)=\cos x$, where $\cos x \neq 0$,
 
 $$\mathcal{D}[\cos x](x) = \frac{-\sin x}{\cos x} = -\tan x.$$
+
+## Transforming a Derivative
+
+A deeper relation appears when the differential transform is applied not to the
+original function $f$, but to its derivative $f'$. In that case one obtains
+
+$$
+\mathcal{D}[f'](x)=\frac{f''(x)}{f'(x)}.
+$$
+
+Thus the ratio between the second derivative and the first derivative is itself
+a differential transform: it is the transform of the derived function.
+
+Now set
+
+$$
+T_1(x)=\mathcal{D}[f](x)=\frac{f'(x)}{f(x)}.
+$$
+
+Then
+
+$$
+f'(x)=T_1(x)f(x).
+$$
+
+Applying the differential transform to both sides gives
+
+$$
+\mathcal{D}[f'](x)=\mathcal{D}[T_1f](x).
+$$
+
+Using the product rule for the transform,
+
+$$
+\mathcal{D}[f'](x)=\mathcal{D}[T_1](x)+\mathcal{D}[f](x).
+$$
+
+Therefore,
+
+$$
+\frac{f''(x)}{f'(x)}
+= T_1(x)+\frac{T_1'(x)}{T_1(x)},
+$$
+
+provided that $T_1(x) \neq 0$. Since $T_1=f'/f$, this can also be written as
+
+$$
+\mathcal{D}[f'] = \mathcal{D}[f] + \mathcal{D}[\mathcal{D}[f]].
+$$
+
+This identity expresses the exchange mechanism: transforming a derivative is
+not independent from transforming the base function. The transform of $f'$ is
+obtained by taking the transform of $f$ and adding the transform of the
+transform itself.
+
+Equivalently,
+
+$$
+\mathcal{D}[f']-\mathcal{D}[f]=\mathcal{D}[T_1].
+$$
+
+The difference between the transform of the derivative and the transform of the
+base function measures how the relative growth $T_1$ changes.
+
+This mechanism extends to higher derivatives. If
+
+$$
+T_n(x)=\frac{f^{(n)}(x)}{f(x)},
+$$
+
+then
+
+$$
+f^{(n)}(x)=T_n(x)f(x).
+$$
+
+Transforming both sides gives
+
+$$
+\mathcal{D}[f^{(n)}](x)=\mathcal{D}[T_n](x)+\mathcal{D}[f](x).
+$$
+
+Since
+
+$$
+\mathcal{D}[f^{(n)}](x)=\frac{f^{(n+1)}(x)}{f^{(n)}(x)},
+$$
+
+we obtain the general exchange law
+
+$$
+\frac{f^{(n+1)}(x)}{f^{(n)}(x)}
+= T_1(x)+\frac{T_n'(x)}{T_n(x)}.
+$$
+
+Thus every passage from one derivative to the next can be read in two ways: as
+the transform of the derivative $f^{(n)}$, or as the base transform $T_1$ plus a
+correction term describing the variation of $T_n$.
 
 ## Second Derivative and Iterative Relations
 
