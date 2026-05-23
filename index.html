@@ -118,6 +118,12 @@
     .tree-group-head i, .menu button i, .token-btn i { width: 18px; text-align: center; font-size: 15px; }
     .sidebar-foot { padding: 10px 12px; border-top: 1px solid #00000033; }
     .toc-back { padding: 10px 12px; border-bottom: 1px solid #00000033; }
+    .toc-doc-title {
+      padding: 12px 16px 8px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 15px; font-weight: 400; line-height: 1.3;
+      color: var(--sidebar-text);
+    }
     .token-btn {
       width: 100%; display: flex; align-items: center; gap: 10px;
       padding: 9px 10px; border: 0; border-radius: 8px; cursor: pointer;
@@ -288,6 +294,17 @@
       font-size: 14px; line-height: 1.55; color: #1d2127;
     }
     .modal-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 18px; border-top: 1px solid #eef0f3; }
+    /* settings modal */
+    .settings-body { padding: 18px 18px 6px; display: flex; flex-direction: column; gap: 14px; }
+    .setting-row { display: flex; flex-direction: column; gap: 5px; }
+    .setting-row label { font-size: 12px; font-weight: 600; color: #6b737e; letter-spacing: .4px; text-transform: uppercase; }
+    .setting-row input[type="text"], .setting-row input[type="color"] {
+      border: 1px solid #d4d8df; border-radius: 7px; padding: 8px 11px;
+      font-size: 14px; color: #1d2127; outline: none;
+      font-family: inherit; background: #fff;
+    }
+    .setting-row input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px #2f6df018; }
+    .setting-row input[type="color"] { padding: 4px 6px; height: 36px; width: 100%; cursor: pointer; }
     .modal-actions .btn { border: 1px solid #d4d8df; background: #fff; color: #2a2f37; }
     .modal-actions .btn:hover { background: #f5f6f8; }
     .modal-actions .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -315,31 +332,61 @@
       background: #fff; box-shadow: 0 4px 24px #00000059;
       border-radius: 2px; display: flex; flex-direction: column; overflow: hidden;
     }
-    .cover-edition {
-      padding: 12mm 30mm 0; font-size: 10.5px; letter-spacing: 1.2px;
-      text-transform: uppercase; color: #9aa0a8;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    .cover-release {
+      padding: 12mm 30mm 0; font-size: 11px; letter-spacing: 1.8px;
+      text-transform: uppercase; color: #c0c6d0; text-align: center;
+      font-family: Helvetica, Arial, sans-serif; cursor: text;
     }
+    .cover-release:focus { outline: none; color: #8a909a; }
     .cover-body {
-      flex: 1; padding: 0 30mm 28px;
-      display: flex; flex-direction: column; justify-content: flex-end;
+      flex: 1; padding: 0 30mm 32px;
+      display: flex; flex-direction: column;
     }
+    .cover-formula {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      color: #d8dde6; font-size: 320px; pointer-events: none; user-select: none;
+      overflow: hidden;
+    }
+    .cover-formula .katex-display { margin: 0; }
     .cover-title {
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 52px; font-weight: 300; line-height: 1.1;
-      margin: 0; letter-spacing: -.4px;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 68px; font-weight: 300; line-height: 1.05;
+      margin: 0; letter-spacing: -1.5px;
     }
     .cover-band {
-      flex: 0 0 calc(297mm / 3); padding: 28px 30mm 22px;
-      display: flex; flex-direction: column; justify-content: space-between;
+      flex: 0 0 calc(297mm / 3); padding: 28px 30mm;
+      display: flex; flex-direction: column;
+      align-items: flex-end; justify-content: center;
+      position: relative;
     }
     .cover-author {
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 19px; font-weight: 400; color: rgba(255,255,255,.92);
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 26px; font-weight: 400; color: rgba(255,255,255,.9);
+      text-align: right; cursor: text;
     }
+    .cover-author:focus { outline: none; }
     .cover-publisher {
-      text-align: center; font-size: 10px; letter-spacing: 2.5px;
-      text-transform: uppercase; color: rgba(255,255,255,.55);
+      position: absolute; bottom: 22px; left: 30mm; right: 30mm;
+      text-align: center; font-size: 12px; letter-spacing: 2.5px;
+      text-transform: uppercase; color: rgba(255,255,255,.9);
+      font-family: Helvetica, Arial, sans-serif;
+    }
+
+    /* ---------- inline WYSIWYG editing ---------- */
+    .inline-editable h1, .inline-editable h2, .inline-editable h3, .inline-editable p {
+      cursor: text; border-radius: 3px;
+      margin-left: -5px; margin-right: -5px;
+      padding-left: 5px; padding-right: 5px;
+      transition: background .1s;
+    }
+    .inline-editable h1:hover, .inline-editable h2:hover,
+    .inline-editable h3:hover, .inline-editable p:hover {
+      background: rgba(47, 109, 240, .045);
+    }
+    [contenteditable="true"]:focus {
+      outline: none;
+      background: rgba(47, 109, 240, .06);
+      border-radius: 3px;
     }
 
     /* ---------- formula row + counter ---------- */
@@ -366,7 +413,7 @@
   <div class="app">
     <header class="topbar">
       <div class="brand" id="brandBtn" style="cursor:pointer;" title="Go to Home">
-        <span class="brand-mark">∑</span>
+        <span class="brand-mark" style="font-size:15px;letter-spacing:-.5px">e<sup>x</sup></span>
         <span class="brand-name">Math Wiki</span>
       </div>
       <div id="topbar" class="topbar-content"></div>
@@ -394,6 +441,7 @@
           <div class="toc-back">
             <button id="backBtn" class="token-btn"><i class="fa-solid fa-arrow-left"></i> Back to documents</button>
           </div>
+          <div id="tocDocTitle" class="toc-doc-title"></div>
           <div class="toc-head">On this page</div>
           <nav id="toc" class="toc"></nav>
         </div>
@@ -407,6 +455,34 @@
     </div>
   </div>
   <div id="toast"></div>
+
+  <div id="settingsModal" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-title"><i class="fa-solid fa-sliders"></i> Document settings</div>
+      <div class="settings-body">
+        <div class="setting-row">
+          <label>Title</label>
+          <input id="stgTitle" type="text" placeholder="Document title" />
+        </div>
+        <div class="setting-row">
+          <label>Author</label>
+          <input id="stgAuthor" type="text" placeholder="Anonymous" />
+        </div>
+        <div class="setting-row">
+          <label>Filename in repo (slug)</label>
+          <input id="stgSlug" type="text" placeholder="my-document" />
+        </div>
+        <div class="setting-row">
+          <label>Primary color</label>
+          <input id="stgColor" type="color" value="#2f6df0" />
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="stgCancel" class="btn">Cancel</button>
+        <button id="stgApply" class="btn btn-primary">Apply</button>
+      </div>
+    </div>
+  </div>
 
   <div id="mathModal" class="modal-overlay hidden">
     <div class="modal">
@@ -455,6 +531,7 @@
       mode: "empty",            // empty | view | edit
       dirty: false,
       preview: false,
+      inlineEdit: false,
       sidebarView: "tree",      // tree | toc
     };
 
@@ -613,12 +690,16 @@
         return;
       }
       const d = state.current;
+      const settingsBtn = `<button id="settingsBtn" class="btn" title="Settings"><i class="fa-solid fa-sliders"></i></button>`;
       if (state.mode === "view") {
         topbarEl.innerHTML =
           `<div class="doc-name"></div>` +
-          `<div class="actions"><button id="editBtn" class="btn">Edit</button></div>`;
+          `<div class="actions">` +
+          `<button id="editBtn" class="btn"><i class="fa-solid fa-pen-to-square"></i> Edit</button>` +
+          settingsBtn + `</div>`;
         topbarEl.querySelector(".doc-name").textContent = d.title;
         $("#editBtn").onclick = enterEdit;
+        $("#settingsBtn").onclick = openSettingsModal;
         return;
       }
       // edit
@@ -628,13 +709,15 @@
       topbarEl.innerHTML =
         `<div class="doc-name"></div>` +
         `<div class="actions">${badge}` +
-        `<button id="previewBtn" class="btn">${state.preview ? "Edit" : "Preview"}</button>` +
-        `<button id="discardBtn" class="btn">Discard</button>` +
-        `<button id="saveBtn" class="btn btn-primary">Save</button>` +
+        `<button id="previewBtn" class="btn">${state.preview ? "<i class=\"fa-solid fa-code\"></i> Markdown" : "<i class=\"fa-solid fa-eye\"></i> Preview"}</button>` +
+        `<button id="discardBtn" class="btn"><i class="fa-solid fa-rotate-left"></i> Discard</button>` +
+        settingsBtn +
+        `<button id="saveBtn" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save</button>` +
         `</div>`;
       topbarEl.querySelector(".doc-name").textContent = d.title || "Untitled";
       $("#previewBtn").onclick = togglePreview;
       $("#discardBtn").onclick = discard;
+      $("#settingsBtn").onclick = openSettingsModal;
       $("#saveBtn").onclick = save;
     }
 
@@ -642,7 +725,7 @@
     function renderPage() {
       if (state.mode === "empty") {
         pageEl.innerHTML =
-          `<div class="empty"><div class="big">∑</div>` +
+          `<div class="empty"><div class="big">e<sup>x</sup></div>` +
           `<h2>Math Wiki</h2><p>Pick a document on the left<br>or create something new.</p></div>`;
         return;
       }
@@ -666,11 +749,13 @@
       pageEl.querySelector(".doc-body").innerHTML = renderMarkdown(d.content);
       typesetMath(pageEl);
       numberAndActivateFormulas(pageEl);
+      activateInlineEdit(pageEl);
     }
 
     function renderEditor() {
       const d = state.current;
       if (state.preview) {
+        pageEl.className = "page";
         pageEl.innerHTML =
           `<div class="doc-head">` +
           `<div class="doc-kicker"><i class="${TYPES[d.type].icon}"></i> ${TYPES[d.type].label}</div>` +
@@ -679,6 +764,7 @@
         pageEl.querySelector(".doc-body").innerHTML = renderMarkdown(d.content);
         typesetMath(pageEl);
         numberAndActivateFormulas(pageEl);
+        if (state.inlineEdit) makeDocBodyEditable(pageEl);
         return;
       }
       pageEl.innerHTML =
@@ -754,25 +840,39 @@
     }
 
     function buildCoverPage(d) {
-      const meta = d.meta || {};
+      const meta    = d.meta || {};
       const color   = meta.color     || "#2f6df0";
-      const author  = meta.author    || meta.authors   || "";
+      const author  = meta.author    || meta.authors || "Anonymous";
       const pub     = meta.publisher || "Math Wiki";
-      const ed      = meta.edition ? "Ed. " + meta.edition : "";
-      const ver     = meta.version  ? "v" + meta.version         : "";
-      const edLine  = [ed, ver].filter(Boolean).join(" · ");
+      const release = meta.release   || "Release 1";
+      const formula = meta.formula   || "e^x";
+
+      let formulaHtml = formula;
+      try {
+        if (window.katex)
+          formulaHtml = window.katex.renderToString(formula, { displayMode: true, throwOnError: false });
+      } catch (_) {}
+
       const cover = document.createElement("div");
       cover.className = "page-cover";
       cover.innerHTML =
-        `<div class="cover-edition">${edLine ? escapeHtml(edLine) : "&nbsp;"}</div>` +
+        `<div class="cover-release" contenteditable="true">${escapeHtml(release)}</div>` +
         `<div class="cover-body">` +
+        `<div class="cover-formula">${formulaHtml}</div>` +
         `<h1 class="cover-title" style="color:${color}">${escapeHtml(d.title)}</h1>` +
         `</div>` +
         `<div class="cover-band" style="background:${color}">` +
-        `<div class="cover-author">${escapeHtml(author)}</div>` +
+        `<div class="cover-author" contenteditable="true">${escapeHtml(author)}</div>` +
         `<div class="cover-publisher">${escapeHtml(pub)}</div>` +
         `</div>`;
       return cover;
+    }
+
+    function makeCoverEditable(cover, d) {
+      const rel  = cover.querySelector(".cover-release");
+      const auth = cover.querySelector(".cover-author");
+      if (rel)  rel.addEventListener("input",  () => { (d.meta = d.meta||{}).release = rel.textContent.trim()  || "Release 1"; markDirty(); });
+      if (auth) auth.addEventListener("input", () => { (d.meta = d.meta||{}).author  = auth.textContent.trim() || "Anonymous"; markDirty(); });
     }
 
     function renderPaginatedPage(d) {
@@ -811,7 +911,12 @@
       pageEl.innerHTML = "";
       let pageNum = 1;
 
-      if (d.type === "book") { pageEl.appendChild(buildCoverPage(d)); pageNum = 2; }
+      if (d.type === "book") {
+        const cover = buildCoverPage(d);
+        pageEl.appendChild(cover);
+        makeCoverEditable(cover, d);
+        pageNum = 2;
+      }
 
       groups.forEach((nodes, gi) => {
         const sheet = document.createElement("div");
@@ -837,6 +942,7 @@
       });
 
       numberAndActivateFormulas(pageEl);
+      activateInlineEdit(pageEl);
     }
 
     let _fState = { idx: -1, origLatex: "" };
@@ -873,6 +979,145 @@
         count++;
       }
       return null;
+    }
+
+    /* ---------- inline WYSIWYG ---------- */
+    let _inlineTarget = 0;
+
+    function activateInlineEdit(el) {
+      let idx = 0;
+      el.querySelectorAll(".doc-body").forEach((db) => db.classList.add("inline-editable"));
+      el.querySelectorAll(".doc-body h1, .doc-body h2, .doc-body h3, .doc-body p").forEach((node) => {
+        const i = idx++;
+        node.addEventListener("click", (e) => {
+          if (state.mode !== "view") return;
+          e.stopPropagation();
+          _inlineTarget = i;
+          state.mode = "edit";
+          state.preview = true;
+          state.inlineEdit = true;
+          renderAll();
+        });
+      });
+    }
+
+    function makeDocBodyEditable(el) {
+      const nodes = Array.from(
+        el.querySelectorAll(".doc-body h1, .doc-body h2, .doc-body h3, .doc-body p")
+      );
+      nodes.forEach((node, i) => {
+        node.contentEditable = "true";
+        node.style.outline = "none";
+        // Protect inline math and formula blocks from editing
+        node.querySelectorAll(".katex").forEach((k) => { k.contentEditable = "false"; });
+        // Enter key in headings: blur instead of inserting a line
+        if (node.matches("h1, h2, h3")) {
+          node.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") { e.preventDefault(); node.blur(); }
+          });
+        }
+        node.addEventListener("input", () => markDirty());
+        if (i === _inlineTarget) {
+          requestAnimationFrame(() => {
+            node.focus();
+            try {
+              const range = document.createRange();
+              range.selectNodeContents(node);
+              range.collapse(false);
+              const sel = window.getSelection();
+              sel.removeAllRanges();
+              sel.addRange(range);
+            } catch (_) {}
+          });
+        }
+      });
+    }
+
+    function syncInlineEdits() {
+      if (!state.inlineEdit || !state.current) return;
+      let md = "";
+      pageEl.querySelectorAll(".doc-body").forEach((db) => {
+        Array.from(db.children).forEach((child) => { md += _nodeToMd(child); });
+      });
+      state.current.content = md.trim();
+    }
+
+    function _nodeToMd(node) {
+      const tag = (node.tagName || "").toLowerCase();
+      if (tag === "h1") return "# "  + node.textContent.trim() + "\n\n";
+      if (tag === "h2") return "## " + node.textContent.trim() + "\n\n";
+      if (tag === "h3") return "### "+ node.textContent.trim() + "\n\n";
+      if (tag === "p")  return _inlineMd(node) + "\n\n";
+      if (node.classList && node.classList.contains("formula-row")) {
+        const ann = node.querySelector('annotation[encoding="application/x-tex"]');
+        return ann ? "$$" + ann.textContent.trim() + "$$\n\n" : "";
+      }
+      if (tag === "ul") return Array.from(node.querySelectorAll(":scope > li"))
+        .map((li) => "- " + li.textContent.trim()).join("\n") + "\n\n";
+      if (tag === "ol") return Array.from(node.querySelectorAll(":scope > li"))
+        .map((li, n) => (n + 1) + ". " + li.textContent.trim()).join("\n") + "\n\n";
+      if (tag === "blockquote") return Array.from(node.children)
+        .map((p) => "> " + p.textContent.trim()).join("\n") + "\n\n";
+      if (tag === "hr") return "---\n\n";
+      if (tag === "pre") {
+        const code = node.querySelector("code");
+        return "```\n" + (code ? code.textContent : node.textContent).trim() + "\n```\n\n";
+      }
+      return "";
+    }
+
+    function _inlineMd(el) {
+      let md = "";
+      for (const child of el.childNodes) {
+        if (child.nodeType === Node.TEXT_NODE) { md += child.textContent; continue; }
+        const t = (child.tagName || "").toLowerCase();
+        if (t === "strong" || t === "b")   { md += "**" + child.textContent + "**"; continue; }
+        if (t === "em"     || t === "i")   { md += "*"  + child.textContent + "*";  continue; }
+        if (t === "code")                  { md += "`"  + child.textContent + "`";  continue; }
+        if (t === "a") { md += "[" + child.textContent + "](" + (child.getAttribute("href") || "") + ")"; continue; }
+        if (child.classList && child.classList.contains("katex")) {
+          const ann = child.querySelector('annotation[encoding="application/x-tex"]');
+          md += ann ? "$" + ann.textContent.trim() + "$" : child.textContent;
+          continue;
+        }
+        md += _inlineMd(child);
+      }
+      return md.trim();
+    }
+
+    /* ---------- settings modal ---------- */
+    function openSettingsModal() {
+      if (!state.current) return;
+      const d = state.current;
+      const meta = d.meta || {};
+      document.getElementById("stgTitle").value  = d.title  || "";
+      document.getElementById("stgAuthor").value = meta.author || meta.authors || "";
+      document.getElementById("stgSlug").value   = d.slug   || "";
+      document.getElementById("stgColor").value  = meta.color || "#2f6df0";
+      document.getElementById("settingsModal").classList.remove("hidden");
+    }
+
+    function setupSettingsModal() {
+      const modal = document.getElementById("settingsModal");
+      document.getElementById("stgCancel").onclick = () => modal.classList.add("hidden");
+      document.getElementById("stgApply").onclick = () => {
+        const d = state.current;
+        if (!d) return;
+        d.meta = d.meta || {};
+        const newTitle  = document.getElementById("stgTitle").value.trim();
+        const newAuthor = document.getElementById("stgAuthor").value.trim();
+        const newSlug   = document.getElementById("stgSlug").value.trim()
+          .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || d.slug;
+        const newColor  = document.getElementById("stgColor").value;
+        if (newTitle)  { d.title = newTitle; }
+        if (newAuthor) { d.meta.author = newAuthor; } else { delete d.meta.author; }
+        d.meta.color = newColor;
+        if (newSlug && newSlug !== d.slug) d.slug = newSlug;
+        modal.classList.add("hidden");
+        markDirty();
+        renderAll();
+      };
+      modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.add("hidden"); });
     }
 
     function setupFormulaModal() {
@@ -945,6 +1190,7 @@
     }
 
     function enterEdit() {
+      if (state.inlineEdit) { syncInlineEdits(); state.inlineEdit = false; }
       state.mode = "edit";
       state.preview = false;
       state.dirty = false;
@@ -953,12 +1199,14 @@
     }
 
     function togglePreview() {
+      if (state.inlineEdit && state.preview) { syncInlineEdits(); state.inlineEdit = false; }
       state.preview = !state.preview;
       renderTopbar();
       renderPage();
     }
 
     function discard() {
+      state.inlineEdit = false;
       if (!confirmLeave()) return;
       clearDraftLocal();
       state.dirty = false;
@@ -978,6 +1226,7 @@
     }
 
     async function save() {
+      if (state.inlineEdit) { syncInlineEdits(); state.inlineEdit = false; }
       const d = state.current;
       if (!d.title.trim()) { toast("Give the document a title before saving."); return; }
 
@@ -1065,8 +1314,14 @@
     function buildMarkdown(d) {
       const created = d.created || new Date().toISOString();
       const updated = new Date().toISOString();
+      const SKIP = new Set(["title", "type", "created", "updated"]);
+      const extra = Object.entries(d.meta || {})
+        .filter(([k, v]) => !SKIP.has(k) && v !== undefined && v !== "")
+        .map(([k, v]) => `${k}: ${v}`).join("\n");
       return `---\ntitle: ${d.title.trim()}\ntype: ${d.type}\n` +
-             `created: ${created}\nupdated: ${updated}\n---\n\n${(d.content || "").trim()}\n`;
+             `created: ${created}\nupdated: ${updated}\n` +
+             (extra ? extra + "\n" : "") +
+             `---\n\n${(d.content || "").trim()}\n`;
     }
 
     /* ---------- draft persistence ---------- */
@@ -1123,6 +1378,8 @@
 
     function renderToc() {
       tocEl.innerHTML = "";
+      const titleEl = document.getElementById("tocDocTitle");
+      if (titleEl) titleEl.textContent = state.current ? state.current.title : "";
       const canvas = () => document.querySelector(".canvas");
 
       tocEl.appendChild(makeTocSpecial("(top)", "fa-solid fa-angles-up",
@@ -1195,6 +1452,7 @@
 
     async function init() {
       setupMenu();
+      setupSettingsModal();
       setupFormulaModal();
       setupShortcuts();
       renderTokenStatus();

@@ -13,6 +13,9 @@ help: ## Show this help
 start: ## Serve files locally at http://127.0.0.1:$(PORT) with live reload
 	PORT=$(PORT) $(PY) server.py
 
+pull: ## Pull latest changes from remote before pushing
+	git pull --rebase origin main
+
 build: ## Rebuild index.json from the .md files in library/
 	@$(PY) -c "$$BUILD_MANIFEST_PY"
 
