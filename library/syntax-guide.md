@@ -2,7 +2,9 @@
 title: Syntax Guide
 type: page
 created: 2026-05-23T12:00:00+00:00
-updated: 2026-05-23T12:00:00+00:00
+updated: 2026-05-23T10:11:06.336Z
+color: #2f6df0
+refcode: syntax
 ---
 
 This page is a living reference for everything you can write in a Math Wiki document.
