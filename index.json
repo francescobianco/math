@@ -1,11 +1,19 @@
 {
   "documents": [
     {
+      "slug": "about",
+      "title": "About Me",
+      "type": "page",
+      "created": "2026-05-23T10:00:00+00:00",
+      "updated": "2026-05-23T10:33:30.392Z"
+    },
+    {
       "slug": "aritmetica-delle-tetrazioni",
       "title": "Aritmetica delle Tetrazioni",
       "type": "book",
       "created": "2026-05-22T11:00:00+00:00",
-      "updated": "2026-05-23T10:20:49.143Z"
+      "updated": "2026-05-23T10:20:49.143Z",
+      "refcode": ""
     },
     {
       "slug": "syntax-guide",
@@ -16,18 +24,12 @@
       "refcode": "syntax"
     },
     {
-      "slug": "about",
-      "title": "About Me",
-      "type": "page",
-      "created": "2026-05-23T10:00:00+00:00",
-      "updated": "2026-05-23T10:00:00+00:00"
-    },
-    {
       "slug": "the-fundamental-theorem-of-calculus",
       "title": "The Fundamental Theorem of Calculus",
       "type": "paper",
       "created": "2026-05-22T10:00:00+00:00",
-      "updated": "2026-05-22T10:00:00+00:00"
+      "updated": "2026-05-22T10:00:00+00:00",
+      "refcode": ""
     },
     {
       "slug": "welcome-to-the-math-wiki",
@@ -42,7 +44,8 @@
       "title": "Home",
       "type": "page",
       "created": "2026-05-22T08:00:00+00:00",
-      "updated": "2026-05-22T08:00:00+00:00"
+      "updated": "2026-05-22T08:00:00+00:00",
+      "refcode": ""
     }
   ]
 }
