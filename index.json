@@ -1,19 +1,46 @@
 {
   "documents": [
     {
-      "slug": "about",
-      "title": "About Me",
-      "type": "page",
-      "created": "2026-05-23T10:00:00+00:00",
-      "updated": "2026-05-23T10:33:30.392Z"
+      "slug": "the-derivative-mystery-of-the-logarithm",
+      "title": "The Derivative Mystery of the Logarithm",
+      "type": "paper",
+      "created": "2026-05-23T16:25:00+00:00",
+      "updated": "2026-05-23T16:45:00+00:00"
+    },
+    {
+      "slug": "semilogarithmic-chain-algebra",
+      "title": "Semilogarithmic Chain Algebra",
+      "type": "paper",
+      "created": "2026-05-23T16:05:00+00:00",
+      "updated": "2026-05-23T16:05:00+00:00"
+    },
+    {
+      "slug": "infinite-chain-algebra",
+      "title": "Infinite Chain Algebra",
+      "type": "paper",
+      "created": "2026-05-23T15:05:00+00:00",
+      "updated": "2026-05-23T15:50:00+00:00"
+    },
+    {
+      "slug": "the-semilogarithm",
+      "title": "The Semilogarithm",
+      "type": "paper",
+      "created": "2026-05-23T13:00:00+00:00",
+      "updated": "2026-05-23T14:50:00+00:00"
+    },
+    {
+      "slug": "the-differential-transform",
+      "title": "The Differential Transform",
+      "type": "paper",
+      "created": "2026-05-23T12:00:00+00:00",
+      "updated": "2026-05-23T12:45:00+00:00"
     },
     {
       "slug": "aritmetica-delle-tetrazioni",
       "title": "Aritmetica delle Tetrazioni",
       "type": "book",
       "created": "2026-05-22T11:00:00+00:00",
-      "updated": "2026-05-23T10:20:49.143Z",
-      "refcode": ""
+      "updated": "2026-05-23T10:20:49.143Z"
     },
     {
       "slug": "syntax-guide",
@@ -24,12 +51,18 @@
       "refcode": "syntax"
     },
     {
+      "slug": "about",
+      "title": "About Me",
+      "type": "page",
+      "created": "2026-05-23T10:00:00+00:00",
+      "updated": "2026-05-23T10:00:00+00:00"
+    },
+    {
       "slug": "the-fundamental-theorem-of-calculus",
       "title": "The Fundamental Theorem of Calculus",
       "type": "paper",
       "created": "2026-05-22T10:00:00+00:00",
-      "updated": "2026-05-22T10:00:00+00:00",
-      "refcode": ""
+      "updated": "2026-05-22T10:00:00+00:00"
     },
     {
       "slug": "welcome-to-the-math-wiki",
@@ -44,8 +77,7 @@
       "title": "Home",
       "type": "page",
       "created": "2026-05-22T08:00:00+00:00",
-      "updated": "2026-05-22T08:00:00+00:00",
-      "refcode": ""
+      "updated": "2026-05-22T08:00:00+00:00"
     }
   ]
 }
