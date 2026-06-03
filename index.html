@@ -132,6 +132,12 @@
       font-size: 13.5px; text-align: left;
     }
     .token-btn:hover { background: var(--sidebar-soft); color: var(--sidebar-text); }
+    #backBtn {
+      border: 1px solid var(--sidebar-soft);
+      background: var(--sidebar-soft);
+      color: var(--sidebar-text);
+    }
+    #backBtn:hover { border-color: var(--sidebar-text); }
 
     /* ---------- Topbar (full width) ---------- */
     .topbar {
@@ -387,6 +393,32 @@
       text-transform: uppercase; color: rgba(255,255,255,.9);
       font-family: Helvetica, Arial, sans-serif;
     }
+
+    /* ---------- book table of contents ---------- */
+    .toc-head {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 34px; font-weight: 300; letter-spacing: -0.5px;
+      color: #1a1d22; margin: 0 0 30px;
+    }
+    .toc-row {
+      display: flex; align-items: baseline; margin: 0 0 11px;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+    .toc-row .toc-label {
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .toc-row .toc-dots {
+      flex: 1 1 auto; min-width: 24px; margin: 0 7px;
+      border-bottom: 1px dotted #b9c0c9; transform: translateY(-3px);
+    }
+    .toc-row .toc-page {
+      white-space: nowrap; font-variant-numeric: tabular-nums; color: #4a5057;
+    }
+    .toc-l1 { font-size: 16px; color: #1a1d22; margin-top: 16px; }
+    .toc-l1 .toc-label { font-weight: 600; }
+    .toc-l1:first-of-type { margin-top: 0; }
+    .toc-l2 { font-size: 14px; color: #4a5057; }
+    .toc-l2 .toc-label { padding-left: 22px; }
 
     /* ---------- inline WYSIWYG editing ---------- */
     .inline-editable h1, .inline-editable h2, .inline-editable h3, .inline-editable p {
@@ -1097,6 +1129,45 @@
       if (auth) auth.addEventListener("input", () => { (d.meta = d.meta||{}).author  = auth.textContent.trim() || "Anonymous"; markDirty(); });
     }
 
+    function collectTocItems(groups) {
+      // Gather the top two heading levels across all content pages,
+      // remembering which page-group (gi) each heading lands on.
+      const heads = [];
+      groups.forEach((nodes, gi) => nodes.forEach((n) => {
+        if (/^H[1-3]$/.test(n.tagName))
+          heads.push({ lvl: +n.tagName[1], title: n.textContent.trim(), gi });
+      }));
+      if (!heads.length) return [];
+      const minLevel = Math.min(...heads.map((h) => h.lvl));
+      const counters = [0, 0];
+      const items = [];
+      heads.forEach((h) => {
+        const rel = h.lvl - minLevel;
+        if (rel > 1) return; // only chapters + first sub-level in the TOC
+        counters[rel]++;
+        for (let k = rel + 1; k < counters.length; k++) counters[k] = 0;
+        items.push({ lvl: rel + 1, num: counters.slice(0, rel + 1).join("."), title: h.title, gi: h.gi });
+      });
+      return items;
+    }
+
+    function buildTocRow(item, hasNum, style) {
+      const row = document.createElement("div");
+      row.className = "toc-row toc-l" + item.lvl;
+      const label = document.createElement("span");
+      label.className = "toc-label";
+      const numTxt = hasNum ? (style === "dot" ? item.num + "." : item.num) + " " : "";
+      label.textContent = numTxt + item.title;
+      const dots = document.createElement("span");
+      dots.className = "toc-dots";
+      const page = document.createElement("span");
+      page.className = "toc-page";
+      row.append(label, dots, page);
+      row._pageSpan = page;
+      row._gi = item.gi;
+      return row;
+    }
+
     function renderPaginatedPage(d) {
       // Phase 1 — render & measure in a hidden off-screen sheet
       const measurer = document.createElement("div");
@@ -1138,6 +1209,47 @@
         pageEl.appendChild(cover);
         makeCoverEditable(cover, d);
         pageNum = 2;
+
+        // Auto table of contents (cover = p.1, TOC = p.2…, content follows)
+        const items = collectTocItems(groups);
+        if (items.length) {
+          const prefix = (d.meta || {}).section_prefix;
+          const tocRows = items.map((it) => buildTocRow(it, !!prefix, prefix));
+
+          // Measure how many sheets the TOC needs.
+          const tocMeas = document.createElement("div");
+          tocMeas.className = "page-sheet";
+          tocMeas.style.cssText = "position:fixed;left:-9999px;top:0;visibility:hidden;";
+          const measToc = document.createElement("div");
+          measToc.className = "toc-body";
+          const measHead = document.createElement("div");
+          measHead.className = "toc-head";
+          measHead.textContent = "Contents";
+          measToc.appendChild(measHead);
+          tocRows.forEach((r) => measToc.appendChild(r));
+          tocMeas.appendChild(measToc);
+          document.body.appendChild(tocMeas);
+          const tocGroups = paginateNodes(measToc, fullH);
+          document.body.removeChild(tocMeas);
+
+          // Now page numbers are known: content starts right after the TOC.
+          const firstContentPage = 2 + tocGroups.length;
+          tocRows.forEach((r) => { r._pageSpan.textContent = String(firstContentPage + r._gi); });
+
+          tocGroups.forEach((nodes) => {
+            const sheet = document.createElement("div");
+            sheet.className = "page-sheet";
+            const body = document.createElement("div");
+            body.className = "toc-body";
+            nodes.forEach((n) => body.appendChild(n));
+            sheet.appendChild(body);
+            const footer = document.createElement("div");
+            footer.className = "page-num";
+            footer.textContent = String(pageNum++);
+            sheet.appendChild(footer);
+            pageEl.appendChild(sheet);
+          });
+        }
       }
 
       groups.forEach((nodes, gi) => {
