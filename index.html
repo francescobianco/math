@@ -395,30 +395,30 @@
     }
 
     /* ---------- book table of contents ---------- */
-    .toc-head {
+    .bk-toc-head {
       font-family: Helvetica, Arial, sans-serif;
       font-size: 34px; font-weight: 300; letter-spacing: -0.5px;
       color: #1a1d22; margin: 0 0 30px;
     }
-    .toc-row {
+    .bk-toc-row {
       display: flex; align-items: baseline; margin: 0 0 11px;
       font-family: Georgia, "Times New Roman", serif;
     }
-    .toc-row .toc-label {
+    .bk-toc-row .bk-toc-label {
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
-    .toc-row .toc-dots {
+    .bk-toc-row .bk-toc-dots {
       flex: 1 1 auto; min-width: 24px; margin: 0 7px;
       border-bottom: 1px dotted #b9c0c9; transform: translateY(-3px);
     }
-    .toc-row .toc-page {
+    .bk-toc-row .bk-toc-page {
       white-space: nowrap; font-variant-numeric: tabular-nums; color: #4a5057;
     }
-    .toc-l1 { font-size: 16px; color: #1a1d22; margin-top: 16px; }
-    .toc-l1 .toc-label { font-weight: 600; }
-    .toc-l1:first-of-type { margin-top: 0; }
-    .toc-l2 { font-size: 14px; color: #4a5057; }
-    .toc-l2 .toc-label { padding-left: 22px; }
+    .bk-toc-l1 { font-size: 16px; color: #1a1d22; margin-top: 16px; }
+    .bk-toc-l1 .bk-toc-label { font-weight: 600; }
+    .bk-toc-l1:first-of-type { margin-top: 0; }
+    .bk-toc-l2 { font-size: 14px; color: #4a5057; }
+    .bk-toc-l2 .bk-toc-label { padding-left: 22px; }
 
     /* ---------- inline WYSIWYG editing ---------- */
     .inline-editable h1, .inline-editable h2, .inline-editable h3, .inline-editable p {
@@ -1153,15 +1153,15 @@
 
     function buildTocRow(item, hasNum, style) {
       const row = document.createElement("div");
-      row.className = "toc-row toc-l" + item.lvl;
+      row.className = "bk-toc-row bk-toc-l" + item.lvl;
       const label = document.createElement("span");
-      label.className = "toc-label";
+      label.className = "bk-toc-label";
       const numTxt = hasNum ? (style === "dot" ? item.num + "." : item.num) + " " : "";
       label.textContent = numTxt + item.title;
       const dots = document.createElement("span");
-      dots.className = "toc-dots";
+      dots.className = "bk-toc-dots";
       const page = document.createElement("span");
-      page.className = "toc-page";
+      page.className = "bk-toc-page";
       row.append(label, dots, page);
       row._pageSpan = page;
       row._gi = item.gi;
@@ -1221,9 +1221,9 @@
           tocMeas.className = "page-sheet";
           tocMeas.style.cssText = "position:fixed;left:-9999px;top:0;visibility:hidden;";
           const measToc = document.createElement("div");
-          measToc.className = "toc-body";
+          measToc.className = "bk-toc-body";
           const measHead = document.createElement("div");
-          measHead.className = "toc-head";
+          measHead.className = "bk-toc-head";
           measHead.textContent = "Contents";
           measToc.appendChild(measHead);
           tocRows.forEach((r) => measToc.appendChild(r));
@@ -1240,7 +1240,7 @@
             const sheet = document.createElement("div");
             sheet.className = "page-sheet";
             const body = document.createElement("div");
-            body.className = "toc-body";
+            body.className = "bk-toc-body";
             nodes.forEach((n) => body.appendChild(n));
             sheet.appendChild(body);
             const footer = document.createElement("div");
