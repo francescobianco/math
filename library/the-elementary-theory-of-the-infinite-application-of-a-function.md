@@ -2,7 +2,7 @@
 title: The Elementary Theory of the Infinite Application of a Function
 type: book
 created: 2026-06-03T09:00:00+00:00
-updated: 2026-06-03T09:00:00+00:00
+updated: 2026-06-05T00:00:00+00:00
 color: #b8336a
 section_prefix: nodot
 author: F. Bianco
@@ -500,6 +500,126 @@ destination but forgets the road.
 > The observable mathematical objects may not be primitive.
 >
 > They may be the stable residue of infinite iterative processes.
+
+---
+
+# Part IX — The Two-Cycle Oscillator
+
+## Chapter 25 — A Destiny That Refuses to Settle
+
+Most of the fates catalogued in Chapter 2 are *quiet*: the orbit collapses to a
+point, freezes at a fixed value, or escapes to infinity. We now isolate the
+loudest of the non-trivial classes — the **cycle of period two** — and ask for
+the simplest function whose destiny is not a number but a perpetual swing
+between
+
+$$
+-1 \quad\text{and}\quad +1.
+$$
+
+Here $f^{\infty}$ never converges. The orbit is forever undecided, and that
+indecision is itself a stable structure:
+
+$$
+\mathcal{A}(f) = \{-1, +1\}.
+$$
+
+The attractor is a *pair*. The function has a destiny, but its destiny is to
+alternate.
+
+## Chapter 26 — The Minimal Oscillator
+
+The simplest generator of the swing is the reflection through the origin:
+
+$$
+f(x) = -x.
+$$
+
+Starting from $x_0 = 1$,
+
+$$
+1 \to -1 \to 1 \to -1 \to \cdots
+$$
+
+The orbit is a clean period-two cycle. Indeed $f(f(x)) = x$ for *every* $x$, so
+the whole line is foliated into two-cycles $\{x, -x\}$, with the single fixed
+point $0$ on the diagonal $y = x$ of Chapter 7. The displacement of Chapter 8,
+
+$$
+g(x) = f(x) - x = -2x,
+$$
+
+vanishes only at the origin: one fixed point, and around it an ocean of
+oscillation.
+
+## Chapter 27 — The General Condition
+
+The pair $\{-1, +1\}$ forms a two-cycle of $f$ precisely when
+
+$$
+f(1) = -1 \qquad\text{and}\qquad f(-1) = 1.
+$$
+
+*Any* function satisfying these two equations carries the swing
+
+$$
+1 \longleftrightarrow -1.
+$$
+
+The minimal oscillator $f(x) = -x$ is only the linear representative of an
+infinite equivalence class (Chapter 4): all such functions share the same
+asymptotic skeleton on the cycle, however different their formulas. A bounded
+nonlinear witness is
+
+$$
+f(x) = \frac{-2x}{1 + x^{2}},
+$$
+
+for which
+
+$$
+f(1) = \frac{-2}{2} = -1, \qquad f(-1) = \frac{2}{2} = +1.
+$$
+
+Unlike $-x$, this map keeps every orbit inside $[-1, 1]$, so the swing is not
+merely *possible* but confined — a first hint of **attraction**.
+
+## Chapter 28 — Making the Swing Attractive
+
+A cycle can be present without being the *fate* of nearby points. The cycle
+$\{-1, +1\}$ becomes a genuine attractor when its second iterate contracts: with
+
+$$
+F(x) = f(f(x)),
+$$
+
+the cycle is attracting whenever
+
+$$
+\bigl| F'(1) \bigr| = \bigl| f'(-1)\, f'(1) \bigr| < 1.
+$$
+
+For the reflection $f(x) = -x$ one gets $|f'(-1) f'(1)| = 1$ exactly: the swing
+is **neutral** — present, but indifferent, neither drawing in nor pushing away.
+To make almost every starting point spiral into the oscillation one must bend
+the map until the product of slopes drops below one.
+
+This is the same mechanism that the **logistic family** discovers on its own:
+
+$$
+x_{n+1} = r\, x_n (1 - x_n).
+$$
+
+Past the first bifurcation the single fixed point loses stability and a stable
+two-cycle is born — an oscillation between two values that the iteration
+spontaneously selects. The endpoints are not $-1$ and $+1$, but the phenomenon
+is identical: the destiny of $f^{\infty}$ has become a *rhythm* rather than a
+*point* — the same reinterpretation forced upon us, at period three, by the
+terminal Collatz cycle of Chapter 12.
+
+The two-cycle is therefore the smallest laboratory of the whole theory: the
+least complicated way for a function to possess a destiny that can be named but
+never reached.
 
 ---
 
