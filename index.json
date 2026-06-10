@@ -1,6 +1,27 @@
 {
   "documents": [
     {
+      "slug": "notes-on-the-forbidden-words-of-the-collatz-phases",
+      "title": "Notes on the Forbidden Words of the Collatz Phases",
+      "type": "notes",
+      "created": "2026-06-10T23:35:00+00:00",
+      "updated": "2026-06-10T23:35:00+00:00"
+    },
+    {
+      "slug": "notes-on-the-music-of-the-collatz-phases",
+      "title": "Notes on the Music of the Collatz Phases",
+      "type": "notes",
+      "created": "2026-06-10T23:30:00+00:00",
+      "updated": "2026-06-10T23:30:00+00:00"
+    },
+    {
+      "slug": "the-phases-of-collatz",
+      "title": "The Phases of Collatz",
+      "type": "paper",
+      "created": "2026-06-10T21:30:00+00:00",
+      "updated": "2026-06-11T00:30:00+00:00"
+    },
+    {
       "slug": "a-survey-of-informal-proof-strategies-for-the-collatz-conjecture",
       "title": "A Survey of Informal Proof Strategies for the Collatz Conjecture",
       "type": "paper",
@@ -40,7 +61,7 @@
       "title": "The Semilogarithm",
       "type": "paper",
       "created": "2026-05-23T13:00:00+00:00",
-      "updated": "2026-05-23T14:50:00+00:00"
+      "updated": "2026-06-10T12:00:00+00:00"
     },
     {
       "slug": "the-differential-transform",
