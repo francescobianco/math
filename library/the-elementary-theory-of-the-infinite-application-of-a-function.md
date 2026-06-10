@@ -2,7 +2,7 @@
 title: The Elementary Theory of the Infinite Application of a Function
 type: book
 created: 2026-06-03T09:00:00+00:00
-updated: 2026-06-03T09:00:00+00:00
+updated: 2026-06-11T01:30:00+00:00
 color: #b8336a
 section_prefix: nodot
 author: F. Bianco
@@ -500,6 +500,123 @@ destination but forgets the road.
 > The observable mathematical objects may not be primitive.
 >
 > They may be the stable residue of infinite iterative processes.
+
+---
+
+# Part IX — The Destiny Field
+
+## Chapter 25 — From Attractor to Field
+
+The attractor $\mathcal{A}(f)$ of Part II was a single set. But destiny varies
+with the starting point. Define the **destiny field** of $f$ as the function
+
+$$
+x \;\longmapsto\; \mathcal{A}_x(f),
+$$
+
+assigning to each point the limit behaviour of *its own* orbit. The theory of
+infinite applications becomes the study of this field: not one destiny, but
+the geography of all destinies.
+
+For the cosine the field is constant:
+
+$$
+\mathcal{A}_x(\cos) = \{0.739085\ldots\} \quad \text{for every } x.
+$$
+
+One value compresses the whole field. Information content: zero. The
+compression of Chapter 23 is total.
+
+## Chapter 26 — The Anomaly of Stability
+
+For the harmonic Collatz map of Part V the destiny field is a dichotomy:
+
+$$
+\mathcal{A}_x(f) =
+\begin{cases}
+\{1,4,2\} & x \in B,\\[2pt]
+\infty & \text{for most other } x,
+\end{cases}
+$$
+
+where $B$ is a thin dust of slivers concentrated around the integers.
+Measured: only $2.5\%$ of the reals in $[1,50]$ belong to $B$; the sliver
+around the integer $n$ has thickness collapsing with the peak $M(n)$ of the
+trajectory,
+
+$$
+r(n) \approx \frac{n}{\pi^{2}M(n)^{2}}
+$$
+
+(the sliver at $27$, whose flight reaches $9232$, is $10^{-8}$ wide). This
+field is **incompressible**: its geometry around $n$ stores the entire
+trajectory of $n$.
+
+The two examples are the poles of a classification axis: functions ranked by
+the complexity of their destiny field. At one end the constant field
+(cosine, closed form, zero memory); at the other the fractal field (Collatz,
+total memory, no formula). Where the destiny field develops anomalously thin
+stable sets, iteration theory touches arithmetic — and problems become hard.
+
+## Chapter 27 — The Two Completions
+
+The anomaly seems to say that the integers are special points of the
+continuum. But the harmonic canvas was *built* to resonate with them: the
+carrier $\cos(\pi x)$ equals $\pm 1$ exactly on $\mathbb{Z}$, giving
+$f'(\text{even})=1/2$ and $f'(\text{odd})=3$. The analytic continuum is a
+biased court.
+
+A fair court exists. It is the **formal completion**
+
+$$
+\mathbb{Z}_2=\varprojlim\; \mathbb{Z}/2^{k}\mathbb{Z},
+$$
+
+an inverse limit — a categorical construction, intrinsic to the parity
+structure of the map, with no interpolation chosen. There the Collatz map is
+continuous without artifice, conjugate to the shift, and the integers are
+**dense and in no way special**.
+
+The two courts pass the same sentence in dual forms. In $\mathbb{R}$ the
+integers are a topologically isolated dust of stability; in $\mathbb{Z}_2$
+they are metrically negligible (Haar measure zero). In both, the arithmetic
+question lives on a thin set invisible to the ambient theory. The difficulty
+does not depend on the courtroom.
+
+## Chapter 28 — The Transferable Colour
+
+Every analytic function vanishing on the integers is divisible by
+$\sin(\pi x)$. Hence the analytic extensions of the Collatz map form the
+affine space
+
+$$
+g = f + \sin(\pi x)\,h, \qquad h \text{ entire}:
+$$
+
+infinitely many **canvases**, one **colour** — all restrict to the same map
+on $\mathbb{Z}$.
+
+Measured: the multiplier of the terminal cycle $1\to 4\to 2$ is $+0.75$
+(attracting) on the minimal canvas, $+4.28$ and $-1.88$ (repelling) on
+others. The basin, the slivers, the stability itself: **paint**, not
+pigment. What travels intact through every transfer is the conjugacy class
+of $(\mathbb{N},T)$ — stopping times, phases, forbidden words, entropy
+deficits. That is the colour.
+
+Hence a conservation law:
+
+> **Conservation of difficulty.** The conjecture is an invariant of the
+> colour. No canvas can dissolve it; every "relaxing angle" merely moves it
+> into the paint.
+
+And a method:
+
+> Canvases do not solve; they **compute**. Each canvas makes a different
+> invariant of the colour legible — the drift becomes a multiplier on the
+> harmonic canvas, the parity becomes a shift on the 2-adic canvas, the
+> trajectory becomes a thickness on the basin canvas. Choose the canvas for
+> the invariant you need to read, and never mistake the paint for the
+> pigment.
 
 ---
 

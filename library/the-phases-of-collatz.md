@@ -2,7 +2,7 @@
 title: The Phases of Collatz
 type: paper
 created: 2026-06-10T21:30:00+00:00
-updated: 2026-06-11T00:30:00+00:00
+updated: 2026-06-11T01:30:00+00:00
 ---
 
 # The Phases of Collatz
@@ -727,6 +727,37 @@ an **expansion-stable lower bound**: a quantity attached to the inverse
 orbit, provably bounded below, that dominates $r$. No such bound is known;
 finding one would be genuine progress — and would amount to the hidden
 Lyapunov function in geometric clothing.
+
+### The Basin Is Canvas, Not Colour
+
+A final honesty about the entire section. The interpolation $f$ is one of
+infinitely many: every analytic extension of $T$ has the form
+
+$$
+g = f + \sin(\pi x)\,h, \qquad h \text{ entire},
+$$
+
+since an entire function vanishing on $\mathbb{Z}$ is divisible by
+$\sin(\pi x)$. All these maps share the *colour* — the integer dynamics
+$g|_{\mathbb{Z}}=T$, hence $\sigma$, $\phi$, and the conjecture itself — but
+not the *paint*. Measured on the family $g=f+c\sin(\pi x)$, the multiplier
+of the terminal cycle is
+
+| $c$ | $0$ | $0.3$ | $1$ |
+|---|---:|---:|---:|
+| multiplier of $1\to4\to2$ | $+0.75$ | $+4.28$ | $-1.88$ |
+
+attracting on the minimal canvas, repelling on others; and the $10^{-8}$
+sliver of basin around $27$ simply evaporates at $c=1$ while the integer
+orbits remain identical. Therefore the multiplier $3/4$, the basin $B$, the
+capture fraction, and the pinching law are properties of the *chosen
+canvas*, not of Collatz: gauge, in the same sense as the periodic gauge of
+an Abel coordinate. What survives every repainting is the discrete cycle
+ratio $3^{a}/2^{b}$ and the orbit structure on $\mathbb{Z}$. A serious basin
+program must therefore either fix a canonical canvas and justify the choice,
+or — better — work only with quantities invariant under
+$f \mapsto f+\sin(\pi x)h$. The expansion-stable bound sought above, to mean
+anything, must be of the second kind.
 
 ## Conclusion
 
