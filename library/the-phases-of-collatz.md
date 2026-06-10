@@ -1,4 +1,4 @@
-va ---
+---
 title: The Phases of Collatz
 type: paper
 created: 2026-06-10T21:30:00+00:00
