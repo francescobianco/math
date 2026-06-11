@@ -143,6 +143,60 @@ $$
 the latter because an odd step followed by the forced halving consumes two
 ticks, and $-2\equiv 1 \pmod 3$.
 
+**Phase observables rotate.** More generally, every observable depending only
+on the phase is acted on by $T$ as a rotation. Let
+
+$$
+A(n)=a_{\phi(n)},\qquad (a_0,a_1,a_2)\in\mathbb{C}^{3},
+$$
+
+with all subscripts read modulo three. Then the step law gives
+
+$$
+A(T(n))=a_{\phi(n)-1}.
+$$
+
+Thus applying Collatz does not change the nature of a pure phase observable:
+it only reads the same three registers with a cyclic shift. The three rotated
+copies are
+
+$$
+A_0(n)=a_{\phi(n)},\qquad
+A_1(n)=a_{\phi(n)+1},\qquad
+A_2(n)=a_{\phi(n)+2},
+$$
+
+and their complete symmetrization cancels the phase:
+
+$$
+A_0(n)+A_1(n)+A_2(n)=a_0+a_1+a_2.
+$$
+
+Equivalently, along three consecutive Collatz steps,
+
+$$
+A(n)+A(T(n))+A(T^2(n))=a_0+a_1+a_2.
+$$
+
+For the numerical values of the terminal cycle, for instance
+$(a_0,a_1,a_2)=(1,4,2)$, this gives
+
+$$
+A(n)+A(T(n))+A(T^2(n))=7,
+$$
+
+so the three-step average is the oscillator mean $7/3$. Sums of only two
+rotations are not constant in general; they are complements of the omitted
+register,
+
+$$
+A_i(n)+A_{i+1}(n)=a_0+a_1+a_2-A_{i+2}(n),
+$$
+
+and for $(1,4,2)$ take the three possible values $3,5,6$. The invariant
+object is therefore the full threefold average: averaging over the cyclic
+phase group projects any pure phase observable onto its constant part.
+
 **Law 2 (octave law).** Multiplication by $8$ is phase-transparent:
 
 $$
@@ -766,7 +820,9 @@ The phase structure of Collatz is now explicit at three levels.
 At the **exact** level, the phase obeys a transport calculus — step law,
 octave law, the $4n+1$ law, the coalescence law, the predecessor law — that
 propagates synchronization information through the tree without any knowledge
-of stopping times, and the terminal oscillator is the explicit harmonic
+of stopping times. Every observable depending only on phase is rotated by $T$,
+and its full threefold rotational symmetrization is constant. The terminal
+oscillator is the explicit harmonic
 $w(t)=\tfrac{7}{3}-\tfrac{4}{3}\cos(2\pi t/3)+\tfrac{2\sqrt 3}{3}\sin(2\pi
 t/3)$ onto which every trajectory locks in finite time.
 
