@@ -12,6 +12,9 @@ detected. We measure:
       next symbol (watermark-bearing, zero payload) vs FREE (payload), and the
       residual per-symbol entropy of the free positions.
   E3  burst tampering: detection vs number of edited symbols.
+  E5  streaming attacks: per-seam detection of splice (cut-and-paste a valid
+      foreign block), reorder (swap two adjacent blocks), replay (insert a
+      foreign block) — the structural edits a real-time stream faces.
   E4  keyability: does scanning the phase word along a secret arithmetic
       progression n = r (mod m) change the forbidden-hexagram set? (key space
       of the "secret grammar".)
@@ -112,6 +115,74 @@ def E1_E3_tamper(word, alphabet=(0, 1, 2), trials=50000, seed=1):
 
 
 # ----------------------------------------------------------------------
+def E5_streaming(word, alphabet=(0, 1, 2), trials=20000, seed=2):
+    """Stream-native attacks: splice (cut-and-paste a VALID foreign block),
+    reorder (swap two adjacent valid blocks), replay (insert a foreign block).
+    The interior of a pasted valid block never trips; only the seams can — so
+    this measures per-seam detectability of structural edits to a stream."""
+    print()
+    print("=" * 70)
+    print("E5 — streaming attacks: splice / reorder / replay (per-seam)")
+    print("=" * 70)
+    rng = random.Random(seed)
+    n = len(word)
+    occ = {L: windows_of_length(word, L) for L in (6, 8)}
+
+    def has_forb(seg, L, S):
+        return any(tuple(seg[i:i + L]) not in S
+                   for i in range(len(seg) - L + 1))
+
+    print("\nSplice (paste a valid foreign block of length B):")
+    print(f"  {'B':>4} {'L=6':>8} {'L=8':>8}")
+    for B in (4, 8, 16, 32):
+        row = []
+        for L in (6, 8):
+            S = occ[L]
+            hit = 0
+            for _ in range(trials):
+                p = rng.randrange(64, n - 64 - B)
+                q = rng.randrange(0, n - B)
+                seg = word[p - (L - 1):p + B + (L - 1)][:]
+                for k in range(B):
+                    seg[(L - 1) + k] = word[q + k]
+                hit += has_forb(seg, L, S)
+            row.append(hit / trials)
+        print(f"  {B:>4} {row[0]:>8.4f} {row[1]:>8.4f}")
+
+    print("\nReorder (swap two adjacent valid blocks of length B):")
+    print(f"  {'B':>4} {'L=6':>8} {'L=8':>8}")
+    for B in (4, 8, 16):
+        row = []
+        for L in (6, 8):
+            S = occ[L]
+            hit = 0
+            for _ in range(trials):
+                p = rng.randrange(64, n - 64 - 2 * B)
+                seg = word[p - (L - 1):p + 2 * B + (L - 1)][:]
+                a = seg[L - 1:L - 1 + B][:]
+                b = seg[L - 1 + B:L - 1 + 2 * B][:]
+                seg[L - 1:L - 1 + B] = b
+                seg[L - 1 + B:L - 1 + 2 * B] = a
+                hit += has_forb(seg, L, S)
+            row.append(hit / trials)
+        print(f"  {B:>4} {row[0]:>8.4f} {row[1]:>8.4f}")
+
+    print("\nReplay / insertion of a foreign block of length M (L=8):")
+    L = 8
+    S = occ[L]
+    for M in (6, 12, 24, 48):
+        hit = 0
+        for _ in range(trials):
+            p = rng.randrange(64, n - 64 - M)
+            q = rng.randrange(0, n - M)
+            seg = word[p - (L - 1):p + M + (L - 1)][:]
+            for k in range(M):
+                seg[(L - 1) + k] = word[q + k]
+            hit += has_forb(seg, L, S)
+        print(f"  insert len {M:>3}: P(detected) = {hit/trials:.4f}")
+
+
+# ----------------------------------------------------------------------
 def E2_capacity(word, ctx=5, alphabet=(0, 1, 2)):
     print()
     print("=" * 70)
@@ -208,5 +279,6 @@ if __name__ == '__main__':
     word = phase_word(limit)
     print(f"phase word length: {len(word)}\n")
     E1_E3_tamper(word)
+    E5_streaming(word)
     E2_capacity(word)
     E4_keyability(word)

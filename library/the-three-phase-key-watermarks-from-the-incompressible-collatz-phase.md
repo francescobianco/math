@@ -2,7 +2,7 @@
 title: "The Three-Phase Key: Self-Verifying Watermarks from the Incompressible Collatz Phase"
 type: paper
 created: 2026-06-12T23:55:00+00:00
-updated: 2026-06-12T23:55:00+00:00
+updated: 2026-06-13T01:15:00+00:00
 ---
 
 # The Three-Phase Key: Self-Verifying Watermarks from the Incompressible Collatz Phase
@@ -269,7 +269,83 @@ the specific trace (standard signature over $n_0$'s public trace digest) is
 load-bearing. The Collatz layer is the fragile, cheap, redundant fingerprint;
 the unforgeability of *whose* fingerprint it is rests on the standard signature.
 
-## 8. The Design Space, Swept
+## 8. Real-Time Streaming Applications
+
+Streaming is the natural home of this gadget, for structural reasons before
+any application: verification is **$O(1)$ per symbol** with **constant memory**
+(a sliding window into the forbidden-word table), it is **incremental** (check
+as symbols arrive), and the mark is **woven into the stream** rather than
+appended as a separate tag. But the stream-native attacks — splicing,
+reordering, replay — must be measured, not assumed. We did (per *seam*, at
+$n<2^{20}$; a seam is one junction where unrelated valid content is joined):
+
+| attack (per seam) | $L=6$ | $L=8$ |
+|---|---:|---:|
+| splice (paste a valid foreign block) | $\approx 0.17$ | $\approx 0.26$ |
+| reorder (swap two adjacent blocks) | $\approx 0.16$ | $\approx 0.26$ |
+| replay / insert a foreign block | — | $\approx 0.25$ |
+
+The interior of a pasted *valid* block never trips — only the seams can — so a
+single cut-and-paste escapes roughly three times in four. This one number
+governs which applications hold. It says the Collatz layer is a **cheap
+probabilistic tripwire**, not a high-assurance guarantee, and so it must sit
+*atop* a standard primitive wherever certainty is required. With that fixed,
+the streaming use cases sort cleanly.
+
+**Anti-cheat for clients streaming commands or game moves** — *weak as a
+standalone, by threat model.* Against a man-in-the-middle without the seed, a
+single splice or replay is caught only $\approx 25\%$ of the time, so a **hash
+chain** (which catches splicing with overwhelming probability and carries a
+proof) is the right tool, not this. Against a *malicious client that holds the
+seed*, nothing here helps — the client forges a compliant stream; the secret
+is symmetric. The genuine anti-cheat value is server-authoritative
+**consistency**: the three-projection tag of Section 2, with the value trace
+equal to a server-side deterministic simulation, validates that moves come
+from a real play. That is real, but it is "the server recomputes"; the Collatz
+part is cosmetic there.
+
+**Trust of HTTP payloads / data-stream integrity** — *complementary layer, not
+a replacement.* For the bare question "is this payload authentic", an HMAC or
+signature dominates: cheaper, proven, $\approx 100\%$ detection. The Collatz
+niche is exactly what a MAC does *not* give: an **inline, self-describing**
+seal that travels with the content, **tamper localization** (below), and a
+**covert side-channel** riding the same symbols. Use it beside a MAC, for those
+three, never instead of one.
+
+**Token streams from coding agents** — *the most promising case.* A fragile
+seal over the serialized token stream detects post-hoc edits and splices. The
+$\approx 25\%$ per-event rate is the wrong figure here: detection **compounds
+to near-certainty over long outputs**, because a tamperer must avoid *every*
+forbidden window across thousands of symbols. Combined with the covert channel
+of Section 4 — embedding model-id, version, or run-provenance into the stream
+itself — this is a genuine differentiator. It is orthogonal to statistical LLM
+watermarks: those mark *generation* (the sampling distribution), whereas this
+seals an *existing* stream and localizes edits in it.
+
+**Side-channel for device control with small payloads** — *real but niche, and
+obfuscation not secrecy.* The $\approx 1.2$ bits/symbol covert channel
+(Section 4) can piggyback low-rate control, heartbeat, or versioning onto a
+stream that *simultaneously self-authenticates*. But the grammar is public, so
+this hides nothing from anyone who knows the scheme: it is deniable,
+low-bandwidth, channel-economizing — one stream that both carries control and
+proves its own integrity — not a secret command link.
+
+**The one genuinely new streaming advantage: localization.** A MAC over a whole
+message reports "tampered" but not *where*; the fragile grammar trips in a
+window that must overlap the edit, so it localizes the tamper to within the
+window length ($\le 8$ symbols) — and a *fragment* of the stream can be
+verified without the whole. For real-time pipelines this — partial
+verification, localized fault, graceful degradation — is the capability the
+phase layer adds that appended tags structurally cannot.
+
+The unifying, honest reading: the tool is an **inline, streaming,
+integrity-plus-side-channel layer** with $\approx 1/4$ per-event detection and
+symmetric (seed) security. It earns its place where you want the mark *woven*
+into the data, *localizable*, with a free low-rate covert channel — and it
+belongs on top of HMAC, hash chains, or signatures wherever high assurance or
+defense against a key-holding endpoint is the requirement.
+
+## 9. The Design Space, Swept
 
 Francesco's candidate applications, judged:
 
@@ -286,7 +362,7 @@ Francesco's candidate applications, judged:
   distinguisher. If a *bias* is wanted purely for obfuscation (not security),
   the phase word serves, but must never be relied on for confidentiality.
 
-## 9. What This Is Not (the load-bearing disclaimers)
+## 10. What This Is Not (the load-bearing disclaimers)
 
 - **Not a one-way function.** $\phi$ is easy forward and there is no trapdoor;
   "incompressible" means *no closed form*, not *hard to evaluate*.
@@ -299,13 +375,15 @@ Francesco's candidate applications, judged:
   The constructions are *engineering with measured tamper-evidence*, and must
   be deployed as integrity layers atop primitives that *do* carry proofs.
 
-## 10. Status and Open Problems
+## 11. Status and Open Problems
 
 **Real and measured:** the structure-is-signature thesis; the three-projection
 tamper-evident tag; per-edit ($\approx 0.20$–$0.26$) and burst ($0.86$ at
-$k=8$) detection rates of the fragile watermark; the $2.3\%$-forced /
-$1.206$-bit covert-channel capacity; the negative scan-keying result (the
-watermark lives on the consecutive scan only).
+$k=8$) detection rates of the fragile watermark; per-seam streaming-attack
+rates (splice/reorder/replay $\approx 0.17$–$0.26$); the $O(1)$-per-symbol,
+constant-memory streaming verification with tamper localization to $\le 8$
+symbols; the $2.3\%$-forced / $1.206$-bit covert-channel capacity; the negative
+scan-keying result (the watermark lives on the consecutive scan only).
 
 **Open and worth doing:**
 1. **Stronger fragile watermark.** Combine the ternary, binary, and joint
@@ -331,11 +409,12 @@ watermark lives on the consecutive scan only).
 ## Reproduction
 
 ```bash
-python3 library/scripts/collatz_watermark_experiments.py 20   # all four experiments
+python3 library/scripts/collatz_watermark_experiments.py 20   # all experiments
 ```
 
-E1/E3 prints the tamper-evidence rates of Section 3, E2 the capacity split of
-Section 4, E4 the scan-keying negative result of Section 5. The grammar data
+E1/E3 prints the tamper-evidence rates of Section 3, E5 the streaming
+splice/reorder/replay rates of Section 8, E2 the capacity split of Section 4,
+E4 the scan-keying negative result of Section 5. The grammar data
 come from `library/scripts/collatz_forbidden_words.py`; the binary companion
 and the $\mathbb{Z}/6$ joint word from
 `library/scripts/skycak_bridge_experiments.py`.
