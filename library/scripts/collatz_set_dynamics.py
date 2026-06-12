@@ -12,8 +12,12 @@ companion paper:
      residue class 4 mod 6, density 1/6;
   3. the exact halving law for tails: T^k(S_m) = S_ceil(m/2^k),
      where S_m = {m, m+1, m+2, ...}, checked by backward search;
-  4. the 3n-1 control: identical set-level laws, different destinies
-     (the finite collapse lands on three cycles instead of one).
+  4. the doors of the slide: the last odd value of every convergent
+     trajectory is an antechamber (4^j-1)/3 = 1, 5, 21, 85, ...;
+  5. the 3n-1 control: identical set-level laws, different destinies
+     (the finite collapse lands on three cycles instead of one), with
+     basin densities ~1/3 each — witnesses at arbitrary distance are
+     not enough to make a forall.
 
 Usage:
     python3 library/scripts/collatz_set_dynamics.py [log2_N]
@@ -95,6 +99,44 @@ def halving_law(window: int, ms: list[int], ks: list[int]) -> None:
             print(f"    m={m:<8d} k={k:<3d} front ceil(m/2^k)={front:<8d} OK")
 
 
+def slide_doors(N: int) -> None:
+    """Last odd value of every trajectory is an antechamber (4^j-1)/3."""
+    doors: set[int] = set()
+    for n in range(2, N + 1):
+        m, last_odd = n, None
+        while m != 1:
+            if m % 2:
+                last_odd = m
+            m = T(m)
+        if last_odd is None:  # n is a power of two: born on the slide
+            continue
+        p = 3 * last_odd + 1
+        assert p & (p - 1) == 0 and (p.bit_length() - 1) % 2 == 0, (n, last_odd)
+        doors.add(last_odd)
+    print(f"\n  doors of the slide, n <= {N}: every last odd value q has "
+          f"3q+1 = 4^j")
+    print(f"    antechambers found: {sorted(doors)}")
+
+
+def basins_3n_minus_1(N: int) -> None:
+    cyc1 = {1, 2}
+    cyc5 = {5, 14, 7, 20, 10}
+    cyc17 = {17, 50, 25, 74, 37, 110, 55, 164, 82, 41,
+             122, 61, 182, 91, 272, 136, 68, 34}
+    allc = cyc1 | cyc5 | cyc17
+    counts = {"1": 0, "5": 0, "17": 0}
+    for n in range(1, N + 1):
+        m = n
+        while m not in allc:
+            m = T_minus(m)
+        counts["1" if m in cyc1 else "5" if m in cyc5 else "17"] += 1
+    print(f"\n  3n-1 basin densities on [1, {N}]:")
+    for k, v in counts.items():
+        print(f"    basin of cycle({k}): {v / N:.4f}")
+    print("    destiny-1 witnesses exist at every scale, yet ~2/3 of all"
+          " numbers have a different destiny.")
+
+
 def main() -> None:
     log2_N = int(sys.argv[1]) if len(sys.argv) > 1 else 20
     N = 2 ** log2_N
@@ -106,9 +148,11 @@ def main() -> None:
     halving_law(window=40,
                 ms=[10, 100, 10 ** 4, 10 ** 6],
                 ks=[1, 3, 7, 12])
+    slide_doors(min(N, 2 * 10 ** 5))
 
     print("\n  control map 3n-1:")
     finite_collapse(N, T_minus, "T' (3n-1)")
+    basins_3n_minus_1(min(N, 10 ** 6))
 
 
 if __name__ == "__main__":
