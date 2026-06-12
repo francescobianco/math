@@ -2,7 +2,7 @@
 title: The Elementary Theory of the Infinite Application of a Function
 type: book
 created: 2026-06-03T09:00:00+00:00
-updated: 2026-06-12T11:00:00+00:00
+updated: 2026-06-12T17:00:00+00:00
 color: #b8336a
 section_prefix: nodot
 author: F. Bianco
@@ -1100,6 +1100,356 @@ scaffolding: rigorously, and in order to remove it.
 > once handed the logarithm.
 >
 > Process is the bridge. Destiny is the base.
+
+---
+
+# Part XIII — The Spectral Function
+
+## Chapter 40 — The Dictation
+
+We now equip the theory with its measuring instrument. Define the
+**spectral function** of an infinite function:
+
+$$
+S[\,f\,] = g, \qquad g(x) = \text{the spectrum of the destiny of } x
+\text{ under } f.
+$$
+
+$S$ eats a function and returns a function: at every starting point $x$,
+the value $g(x)$ names *which kind* of destiny the orbit of $x$ meets —
+and nothing else. No constants, no multipliers, no basins, no calendars:
+$S$ is built from destinies alone. It is not the multiplier analysis of
+the bridge; it is the first instrument native to the new base.
+
+The values were fixed by dictation, one destiny at a time, in the
+normalized space of Chapter 37:
+
+$$
+\begin{array}{lll}
+\textbf{destiny of } x & \boldsymbol{g(x)} & \\[4pt]
+\text{flight to } +\infty & +1 & \text{real edge}\\[2pt]
+\text{flight to } -\infty & -1 & \text{real edge}\\[2pt]
+\text{convergence to } c,\ \text{any } c & 0 & \text{the origin}\\[2pt]
+\text{rest on an unstable point} & \pm 0 & \text{the signed zero}\\[2pt]
+\text{oscillation on } k \text{ finite values} & (k-1)\,i & \text{pure imaginary}\\[2pt]
+\text{ordered dust (Feigenbaum)} & 1+i & \text{corner}\\[2pt]
+\text{chaotic dust} & 1-i & \text{corner}\\[2pt]
+\text{chaotic band} & -1-i & \text{corner}\\[2pt]
+\text{ordered band} & -1+i & \text{corner — forbidden on the line}\\[2pt]
+\text{pendulum between the edges} & w = (-1,\ 1) & \text{dual output}\\[2pt]
+\text{lame pendulum } (c \leftrightarrow +\infty) & (0,\ 1) & \text{dual output}
+\end{array}
+$$
+
+Two values deserve their own remarks.
+
+The **signed zero** $\pm 0$ is worth nothing and says everything: a point
+resting forever on an unstable equilibrium has, as destiny, a constant —
+hence zero — but a breath away lies a different fate entirely. The sign is
+a decoration without operative content, the only homage $S$ pays to the
+road: the road leaves an insignia, never a number.
+
+The **dual outputs** are the frontier the theory predicted in Chapter 38
+arriving inside the spectrum itself: at certain points $S[f]$ ceases to be
+a number and becomes an array. The pendulum that swings between $-\infty$
+and $+\infty$ has spectrum $w = (-1, 1)$: not a blur, but the ordered pair
+of the two destinies it forever alternates.
+
+## Chapter 41 — The Three Laws
+
+The dictation was free, yet three laws crystallized from it unprompted.
+
+**Law of oblivion.** Finite values are forgotten; edges are remembered.
+Convergence to the Dottie constant, to zero, to $x_{*}$ — all collapse to
+the single value $0$; flight to the boundary keeps its sign. The spectrum
+is blind to numbers but sees horizons.
+
+**Law of rhythm.** An array of *equal* spectral components collapses to a
+single number remembering only the cardinality: a $k$-cycle of finite
+values is $k$ zeros, and compresses to $(k-1)i$. The imaginary axis is the
+beat counter — and the law contains the law of oblivion as its case
+$k = 1$: $(1-1)i = 0$.
+
+**Law of the dual.** An oscillation between *different* spectral
+components does not collapse: it remains an array of destinies. The
+multivalue is born exactly where the components stop being
+interchangeable. Hence $w = (-1,1)$, hence $(0,1)$ — superpositions of
+destinies, the spectrum's honest refusal to average what differs.
+
+The four corners carry the two binary attributes of the infinite
+destinies, one per axis:
+
+$$
+\mathrm{Re} = \text{shape} \quad (+1 = \text{dust},\ -1 = \text{band}),
+\qquad
+\mathrm{Im} = \text{order} \quad (+i = \text{ordered},\ -i = \text{chaotic}).
+$$
+
+Three corners are inhabited. The fourth, $-1+i$ — a continuum visited in
+perfect order — is **forbidden on the line**: a classical theorem makes
+every transitive interval map chaotic. The corner is not empty for lack of
+imagination; it is empty by theorem, and it is inhabited one space away —
+on the circle, where the irrational rotation fills it exactly. The
+boundary conditions of the spectral square are written by theorems of
+impossibility.
+
+## Chapter 42 — A Gallery of Spectra
+
+We close the part by computing $S$ on the salient infinite functions of
+these notes. Each spectrum is itself a function — the first specimens of
+the new family, seen through the new instrument.
+
+**The cosine and the sine.**
+
+$$
+S[\cos] \equiv 0, \qquad S[\sin] \equiv 0.
+$$
+
+Identical spectra — although $\mathcal{A}(\cos) = \{0.739\ldots\}$ and
+$\mathcal{A}(\sin) = \{0\}$ are different, so that Chapter 4 keeps the two
+functions in different classes. The spectrum is a *coarser* equivalence
+than the destiny: it classifies by kind, not by value. $S$ cannot tell the
+Dottie constant from zero — by the law of oblivion, it refuses to.
+
+**The exponential.**
+
+$$
+S[e^{x}] \equiv +1.
+$$
+
+The first non-zero constant spectrum: every starting point flies to the
+right edge. A function spectrally indistinguishable from any other
+universal escape, however slow.
+
+**The bell on the diagonal** (Part X).
+
+$$
+S[f](x) =
+\begin{cases}
+-1 & x < x_-,\\[2pt]
+\pm 0 & x = x_- \text{ and on the scaffold of preimages of } x_+,\\[2pt]
+i & \text{elsewhere}.
+\end{cases}
+$$
+
+The first spectrum with a wall: a step function from the left edge to the
+rhythm $i$, with a countable sprinkling of signed zeros — the points that
+climb forever toward an unstable rest.
+
+**The bell on the anti-diagonal, $c = 1.2$** (Part XI).
+
+$$
+S[f] \equiv 0.
+$$
+
+Spectrally identical to the cosine — although its road is a pendulum with
+a doubly-exponential calendar and the cosine's is a brisk spiral. No
+sharper proof that $S$ ignores roads: the slowest convergence in this book
+and the most famous one wear the same spectrum.
+
+**The bell on the anti-diagonal, $c = 0.8$.**
+
+$$
+S[f](x) = -1-i \quad \text{for almost every } x,
+$$
+
+the chaotic-band corner — with, scattered densely inside the band, the
+countable skeleton of unstable cycles, points of spectrum $\pm(k-1)i$: the
+signed decoration extends naturally from unstable rest to unstable rhythm.
+Chaos, spectrally, is a corner value wearing a dust of forbidden rhythms.
+
+**The pure involution** $f(x) = -x-\delta$.
+
+$$
+S[f](x) = i \quad (x \neq -\delta/2), \qquad S[f](-\delta/2) = \pm 0.
+$$
+
+The purest rhythm function: a constant imaginary spectrum — every point a
+2-cycle — broken by a single signed zero at the pivot, the rest that
+attracts nothing.
+
+**The doubling flip** $f(x) = -2x$.
+
+$$
+S[f](x) = w = (-1,1) \quad (x \neq 0), \qquad S[f](0) = \pm 0.
+$$
+
+The first function whose spectrum is array-valued almost everywhere: every
+orbit a pendulum between the edges of the world.
+
+**The reciprocal flip** $f(x) = -1/x$.
+
+$$
+S[f](x) = i \quad (x \neq 0), \qquad S[f](0) = (0,\ 1).
+$$
+
+A constant rhythm spectrum with one exceptional point: the orbit
+$0 \to \infty \to 0$, the lame pendulum — one foot on a finite value, one
+on the edge — visible in the spectrum as a single dual output.
+
+**Collatz.** On the positive integers the destiny is the 3-cycle
+$\{1,4,2\}$, hence
+
+$$
+S[T](n) = 2i \qquad \text{for every } n \in \mathbb{N}
+$$
+
+— *if the conjecture is true*. The Collatz conjecture, in spectral form,
+is the statement that **a spectrum is constant**:
+
+$$
+S[T] \equiv 2i \quad \text{on } \mathbb{N}.
+$$
+
+On the harmonic canvas of Part V the spectrum of the real extension is the
+dichotomy made visible: $2i$ on the thin dust of slivers around the
+integers, $+1$ on almost all the rest — a two-valued function whose level
+sets are the incompressible fractal of Chapter 26.
+
+**The Feigenbaum point.** The logistic map at the accumulation of period
+doublings:
+
+$$
+S[f] \equiv 1+i \quad \text{a.e. on } [0,1],
+$$
+
+the ordered-dust corner realized — an entire interval of starting points
+all destined to the same Cantor set, visited like an odometer.
+
+**The irrational rotation** (on the circle).
+
+$$
+S[R_{\alpha}] \equiv -1+i:
+$$
+
+the forbidden corner, captured by changing the space. On the circle there
+are no edges — and indeed its spectrum never uses $\pm 1$.
+
+**The logarithm.** Chapter 9 said the logarithm collapses. The spectrum
+forces a refinement: on the real line it does not even collapse — **it
+dies**. Some iterate always lands on a negative number, where the next
+step does not exist; surviving $n$ steps requires beating a tower of
+exponentials,
+
+$$
+x > e,\quad e^{e} \approx 15.2,\quad e^{e^{e}} \approx 3.8\times 10^{6},
+\quad \ldots
+$$
+
+and no finite point beats them all. The destiny of every real orbit is a
+**domain death** — a fate the dictation never contemplated, because it is
+not a fate: the orbit has no infinite future to classify. Hence
+
+$$
+S[\log] = \text{the empty function on } \mathbb{R}
+$$
+
+— the first spectrum with no points at all. And, as with the forbidden
+corner, the rescue lives one space away: in the complex plane every
+tested orbit survives and converges to
+
+$$
+z_{*} = 0.3181\ldots + 1.3372\ldots\,i, \qquad |1/z_{*}| \approx 0.728 < 1,
+$$
+
+the complex Dottie of the logarithm. So $S[\log] \equiv 0$ on $\mathbb{C}$:
+no destiny on the line, the calmest destiny in the plane.
+
+**The tangent.** No attracting cycle can exist, by one line:
+
+$$
+|\tan'| = 1 + \tan^{2} \geq 1,
+$$
+
+so every cycle has multiplier at least one. The orbit is recurrent over
+the whole line, with unbounded excursions (measured: $|x|$ beyond $3000$
+within half a million steps): the *shape* of the destiny is the **total
+band**, edges included. But the *clock* refuses to choose. Near the origin
+$\tan x \approx x + x^{3}/3$ — a neutral rest — and the orbit spends
+almost all of its time dozing there, interrupted by sudden flights past
+every bound; the measured Lyapunov exponent drifts toward zero as the
+horizon grows. Bursts of chaos, long sleeps of order: intermittency.
+The spectrum hesitates between the two lower corners, and we write it
+with the same decoration the dictation invented for the unstable rest:
+
+$$
+S[\tan] \equiv -1 \pm i,
+$$
+
+the hesitating corner — the imaginary twin of the signed zero.
+
+**The tower** $f(x) = x^{x}$. Near its fixed point $1$,
+
+$$
+x^{x} \approx 1 + \varepsilon + \varepsilon^{2}:
+$$
+
+the quadratic term pushes right from *both* sides — the point attracts
+from the left and repels to the right. A **semi-stable** equilibrium, and
+the spectrum draws it exactly:
+
+$$
+S[x^{x}](x) =
+\begin{cases}
+0 & 0 < x < 1 \quad \text{(measured: } 0.05 \to 0.9952 \text{ in 200 steps)},\\[2pt]
+\pm 0 & x = 1,\\[2pt]
++1 & x > 1 \quad \text{(from } 1.001\text{, twenty steps move it to } 1.00102\text{ — yet escape is certain)}.
+\end{cases}
+$$
+
+The first spectrum in which the signed zero stands exactly *on the step*
+between two destinies — and its sign finally points somewhere: approached
+from below, fled from above.
+
+**The Riemann zeta.** Two real fixed points, measured:
+
+$$
+s^{*} = 1.83377\ldots,\ \ \zeta'(s^{*}) = -1.374
+\qquad\text{and}\qquad
+s_{0} = -0.29590\ldots,\ \ \zeta'(s_{0}) = -0.513.
+$$
+
+The first repels by reflection — the same character as the dome flank of
+Chapter 35 — the second attracts as a spiral. And the repelled orbits have
+nowhere ordinary to go: $\zeta$ sends the neighbourhood of $1$ to the edge
+(the pole) and the edge back to $1$ (since $\zeta(s) \to 1$ as
+$s \to \infty$). Measured from $s = 1.2$:
+
+$$
+5.59 \;\to\; 1.0235 \;\to\; 43.1 \;\to\; 1.0000\ldots \;\to\; 9.4\times 10^{12} \;\to\; \cdots
+$$
+
+— the orbit locks onto the cycle $\{1, +\infty\}$, one foot on a finite
+value, one on the edge: **the lame pendulum of the dictation, realized by
+the most famous function in mathematics**. The spectrum:
+
+$$
+S[\zeta](s) =
+\begin{cases}
+(0,\ 1) & s > 1 \text{ a.e., and on slivers deep in the negatives},\\[2pt]
+0 & \text{a.e. elsewhere } (s_{0} = -0.2959\ldots \text{, reached as a spiral}),\\[2pt]
+\pm 0 & s = s^{*} \text{ and its scaffold of preimages}.
+\end{cases}
+$$
+
+The slivers are real (measured: $-21.5 \to -370 \to 10^{495} \to$
+pendulum), thrown above $1$ by the wild sign-oscillations of $\zeta$ on
+the far negative axis. The trivial zeros, for their part, all share the
+tamest fate: $-2k \mapsto 0 \mapsto -\tfrac{1}{2} \mapsto \cdots \to s_{0}$.
+The function that guards the primes has, as a dynamical system, the
+destiny of a broken pendulum — one foot on $1$, one on infinity.
+
+The gallery teaches the lesson of the whole part: functions that analysis
+keeps far apart (the cosine and a doubly-exponentially slow pendulum; the
+exponential and any drifting escape) become identical under $S$, while
+functions that analysis writes almost identically (the bell at $c = 1.2$
+and at $c = 0.8$) land on opposite points of the spectral square. The
+spectrum redraws the map of nearness:
+
+> Two functions are spectrally close when their points meet the same
+> *kinds* of fate — not the same formulas, not the same values, not the
+> same speeds. $S$ is the first chart of the new continent drawn entirely
+> in the coordinates of destiny.
 
 ---
 
