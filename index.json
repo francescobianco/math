@@ -1,6 +1,13 @@
 {
   "documents": [
     {
+      "slug": "the-indestructible-set-collatz-at-the-level-of-whole-sets",
+      "title": "The Indestructible Set: Collatz at the Level of Whole Sets",
+      "type": "paper",
+      "created": "2026-06-13T10:00:00+00:00",
+      "updated": "2026-06-13T10:00:00+00:00"
+    },
+    {
       "slug": "nota-a-cosa-serve-la-chiave-a-tre-fasi",
       "title": "Nota: a cosa serve la chiave a tre fasi (in parole semplici)",
       "type": "notes",
