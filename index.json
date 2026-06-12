@@ -1,6 +1,27 @@
 {
   "documents": [
     {
+      "slug": "nota-a-cosa-serve-la-chiave-a-tre-fasi",
+      "title": "Nota: a cosa serve la chiave a tre fasi (in parole semplici)",
+      "type": "notes",
+      "created": "2026-06-13T00:30:00+00:00",
+      "updated": "2026-06-13T00:30:00+00:00"
+    },
+    {
+      "slug": "the-three-phase-key-watermarks-from-the-incompressible-collatz-phase",
+      "title": "The Three-Phase Key: Self-Verifying Watermarks from the Incompressible Collatz Phase",
+      "type": "paper",
+      "created": "2026-06-12T23:55:00+00:00",
+      "updated": "2026-06-12T23:55:00+00:00"
+    },
+    {
+      "slug": "from-settling-to-synchrony-expanding-skycaks-continuous-collatz",
+      "title": "From Settling to Synchrony: Expanding Skycak's Continuous Collatz",
+      "type": "paper",
+      "created": "2026-06-12T22:30:00+00:00",
+      "updated": "2026-06-12T22:30:00+00:00"
+    },
+    {
       "slug": "notes-on-the-forbidden-words-of-the-collatz-phases",
       "title": "Notes on the Forbidden Words of the Collatz Phases",
       "type": "notes",

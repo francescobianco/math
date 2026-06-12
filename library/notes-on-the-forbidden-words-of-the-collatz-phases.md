@@ -195,6 +195,30 @@ The growth ratio falls steadily below $3$: the entropy of the phase
 language is strictly below $\log 3$ and, at these scales, still
 descending. No limit claim — the ratios are not yet stable.
 
+## The Binary Companion (measured 2026-06-12)
+
+The accelerated map $T(n) = \frac{3n+1}{2} \mid \frac{n}{2}$ has its own
+phase word, $\phi_2(n) = \sigma_T(n) \bmod 2$ ($\sigma_T$ = number of
+halvings). Measured at $n < 2^{24}$ (see
+[From Settling to Synchrony](library/from-settling-to-synchrony-expanding-skycaks-continuous-collatz.md)):
+full to length $5$, then exactly **two** forbidden hexagrams —
+
+$$
+010010, \qquad 101101
+$$
+
+— which are precisely $\mathcal{F} \cap \{0,1\}^6$, and precisely the
+squares of the two binary zigzag trigrams. Complement- and reversal-closed,
+persistent quarter-to-full range. The bottom level is two forcing rules,
+$01001 \to 1$ and $10110 \to 0$ — the cheapest provable target in the whole
+program. Frontier differs from the ternary case: length $7$ is silent
+($0$ genuinely new of $8$ missing); length $8$ brings the pure alternations
+$01010101, 10101010$ (maximal zigzag run is seven); length $9$ brings $18$
+new. **Trigram-square law** (conjecture): on either clock, the phase word
+never immediately repeats a zigzag trigram. Unifying object: the joint word
+$\Phi(n) = (a \bmod 2,\ (a{+}b) \bmod 3) \in \mathbb{Z}/6$, of which both
+languages are linear shadows.
+
 ## Why the Known Laws Cannot Explain This
 
 The only proved coalescence law in the phase paper is
