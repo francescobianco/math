@@ -2,7 +2,7 @@
 title: The Elementary Theory of the Infinite Application of a Function
 type: book
 created: 2026-06-03T09:00:00+00:00
-updated: 2026-06-12T17:00:00+00:00
+updated: 2026-06-12T18:00:00+00:00
 color: #b8336a
 section_prefix: nodot
 author: F. Bianco
@@ -1220,6 +1220,38 @@ $$
 The first non-zero constant spectrum: every starting point flies to the
 right edge. A function spectrally indistinguishable from any other
 universal escape, however slow.
+
+**The halving and the doubling.** The halving collapses everything:
+
+$$
+S[x/2] \equiv 0
+$$
+
+— spectrally indistinguishable from the cosine. Its inverse, the
+doubling, repels everything from the same point, and each side flies to
+its own edge:
+
+$$
+S[2x](x) =
+\begin{cases}
+-1 & x < 0,\\[2pt]
+\pm 0 & x = 0,\\[2pt]
++1 & x > 0
+\end{cases}
+\qquad\text{— that is,}\qquad
+S[2x] = \mathrm{sgn}.
+$$
+
+The spectrum of the doubling **is the sign function**: the first spectrum
+in the gallery that mathematics had already named — and the signed zero
+lands precisely where the classical definition of $\mathrm{sgn}$ has
+always hesitated. The pair teaches two lessons. Inverting a generator
+turns its attractor into a repeller, and the spectrum answers by turning
+the constant $0$ into the two-edged step: destiny under $f$ is ancestry
+under $f^{-1}$. And against $-2x$, already in the gallery, the sign of the
+multiplier shows its spectral meaning: $2x$ assigns each side its own
+edge; $-2x$ refuses to choose and takes both at once — $w = (-1, 1)$.
+Splitting the infinities or marrying them: one minus sign.
 
 **The bell on the diagonal** (Part X).
 
