@@ -2,7 +2,7 @@
 title: The Elementary Theory of the Infinite Application of a Function
 type: book
 created: 2026-06-03T09:00:00+00:00
-updated: 2026-06-12T18:00:00+00:00
+updated: 2026-06-12T19:00:00+00:00
 color: #b8336a
 section_prefix: nodot
 author: F. Bianco
@@ -1337,6 +1337,72 @@ On the harmonic canvas of Part V the spectrum of the real extension is the
 dichotomy made visible: $2i$ on the thin dust of slivers around the
 integers, $+1$ on almost all the rest — a two-valued function whose level
 sets are the incompressible fractal of Chapter 26.
+
+**The continuous Collatz, in full.** Setting the harmonic canvas equal to
+$x$ gives the fixed-point equation as a **resonance condition**:
+
+$$
+f(x) = x \quad\Longleftrightarrow\quad \cos(\pi x) = \frac{3x+2}{5x+2}.
+$$
+
+The right side glides from $1$ down toward $3/5$; the cosine crosses that
+level twice per period — once falling, once rising — and the crossings hug
+the even integers. Measured: an infinite **picket fence** of fixed points
+at
+
+$$
+x_{*} \approx 2k \pm 0.28\ldots, \qquad
+f'(x_{*}) = -5.3,\ +8.8,\ -11.5,\ +15.2,\ \ldots
+$$
+
+all repelling, ever more violently as $k$ grows, alternating reflection
+and amplification — except one. At the origin the resonance is perfect
+($\cos 0 = 1 = \tfrac{2}{2}$) and
+
+$$
+f'(0) = \tfrac{1}{2}:
+$$
+
+**zero is the only attracting fixed point of the entire canvas**, the
+forgotten fixed point of Collatz, with exact basin $(-0.585,\ 0.150)$ —
+the interval fenced off by its two nearest pickets.
+
+And on the negative integers the canvas rides the three known negative
+cycles, all repelling, with multipliers
+
+$$
+\{-1,-2\}:\ \tfrac{3}{2}, \qquad
+\{-5,-14,-7,-20,-10\}:\ \tfrac{9}{8}, \qquad
+\text{the 18-cycle of } -17:\ \tfrac{3^{7}}{2^{11}} = \tfrac{2187}{2048}.
+$$
+
+Read those numbers aloud: the **perfect fifth**, the **whole tone**, the
+**Pythagorean apotome**. Every Collatz cycle multiplier is a ratio
+$3^{p}/2^{q}$ near $1$ — the very arithmetic that forbids the circle of
+fifths from closing — and the terminal cycle $\{1,4,2\}$ plays
+$3/2^{2} = 3/4$, the descending fourth: the only consonance of the family
+that is also attracting. The cycles of Collatz are tuned in Pythagorean
+intervals, and only the consonant one captures.
+
+The full spectrum is the most polyphonic of the gallery:
+
+$$
+S[f](x) =
+\begin{cases}
++1 & \text{a.e. on the positive axis},\\[2pt]
+-1 & \text{a.e. on the negative axis},\\[2pt]
+0 & \text{on } (-0.585,\ 0.150), \text{ the basin of the origin},\\[2pt]
+2i & \text{on the dust of slivers } B,\\[2pt]
+\pm 0 & \text{on the picket fence } 2k \pm 0.28\ldots,\\[2pt]
+\pm i,\ \pm 4i,\ \pm 17i & \text{on the negative integers (conjecturally all of them)}.
+\end{cases}
+$$
+
+Both edges, the origin, an infinite lattice of signed zeros, one stable
+rhythm and three unstable ones wearing the $\pm$ of their instability:
+nearly the whole dictated alphabet, spoken by a single function. Only the
+corners and the dual outputs are missing — Collatz oscillates everywhere
+and never hesitates.
 
 **The Feigenbaum point.** The logistic map at the accumulation of period
 doublings:
