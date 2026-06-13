@@ -1,6 +1,13 @@
 {
   "documents": [
     {
+      "slug": "what-if-fractals-dont-exist-the-mandelbrot-shadow",
+      "title": "What If Fractals Don't Exist? The Mandelbrot Set as the Shadow of an Undecidable Edge",
+      "type": "paper",
+      "created": "2026-06-13T18:30:00+00:00",
+      "updated": "2026-06-13T18:30:00+00:00"
+    },
+    {
       "slug": "the-light-cone-of-collatz-two-pairs-of-lines",
       "title": "The Light Cone of Collatz: Two Pairs of Lines and the Geometry of the Bounce",
       "type": "paper",
