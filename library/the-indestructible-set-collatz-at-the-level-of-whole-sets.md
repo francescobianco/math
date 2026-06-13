@@ -2,7 +2,7 @@
 title: "The Indestructible Set: Collatz at the Level of Whole Sets"
 type: paper
 created: 2026-06-13T10:00:00+00:00
-updated: 2026-06-13T12:30:00+00:00
+updated: 2026-06-13T13:30:00+00:00
 ---
 
 # The Indestructible Set: Collatz at the Level of Whole Sets
@@ -60,7 +60,13 @@ have density $\approx \tfrac13$ each, with witnesses at every scale), and
 identify the corrected rule: two $\exists$ make a $\forall$ when they
 **compose** — when the dynamics carries each witness onto an
 already-settled one — which is exactly the classical descent reduction by
-strong induction.
+strong induction. Finally, the **window** $[m,p]$ between two
+indestructible tails is dissected: at the first step about $m/2$ numbers
+escape below and $p/3$ escape above, and the $-1$ alters this partition by
+at most one number per step — yet under $3n+1$ the window empties
+permanently while under $3n-1$ it can hold residents forever. The fluxes
+are identical; the $-1$ digs ponds. Windows turn out to see exactly the
+no-other-cycles half of the conjecture, and to be blind to divergence.
 
 Throughout, $T$ denotes the Collatz map
 
@@ -522,7 +528,99 @@ successor $n \mapsto n+1$ would do) — ordinary induction would finish the
 proof. No such move is known. That, precisely, is where an angle of view
 in which the $\exists$ becomes a $\forall$ would have to be found.
 
-## 10. Conclusion: Perfect Bookkeeping of Roads, Total Amnesia of Destinies
+## 10. The Window Between Two Tails
+
+Take two tails at once: $S_m$ and $S_p$ with $m < p$. Both are
+indestructible — each obeys the halving law of Theorem 3 on its own. Their
+difference is the **window**
+
+$$
+I \;=\; [m, p] \;=\; S_m \setminus S_p \cup \{p\},
+$$
+
+a finite strip of the floor, and all the drama the tails refuse to show
+happens here: the window *does* empty. How it empties — and how the $-1$
+changes the answer — turns out to be exactly computable.
+
+**Proposition 9 (First-step partition).** Apply one step of $T$ to the
+window $[m, p]$. Then:
+
+* **escape downward**: exactly the even $n$ with $m \le n < 2m$ (they land
+  in $[\lceil m/2 \rceil, m)$, the band just below) — about $m/2$ numbers;
+* **escape upward**: exactly the odd $n$ with $n > (p-1)/3$ (they land in
+  $(p,\, 3p+1]$, the band just above) — about $p/3$ numbers;
+* everyone else stays inside.
+
+Under $3n-1$ the downward clause is identical (the even branch does not
+see the sign) and the upward threshold moves from $(p-1)/3$ to $(p+1)/3$:
+the two partitions differ by **at most one number**.
+
+Measured ($\textit{down}, \textit{stay}, \textit{up}$): the window
+$[100, 1000]$ gives $(50, 518, 333)$ under $3n+1$ and exactly the same
+under $3n-1$; the window $[50, 5000]$ gives $(25, 3259, 1667)$ versus
+$(25, 3260, 1666)$ — one odd number, $1667 = \lceil 5000/3 \rceil$,
+promoted from fugitive to resident by the $-1$. The flux ratio is
+up/down $\approx (p/3)/(m/2) = 2p/3m$: for a wide window the **first event
+is an explosion upward**, six-fold here ($333$ up versus $50$ down). The
+window that will eventually drain through the floor begins by hemorrhaging
+toward the ceiling.
+
+The long run, measured on $[100, 1000]$ under $3n+1$: the population
+inside decays steadily ($485$ at $k=1$, $138$ at $k=20$, $25$ at $k=80$),
+first touches zero at $k = 143$ — and then **returning travelers** from the
+band above re-cross the strip ($433$ at $k=151$, $244$ at $k=157$, down
+the slide of Section 7) until the last visitor, the value $160$, transits
+at $k = 168$. From $k = 169$ the window is empty forever. The window
+$[5, 20]$ empties permanently after step $17$.
+
+Under $3n-1$, same window $[100, 1000]$, same fluxes to within one unit at
+every step — and the story ends differently: the inside population
+stabilizes at **six, forever**. The six are no mystery:
+
+$$
+\{110,\ 122,\ 136,\ 164,\ 182,\ 272\}
+\;=\; C_{17} \cap [100, 1000],
+$$
+
+the members of the $18$-element cycle of $17$ that happen to live in the
+strip. Likewise $[5, 20]$ under $3n-1$ holds $5$–$6$ residents forever:
+the full cycle of $5$ lives inside it, and the rotating cycle of $17$
+sends a visitor ($17$ itself) around periodically. So:
+
+> The $-1$ does not change how many numbers escape, nor in which
+> direction — at most one number per step, in any window. It changes **who
+> can never escape**. The fluxes are identical; the $-1$ digs ponds in the
+> floor.
+
+This is worth promoting to a statement, because it says precisely *which
+half* of the conjecture the windows can see:
+
+**Proposition 10 (Windows see cycles, not divergence).** A window $[m, p]$
+empties permanently ($T^k(I) \cap I = \varnothing$ for all large $k$) if
+and only if no cycle of the map intersects $[m, p]$.
+
+*Proof.* If a cycle point $x \in I$ exists, then $T^{j|C|}(x) = x \in I$
+for every $j$: the window is reoccupied forever. Conversely, suppose
+$T^k(I) \cap I \neq \varnothing$ for arbitrarily large $k$. Since $I$ is
+finite, some single $n \in I$ has $T^k(n) \in I$ for infinitely many $k$;
+its orbit visits the finite set $I$ infinitely often, so some value
+$x \in I$ is visited twice — and a value revisited is a cycle point in
+$I$. With no such point, each element's orbit leaves $I$ after a final
+visit, and the maximum of finitely many final visits is the emptying time.
+$\blacksquare$
+
+Note what is *absent* from Proposition 10: divergence. A divergent orbit
+(if one exists) abandons every window on its own — an orbit that returned
+to a finite strip infinitely often would repeat a value and be a cycle.
+So "every window $[m,p]$ with $m \ge 5$ empties permanently" is exactly
+equivalent to the **no-other-cycles** half of the Collatz conjecture,
+while the no-divergence half is invisible to windows, just as it was
+invisible to Theorem 5 — a divergent escapee and a converged one leave the
+strip with identical paperwork. The windows, like every set-level
+instrument in this paper, audit the rooms and not the guests; but unlike
+the full tails, they at least notice when somebody never checks out.
+
+## 11. Conclusion: Perfect Bookkeeping of Roads, Total Amnesia of Destinies
 
 What the set-level dynamics knows, it knows exactly: $\mathbb{N}$ is a fixed
 point (Theorem 1); collisions cost a sixth and the infinite source repays
@@ -562,5 +660,7 @@ $3n+1$ (and to the $25$-element union of three cycles under $3n-1$), the
 $1/6$ collision density, the exact halving law
 $T^k(S_m) = S_{\lceil m/2^k \rceil}$ by backward search on windows for $m$
 up to $10^6$, the doors of the slide (every last odd value is an
-antechamber $(4^j-1)/3$, exhaustively for $n \le 2 \times 10^5$), and the
-$3n-1$ basin densities ($\approx 0.328 / 0.323 / 0.349$ on $[1, 10^6]$).
+antechamber $(4^j-1)/3$, exhaustively for $n \le 2 \times 10^5$), the
+$3n-1$ basin densities ($\approx 0.328 / 0.323 / 0.349$ on $[1, 10^6]$),
+and the window experiments of Section 10 (first-step partitions and
+long-run occupancy of $[100, 1000]$ and $[5, 20]$ under both maps).

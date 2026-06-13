@@ -17,7 +17,11 @@ companion paper:
   5. the 3n-1 control: identical set-level laws, different destinies
      (the finite collapse lands on three cycles instead of one), with
      basin densities ~1/3 each — witnesses at arbitrary distance are
-     not enough to make a forall.
+     not enough to make a forall;
+  6. the window [m,p] between two tails: first-step escape partition
+     (down = evens below 2m, up = odds above ~p/3; the -1 moves at most
+     one number per step) and long-run occupancy (3n+1 empties windows
+     permanently; 3n-1 leaves permanent residents = its cycle members).
 
 Usage:
     python3 library/scripts/collatz_set_dynamics.py [log2_N]
@@ -137,6 +141,39 @@ def basins_3n_minus_1(N: int) -> None:
           " numbers have a different destiny.")
 
 
+def first_step_partition(m: int, p: int) -> None:
+    print(f"\n  first-step partition of [{m}, {p}]: (down, stay, up)")
+    for name, step in (("3n+1", T), ("3n-1", T_minus)):
+        down = up = stay = 0
+        for n in range(m, p + 1):
+            x = step(n)
+            if x < m:
+                down += 1
+            elif x > p:
+                up += 1
+            else:
+                stay += 1
+        print(f"    {name}: ({down}, {stay}, {up})")
+
+
+def window_occupancy(m: int, p: int, kmax: int) -> None:
+    print(f"\n  long-run occupancy of the window [{m}, {p}], k <= {kmax}:")
+    for name, step in (("3n+1", T), ("3n-1", T_minus)):
+        A = set(range(m, p + 1))
+        last_occupied, final_inside = 0, None
+        for k in range(kmax + 1):
+            inside = {x for x in A if m <= x <= p}
+            if inside:
+                last_occupied, final_inside = k, sorted(inside)
+            A = {step(x) for x in A}
+        if last_occupied == kmax:
+            print(f"    {name}: never empties; permanent residents "
+                  f"{final_inside}")
+        else:
+            print(f"    {name}: empty forever from k = {last_occupied + 1} "
+                  f"(last visitor {final_inside} at k = {last_occupied})")
+
+
 def main() -> None:
     log2_N = int(sys.argv[1]) if len(sys.argv) > 1 else 20
     N = 2 ** log2_N
@@ -149,6 +186,10 @@ def main() -> None:
                 ms=[10, 100, 10 ** 4, 10 ** 6],
                 ks=[1, 3, 7, 12])
     slide_doors(min(N, 2 * 10 ** 5))
+    first_step_partition(100, 1000)
+    first_step_partition(50, 5000)
+    window_occupancy(100, 1000, 400)
+    window_occupancy(5, 20, 400)
 
     print("\n  control map 3n-1:")
     finite_collapse(N, T_minus, "T' (3n-1)")
