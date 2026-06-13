@@ -1,22 +1,24 @@
 ---
-title: "What If Fractals Don't Exist? The Mandelbrot Set as the Shadow of an Undecidable Edge"
+title: "What If Fractals Don't Exist? The Mandelbrot Set Between a Wild Edge and a Finite Machine"
 type: paper
 created: 2026-06-13T18:30:00+00:00
-updated: 2026-06-13T18:30:00+00:00
+updated: 2026-06-13T19:30:00+00:00
 ---
 
-# What If Fractals Don't Exist? The Mandelbrot Set as the Shadow of an Undecidable Edge
+# What If Fractals Don't Exist? The Mandelbrot Set Between a Wild Edge and a Finite Machine
 
-*A deliberately provocative study. We suspect that the lacy filaments we draw
-at the edge of the Mandelbrot set are not an approximation of a real object but
-an **artifact of quantization we cannot avoid** — a controlled hysteresis whose
-shape is set by the precision of our machines. We retrace the simple algorithm,
-measure how the boundary "breathes" with iteration depth and flips with the
-mantissa, and then land the provocation honestly: the **set** exists and is
-provably wild, but the **image** is a negotiation with an edge that finite
-computation cannot resolve. The right object to draw is not a curve but a
-**mesh of shadow zones** — a three-state map of what the machine can and cannot
-decide.*
+*A deliberately provocative essay with a serious core. The title is a goad, not
+a thesis: the Mandelbrot **set** certainly exists, and we will lean on theorems
+that prove how wild it is. The real question is narrower and sound — what is the
+relationship between the mathematical set and the **picture** a finite machine
+draws of it, given that the picture is always squeezed through a grid, a finite
+iteration depth, and a finite precision? We retrace the simple algorithm,
+measure (on the standard window) how the rendered region shrinks with iteration
+depth and flips with the mantissa, and keep three registers strictly apart —
+what is **proven**, what our **script measures**, and what is **metaphor**. The
+constructive proposal that survives is a three-state rendering: certified-out,
+certified-in, and an undecided band best drawn explicitly rather than papered
+over.*
 
 ## Abstract
 
@@ -34,28 +36,32 @@ square of parameters), a **depth cap** $N$ (we declare "bounded" anything that
 has not escaped $|z|>2$ within $N$ steps), and a **precision** (float32,
 float64, …). We measure the consequences on the standard window. The rendered
 "inside" *shrinks monotonically* as $N$ grows — $54{,}318$ black pixels at
-$N=50$, still falling to $51{,}555$ at $N=2000$, never settling: the picture is
-always an overcount, breathing inward with every extra iteration. Switching
-float32 → float64 at fixed depth flips the verdict of dozens of boundary
-pixels. And the **shadow zone** — pixels whose in/out verdict changes when you
-nudge a machine parameter — does *not* shrink as the grid refines: its share of
-the boundary band *grows*, $0.09 \to 0.17 \to 0.28$ from $300^2$ to $1200^2$.
+$N=50$, still falling to $51{,}555$ at $N=2000$, with no final value reached
+within the depths we ran: the picture is an overcount, breathing inward with
+every extra iteration. Switching float32 → float64 at fixed depth flips the
+verdict of dozens of boundary pixels. And the **shadow zone** — pixels whose
+in/out verdict changes when you nudge a machine parameter — does not shrink in
+our experiment as the grid refines: its measured share of the boundary band
+*rises*, $0.09 \to 0.17 \to 0.28$ from $300^2$ to $1200^2$ (an observed trend
+over three resolutions, not a proven limit).
 
-We then correct the provocation with the theorems. $M$ is connected
+We then bound the provocation with the theorems. $M$ is connected
 (Douady–Hubbard), and its boundary has **Hausdorff dimension $2$**
 (Shishikura) — the wildness is a theorem about the true object, no computer
-involved. So fractals *exist* as sets. Where the provocation bites is one level
-down: the boundary $\partial M$ is exactly where membership is **undecidable in
-finite time**, local connectivity of $M$ (MLC) is a famous open conjecture, and
-genuine non-computability theorems exist for related Julia sets
-(Braverman–Yampolsky). The honest conclusion is neither "the fractal is real"
-nor "the fractal is fake," but a **three-state object**: certified-out,
-certified-in, and an irreducible shadow skin the machine cannot resolve. We
-argue that the correct rendering — and the correct *epistemology* of fractals
-— is a refining **mesh** that paints that shadow explicitly rather than lying
-in crisp black and white. This is the Mandelbrot face of the same thesis as
-*The Light Cone of Collatz*: the wild thing we see is the shadow a finite
-machine casts on an edge it cannot decide.
+involved. So fractals *exist* as sets. Where the provocation has real bite is
+one level down, and stated carefully: on the boundary $\partial M$ membership
+is **not settled by the finite escape-time test** (only escapes are ever
+certified in finite time; "never escapes" is not); local connectivity of $M$
+(MLC) is a famous open conjecture; and genuine non-computability theorems exist
+for related quadratic Julia sets (Braverman–Yampolsky). The honest conclusion
+is neither "the fractal is real" nor "the fractal is fake," but a **three-state
+object**: certified-out, certified-in, and an undecided band the finite render
+must choose how to treat. We argue that the right rendering — and the right way
+to *talk* about fractals — is a refining **mesh** that paints that band
+explicitly, ideally with interval/ball arithmetic so the "certified" labels are
+rigorous, rather than a crisp black-and-white that hides the choice. This is the
+Mandelbrot face of the same picture as *The Light Cone of Collatz*: the wild
+thing we see owes part of its wildness to the finite machine that draws it.
 
 All numerical claims are reproduced by
 `library/scripts/mandelbrot_shadow_zones.py`.
@@ -79,12 +85,31 @@ we can then measure exactly how much of it survives, is:
 > lace *is* the finitude of the machine, made visible.
 
 A pure point-by-point analytic settlement is not on the table: deciding whether
-a single boundary parameter $c$ belongs to $M$ can require following an orbit
-forever. So we cannot answer the provocation pixel by pixel. We can do two
-better things. We can **measure** how much the picture depends on the machine
-(§§2–5), and we can **bound** the provocation with what is actually proven
-(§§6–7) — and the gap between those two is where the real, surprising answer
-lives (§8).
+a single boundary parameter $c$ belongs to $M$ by escape-time alone can require
+following an orbit without bound. So we cannot answer the provocation pixel by
+pixel. We can do two better things. We can **measure** how much the picture
+depends on the machine (§§2–5), and we can **bound** the provocation with what
+is actually proven (§§6–7) — and the gap between those two is where the real
+content lives (§8).
+
+### A note on register
+
+Because this is a provocative essay about a precise object, it is easy to slide
+from a metaphor into an apparent claim. To prevent that, the paper keeps three
+registers explicitly separated, and we tag which is which throughout:
+
+- **Theorem** — what is mathematically proven, with attribution (Douady–Hubbard
+  connectedness; Shishikura $\dim_H \partial M = 2$; Braverman–Yampolsky
+  non-computability of certain Julia sets). These stand independent of any
+  computation.
+- **Experiment** — what the companion script *measures* on a specific window,
+  grid, depth, and precision. These are observations over a finite range, not
+  laws; where a trend appears (e.g. the shadow share rising with resolution) it
+  is reported as a measured trend, and we do **not** claim a proven limit.
+- **Metaphor** — the narrative images ("breathes," "shadow," "the lace is the
+  machine"). These carry intuition and nothing more; no argument rests on them.
+
+Whenever the three could be confused, the sentence says which one it is.
 
 ---
 
@@ -178,17 +203,20 @@ $[-2.5, 1] \times [-1.5, 1.5]$ at a $600 \times 600$ grid and count the black
 | black pixels | $54{,}318$ | $52{,}872$ | $52{,}180$ | $51{,}768$ | $51{,}622$ | $51{,}555$ |
 | lost since previous | — | $1446$ | $692$ | $412$ | $146$ | $67$ |
 
-The rendered "set" **shrinks at every step and never stops**. Each increase of
-$N$ exposes another ring of pretenders — pixels that looked bounded only because
-the machine gave up too early — and peels them off the black body. The losses
-shrink ($1446 \to 67$) but stay positive: at $N=2000$ we are still losing
-dozens of pixels per refinement, with no sign of a final value. The boundary
-**breathes inward** with computational patience. Whatever crisp curve you think
-you saw, you saw a frame of an animation that never ends, frozen at whatever $N$
-your renderer happened to use.
+(*Experiment.*) The rendered "set" shrinks at every increase of $N$ across the
+range we ran, and has not settled by $N=2000$. Each increase exposes another
+ring of pretenders — pixels that looked bounded only because the machine gave up
+too early — and peels them off the black body. The per-step losses shrink
+($1446 \to 67$) but remain positive: at $N=2000$ we are still losing dozens of
+pixels per refinement. We do not claim the count never converges — monotone
+bounded sequences do converge, and on the true interior it converges to the
+genuine area; the measured fact is only that *within the depths we tested it is
+still visibly moving.* (*Metaphor.*) The boundary "breathes inward" with
+computational patience: the crisp curve you remember was a single frame, frozen
+at whatever $N$ your renderer happened to use.
 
-This is the first concrete sense in which the picture is machine-made: its very
-*area* is a function of $N$, not a property of $M$.
+This is the first concrete sense in which the rendered area is machine-made: at
+finite $N$ it is an overcount that depends on $N$, not yet a property of $M$.
 
 ---
 
@@ -201,15 +229,18 @@ much larger fraction of the boundary band. These are not random pixels
 scattered over the plane; they sit in a thin seam along $\partial M$, exactly
 where the script's third experiment localizes the shadow.
 
-Seventy-two pixels sounds small until you say what it means: *there exist
-parameters whose membership in the picture is decided by the $24$th versus the
-$53$rd bit of the mantissa.* For those parameters, "is it in the Mandelbrot
-set?" has the answer "depends which floating-point type you compiled with."
-That is not approximation error in the usual sense — a slightly wrong position
-of a real edge. It is the edge itself being *constituted* by the precision. The
-provocation's word for this was **hysteresis**, and it is apt: like a magnet
-that remembers its history, the rendered boundary remembers the machine that
-drew it.
+Seventy-two pixels sounds small until you say what it means: *there exist grid
+parameters whose classification by the renderer is decided by the $24$th versus
+the $53$rd bit of the mantissa.* For those pixels, "does the program call it
+inside?" has the answer "depends which floating-point type you compiled with."
+Note the careful phrasing: this is a statement about the **render's verdict**,
+not about true membership in $M$ — the true $c$ either is or is not in $M$,
+independent of arithmetic; what flips is the machine's report. That report is
+still what every published image *is*, so the dependence is real where it
+matters. (*Metaphor, the provocation's word.*) One might call this a
+**hysteresis** — like a magnet that remembers its history, the rendered boundary
+remembers the machine that drew it — but the literal content is just the $72$
+measured flips.
 
 ---
 
@@ -223,8 +254,10 @@ mirage. Two theorems, proved with no computer anywhere in them:
   complement is conformally a disk. The body is one piece, rigorously.
 - **The boundary has Hausdorff dimension $2$ (Shishikura, 1991).**
   $\dim_H \partial M = 2$ — the maximum possible in the plane. The boundary is
-  not a thin curve that we are failing to resolve; it is genuinely, provably,
-  *area-filling in its complexity.*
+  not a thin curve we are merely failing to resolve; its complexity is genuinely
+  $2$-dimensional. (One thing this does *not* settle: whether $\partial M$ has
+  positive Lebesgue *area* is a separate, still-open question — dimension $2$ is
+  weaker than positive area. We claim only the dimension.)
 
 Shishikura's theorem is the hinge of this paper. It says the wildness we see is
 **real**, a property of the true set, independent of every machine. The lace is
@@ -242,69 +275,83 @@ quantization are **the same fact** seen from two sides. The set is real
 
 ---
 
-## 7. Where the provocation is actually true: the undecidable edge
+## 7. Where the provocation has real bite: the edge as a decision problem
 
-So the body is real and the wildness is real. Is anything left of "fractals
-don't exist"? Yes — and it is the sharp part. It survives not as a statement
-about the *set* but about the *decision procedure* at its edge.
+So the body is real and the wildness is real. Is anything left of the goad in
+the title? Yes — but it must be stated with care, because the strong version
+("membership is undecidable") would be false, and the careful version is what is
+actually true.
 
-**Undecidability in finite time.** For $c$ in the interior of $M$ the orbit is
-trapped near an attracting cycle and you can certify "inside" in finite time
-(once you have located the cycle). For $c$ outside, the orbit escapes and you
-certify "outside" the moment $|z|>2$. But for $c \in \partial M$ exactly, the
-orbit neither escapes nor settles — it lives on the Julia set's knife-edge, and
-**no finite computation can return a verdict.** The boundary is precisely the
-locus of non-termination. A renderer must, by construction, *guess* there.
+**What the escape-time test can and cannot settle.** For $c$ outside $M$ the
+orbit crosses $|z|>2$ at some finite step, and the renderer certifies "outside"
+the moment it does. For $c$ in a hyperbolic interior component the orbit is
+attracted to a cycle and one can certify "inside" in finite time *once the cycle
+is located*. But the plain escape-time loop — the one everybody runs — never
+certifies "inside": it only ever runs out of patience. For $c$ on $\partial M$
+the orbit neither escapes nor settles to an attracting cycle, so the escape-time
+test **returns no verdict at any finite $N$**. This is a statement about *that
+algorithm*, not a claim that membership is logically undecidable in the
+Turing sense; $M$ as a whole is widely expected to be computable in the sense of
+computable analysis (it would follow from MLC). The precise, defensible claim
+is: *the finite escape-time procedure decides the exterior and the hyperbolic
+interior, and is silent on the boundary, where it substitutes "hasn't escaped
+yet" for an answer.*
 
 **Local connectivity is open (MLC).** Whether $M$ is locally connected — whether
-the boundary behaves "tamely" enough that the filaments connect up the way the
-pictures suggest — is the **central open conjecture** of the field. If MLC
-holds, hyperbolic parameters are dense and the picture is, in a precise sense,
-"what you think it is." If it fails, the edge hides behavior no finite zoom has
-shown us. We do not know. The thing the pictures most strongly assert — that
-the lace is a connected, locally-tame curtain — is *unproven*.
+the boundary behaves tamely enough that the filaments connect up the way the
+pictures suggest — is a **major open conjecture** (it would imply density of
+hyperbolicity for the quadratic family). If MLC holds, the picture is, in a
+precise sense, "what you think it is." If it fails, the edge hides behavior no
+finite zoom has shown us. We do not know. The thing the pictures most strongly
+assert — that the lace is a connected, locally-tame curtain — is *unproven*.
 
 **Genuine non-computability nearby.** This is not idle worry. Braverman and
 Yampolsky proved that there exist **quadratic Julia sets that are not
-computable**: no algorithm, at any precision, can decide them to guaranteed
-accuracy. The Julia sets are the per-$c$ companions of the Mandelbrot picture,
-and the result shows that "draw the filled dynamics of $z^2+c$" can be, for
-some parameters, a *formally uncomputable task*. The computability of $M$
-itself is tied to MLC and the hyperbolicity conjecture and is not the trivial
-"yes" the easy rendering suggests.
+computable**: no algorithm computes them to guaranteed accuracy. The Julia sets
+are the per-$c$ companions of the Mandelbrot picture, so "draw the filled
+dynamics of $z^2+c$" is, for some parameters, a *formally uncomputable task*.
+This is a theorem about Julia sets, not directly about $M$ — the computability
+of $M$ itself is a separate, subtler question tied to MLC — but it shows the
+neighbourhood of the problem genuinely contains non-computable objects, so the
+worry is not rhetorical.
 
-Put together: the **edge of the Mandelbrot set is where membership stops being
-a finite question.** The provocation, properly aimed, is true of the boundary
-*as a decision problem*: there is a precise sense in which what lives there
-cannot be resolved by any machine, and our renders cope by quietly substituting
-"hasn't escaped yet at this precision" for "is in the set." The lace is the
-record of that substitution.
+Put together, carefully: the **edge of the Mandelbrot picture is where the
+standard finite procedure stops giving answers**, where a major tameness
+conjecture is open, and where provably non-computable cousins live next door.
+That is the sound residue of the provocation — not "the set is undecidable,"
+but "the *edge* is exactly where finite rendering must guess, and where the
+mathematics declines to promise it guessed right."
 
 ---
 
 ## 8. The honest object: a mesh of shadow zones
 
-The two halves now fit. The set is real (§6); the edge is undecidable and our
-arithmetic is finite (§§3–5, 7). The correct response is not to draw a crisp
-black-and-white lie, nor to despair, but to draw **what the machine actually
-knows** — a three-state map:
+The two halves now fit. The set is real (§6); on the boundary the finite
+escape-time procedure gives no answer and our arithmetic is finite (§§3–5, 7).
+The constructive response — and this is the part of the paper closest to a usable
+technique — is not to draw a crisp black-and-white that hides the guess, but to
+draw **what the machine actually knows** — a three-state map:
 
-- **OUT** — certified: the orbit has escaped (rigorously, once $|z|>2$).
-- **IN** — certified: the cell provably contains an attracting cycle / lies in a
-  known hyperbolic component (certifiable in finite time).
-- **SHADOW** — undecided at this budget: the machine cannot yet tell.
+- **OUT** — certifiable: the orbit has escaped (rigorously, once $|z|>2$; with
+  interval arithmetic, once the whole cell escapes).
+- **IN** — certifiable: the cell provably lies in a known hyperbolic component
+  (an attracting cycle can be exhibited in finite time).
+- **SHADOW** — undecided at this budget: neither certificate is in hand.
 
-Operationally we define the shadow as the set of cells whose verdict **flips
-under a change of machine parameter** — raise the depth cap, or change the
-precision, and watch who changes their mind. Those are exactly the parameters
-the render is guessing about. The figure paints them red.
+In the script we use a *sampled* proxy for the shadow — cells whose verdict
+**flips under a change of machine parameter** (raise the depth cap, or change
+the precision). That is a cheap stand-in, not a rigorous certificate; the
+rigorous version replaces point sampling with interval/ball arithmetic, where
+OUT and IN become genuine proofs and SHADOW is "no proof either way yet." The
+figure below paints the sampled shadow red.
 
-![The Mandelbrot set as a three-state object on the standard window. Near-white is the certified-ish interior, dark blue-black is the certified exterior, and the red skin is the SHADOW zone: pixels whose in/out verdict flips when the iteration cap or the floating-point precision is changed. The shadow is not scattered noise — it is a coherent membrane clinging to the boundary, the visible locus of what the machine cannot decide.](library/images/mandelbrot-shadow-zones.png)
+![The Mandelbrot set as a three-state picture on the standard window. Near-white is the (sampled) interior, dark blue-black is the certified exterior, and the red skin is the SHADOW: pixels whose in/out verdict flips when the iteration cap or the floating-point precision is changed. Measured, the red is not scattered noise but a coherent band clinging to the boundary — the locus where this render's verdict is parameter-dependent. The interior/shadow split here is sampled, not interval-rigorous; see the text.](library/images/mandelbrot-shadow-zones.png)
 
-The striking measurement is what the shadow does as you **refine the grid**.
-Naively, finer pixels should resolve more, so the undecided fraction should
-fall. It does the opposite. Taking the shadow's share of the boundary band
-(so the trivial interior and exterior do not dilute it):
+(*Experiment.*) The interesting measurement is what the sampled shadow does as
+you **refine the grid**. Naively, finer pixels should resolve more, so the
+undecided fraction should fall. Over the three resolutions we ran it does the
+opposite. Taking the shadow's share of the boundary band (so the trivial
+interior and exterior do not dilute it):
 
 | grid | shadow pixels | boundary-band pixels | shadow / boundary |
 |---|---:|---:|---:|
@@ -312,13 +359,17 @@ fall. It does the opposite. Taking the shadow's share of the boundary band
 | $600^2$ | $670$ | $3901$ | $0.17$ |
 | $1200^2$ | $2697$ | $9485$ | $0.28$ |
 
-The undecided skin's share of the boundary **grows** as we look closer:
-$9\% \to 17\% \to 28\%$. Refinement does not dissolve the shadow; it *reveals
-more of it*, exactly as a dimension-$2$ boundary (Shishikura) must — the finer
-the mesh, the more boundary there is to be undecided about. The shadow is not a
-transient artifact to be polished away with a better GPU. It is a **stable
-feature of the honest picture**, and it converges (in share) not to $0$ but to
-the genuine, theorem-backed wildness of the edge.
+The undecided skin's share of the boundary band *rises* across these three
+samples, $9\% \to 17\% \to 28\%$: refining the grid revealed *more* undecided
+boundary, not less. We state this as an observation, not a law — three points
+do not establish a limit, and the trend surely depends on the fixed depth and
+precision used to define the proxy. What we will say is the weaker, defensible
+thing: the measurement gives **no sign** that the undecided band is a transient
+that finer pixels dissolve, and that is consistent with — though it does not
+prove — the theorem that $\partial M$ has dimension $2$ (Shishikura), under
+which there is always more boundary to resolve at finer scales. The honest
+reading is that the shadow band behaves like a feature of the picture, not like
+noise to be polished away; whether its share has a positive limit is left open.
 
 This is the constructive proposal the provocation leads to. Replace the
 fictional crisp curve with a **refining mesh of shadow zones**: a quadtree that
@@ -350,37 +401,41 @@ phenomenon with the roles vivid in the other direction:
 | the source of the jaggedness | quantization onto the integer lattice | quantization onto grid + depth + mantissa |
 | the honest verification | analytic, not floating-point iteration | three-state mesh, not crisp black/white |
 
-In both, a finite machine meets an edge it cannot resolve and produces a
-**controlled hysteresis** that we then mistake for the object. The discipline is
-the same: separate the provable smooth body from the quantization skin, refuse
-to iterate non-contracting / undecidable dynamics in floating point and call
-the result truth, and render the uncertainty explicitly. The fractal and the
-Collatz crest are two shadows of one sun.
+In both, a finite machine meets an edge it cannot resolve with its standard
+finite procedure, and the part of what we see that comes from the machine gets
+mistaken for the object. The discipline is the same: separate the provable
+smooth body from the quantization skin, refuse to iterate quantization-sensitive
+dynamics in floating point and call the result truth, and render the uncertainty
+explicitly. (*Metaphor.*) The fractal and the Collatz crest are two shadows of
+one sun — a line to remember the idea by, not to prove anything with.
 
 ---
 
 ## 10. Conclusion
 
-Do fractals exist? The honest answer is a careful *yes, but not the one you
-drew.* The Mandelbrot set exists, is connected, and has a boundary of the
-maximal dimension $2$ — its wildness is a theorem, not a rendering bug. And yet
-**no image of it is the set**: every render is a three-parameter approximation
-$M_N^{(p)}$ whose area breathes with the depth cap (still moving at $N=2000$),
-whose boundary pixels are decided by the mantissa ($72$ flips between float32
-and float64), and whose undecided shadow does not shrink but *grows* as a share
-of the boundary under refinement ($9\% \to 28\%$). The lace is neither pure
-object nor pure artifact; it is the **negotiation** between a provably wild edge
-and an unavoidably finite machine.
+Do fractals exist? The honest answer is a careful *yes — but the picture is not
+the set.* (*Theorem.*) The Mandelbrot set exists, is connected, and has a
+boundary of the maximal dimension $2$: its wildness is proven, not a rendering
+bug. (*Experiment.*) And yet no image of it is the set: every render is a
+three-parameter object $M_N^{(p)}$ whose area shrinks with the depth cap
+(still moving at $N=2000$ in our runs), whose boundary pixels can be decided by
+the mantissa ($72$ flips between float32 and float64), and whose sampled
+undecided band did not shrink but rose as a share of the boundary across the
+three resolutions we tried ($9\% \to 28\%$ — a measured trend, not a limit).
+The lace is neither pure object nor pure artifact; it is the **negotiation**
+between a provably wild edge and an unavoidably finite machine.
 
-The provocation "fractals don't exist" is therefore false about the set and
-true about the *picture*: what we have been calling the fractal is, at its edge,
-the shadow a finite computation casts on a region where membership stops being a
-finite question. The remedy is not more pixels but more honesty: draw the
-certified land, the certified sea, and — in red — the shadow tide between them,
-refining the mesh into the undecidable rather than pretending to have crossed
-it. The fractal we can draw truthfully is a map of our own resolution. The one
-underneath, real and dimension-$2$ and possibly not even locally connected,
-keeps its own counsel just past the last bit of the mantissa.
+The goad in the title resolves like this: "fractals don't exist" is false about
+the set and only *half* true about the picture — what we call the fractal is, at
+its edge, partly the record of a finite computation guessing where its standard
+procedure goes silent. The remedy is not more pixels but more honesty: draw the
+certified land, the certified sea, and — in a third colour — the band between
+them, refining the mesh into the uncertain rather than pretending to have
+crossed it, and with interval arithmetic so the two certified colours are
+proofs. (*Metaphor, to close.*) The fractal we can draw truthfully is a map of
+our own resolution; the one underneath, real and dimension-$2$ and perhaps not
+even locally connected, keeps its own counsel just past the last bit of the
+mantissa.
 
 ---
 
@@ -400,7 +455,10 @@ shadow-zone fraction — pixels whose in/out verdict changes under a change of
 depth or precision — relative to the boundary band, across grids $300^2$,
 $600^2$, $1200^2$ (share growing $0.09 \to 0.17 \to 0.28$). It also renders the
 three-state figure `library/images/mandelbrot-shadow-zones.png` (out / in /
-shadow). The "certified" labels here are sampled, not interval-rigorous; a
-fully certified mesh would replace point sampling with interval / ball
-arithmetic, which only sharpens the same conclusion: the shadow band is a
-stable, theorem-backed feature, not a transient to be polished away.
+shadow). The reported share rise $0.09 \to 0.17 \to 0.28$ is a measured trend
+over three resolutions, not a proven limit. The "certified" labels here are
+sampled, not interval-rigorous; a fully certified mesh would replace point
+sampling with interval / ball arithmetic, turning the OUT and IN colours into
+genuine proofs. The measurements give no sign that the undecided band is a
+transient that finer pixels dissolve, which is consistent with — but does not by
+itself prove — Shishikura's $\dim_H \partial M = 2$.

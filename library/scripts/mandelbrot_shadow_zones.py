@@ -13,7 +13,8 @@ quantizations —
   * PRECISION: float32 vs float64 vs ... arithmetic.
 
 This script measures how much the rendered set depends on those choices,
-near the boundary where the dynamics is undecidable in finite time:
+near the boundary where the finite escape-time test gives no verdict
+(it only ever certifies escapes, never "never escapes"):
 
   1. black_breath()   : |black pixels| shrinks as the depth cap N grows --
                         the rendered set is never the true set, it only
@@ -22,10 +23,13 @@ near the boundary where the dynamics is undecidable in finite time:
                         float32 and float64 at the same depth -- the boundary
                         you see depends on the mantissa.
   3. shadow_zone()    : the SHADOW = pixels whose verdict flips when you change
-                        a machine parameter (depth or precision). This is the
-                        operational "undecided" zone. Its fraction is reported
-                        versus grid resolution; it concentrates on the boundary
-                        and does not vanish (cf. Shishikura: dim_H(dM) = 2).
+                        a machine parameter (depth or precision). A cheap SAMPLED
+                        proxy for the "undecided" zone (a rigorous version needs
+                        interval/ball arithmetic). Its share of the boundary band
+                        is reported versus grid resolution: over the three
+                        resolutions run it rises rather than falls -- a measured
+                        trend, not a proven limit; consistent with, but not a
+                        proof of, Shishikura's dim_H(dM) = 2.
 
 It also renders images/mandelbrot-shadow-zones.png: the set with the shadow
 skin painted red -- an honest three-state picture (out / in / undecided).
@@ -119,9 +123,10 @@ def shadow_zone():
         print(f"   {res:>4}x{res:<4}:  shadow={n_shadow:>6}  "
               f"in={n_in:>7}  boundary-band={n_boundary:>6}  "
               f"shadow/boundary={n_shadow / max(n_boundary,1):.2f}")
-    print("   -> the undecided skin tracks the boundary and persists as the")
-    print("      grid refines: the wildness is real (dim_H dM = 2), and every")
-    print("      finite render must choose what to do with an undecidable edge.")
+    print("   -> over these three resolutions the undecided share RISES, not")
+    print("      falls (measured trend, not a proven limit); consistent with")
+    print("      dim_H dM = 2. Either way, a finite render must choose what to")
+    print("      do with the band its escape-time test leaves unanswered.")
     print()
 
 
