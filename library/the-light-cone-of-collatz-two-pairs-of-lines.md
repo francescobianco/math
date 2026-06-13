@@ -2,7 +2,7 @@
 title: "The Light Cone of Collatz: Two Pairs of Lines and the Geometry of the Bounce"
 type: paper
 created: 2026-06-13T15:00:00+00:00
-updated: 2026-06-13T15:00:00+00:00
+updated: 2026-06-13T16:30:00+00:00
 ---
 
 # The Light Cone of Collatz: Two Pairs of Lines and the Geometry of the Bounce
@@ -35,16 +35,28 @@ the bottom: this is the geometric face of convergence, and it is the same
 "asymptotic shadow that survives iteration" studied in *The Elementary Theory
 of the Infinite Application of a Function*.
 
-Then we mirror it. The $3x-1$ map has the **same cone up to a reflection
-through the origin** — vertex $V' = \left(\tfrac25, \tfrac15\right)$, the same
-diagonal inside, the same $\tfrac34$ drift (measured $e^{-0.2876}$) — and yet
-it has *three* terminal cycles, $\{1,2\}$, $\{5,7,10,14,20\}$, and an
-$18$-element cycle, instead of one. The cone confines and contracts
-identically in both worlds, so it cannot, by itself, distinguish one drain
-from three. This is the same wall met from a different side in *The
-Indestructible Set*: the geometry is real, the proof it seems to offer is not.
-The cone explains why every orbit is *trapped and shrinking*; it is silent on
-*which* drain at the bottom of the funnel catches it.
+Then we mirror it — and find the one thing the mirror does *not* preserve. The
+$3x-1$ map has the cone reflected through the origin: vertex
+$V' = \left(\tfrac25, \tfrac15\right)$, the same diagonal inside, the same
+$\tfrac34$ drift (measured $e^{-0.2876}$). Confinement and contraction are
+identical. But the reflection through the origin fixes the diagonal *as a set*
+while **swapping its two sides**, and the vertex sits on opposite sides in the
+two worlds: the Collatz vertex lies **above** the bisector
+($g(V) = \tfrac15 > 0$), the $3x-1$ vertex **below** it ($g(V') = -\tfrac15$).
+In the language of *The Elementary Theory of the Infinite Application of a
+Function*, where the displacement $g(x) = f(x) - x$ and its sign are *the*
+fundamental difference, the throat of the Collatz cone sits on the **trapping
+(dome) side** of equilibrium, the throat of the $3x-1$ cone on the **escaping
+side** — exactly the distinction the bell-on-the-diagonal examples make
+visible. And the destinies split accordingly: Collatz has the single cycle
+$\{1,2,4\}$; $3x-1$ has *three*. The discriminant
+$\operatorname{sign} g(V_b) = \operatorname{sign}(b)$ is the lone cone-level
+quantity that is **odd** under the mirror, and it is the locus where any proof
+must act. We are honest that "throat above $\Rightarrow$ a single cycle" is not
+here turned into a theorem — that step is the conjecture itself — but we
+correct the over-pessimism of the set-level picture in *The Indestructible
+Set*: the cone is *not* blind to the difference between one drain and three;
+the difference is which side of the bisector the funnel narrows onto.
 
 All numerical claims are reproduced by
 `library/scripts/collatz_light_cone.py`.
@@ -129,7 +141,7 @@ line* toward the vertex.
 
 The figure shows the two cones with a sample orbit threaded through each.
 
-![The Collatz light cone (left, $3x+1$) and its mirror, the $3x-1$ cone (right). The odd edge $y=3x+1$ (slope 3) and the even edge $y=x/2$ (slope 1/2) meet at the vertex $V$; the dashed diagonal $y=x$ runs inside the shaded wedge. The orbit from 7 bounces off the edges, drifting down the bisector toward the vertex.](library/images/collatz-light-cone.png)
+![The Collatz light cone (left, $3x+1$) and its mirror, the $3x-1$ cone (right). The odd edge $y=3x+1$ (slope 3) and the even edge $y=x/2$ (slope 1/2) meet at the vertex $V$; the dashed diagonal $y=x$ runs inside the shaded wedge. The orbit from 7 bounces off the edges, drifting down the bisector toward the vertex. The zoom insets show the decisive asymmetry the mirror cannot hide: the Collatz vertex pokes **above** the bisector, the $3x-1$ vertex sits **below** it.](library/images/collatz-light-cone.png)
 
 The black path is not a cobweb in the usual sense. Each point $(x_n, x_{n+1})$
 sits on an edge; the segment to the next point $(x_{n+1}, x_{n+2})$ carries the
@@ -191,7 +203,9 @@ four places, and, tellingly, **the same value for both maps**. A funnel that
 both confines (Proposition 2) and contracts (Theorem 3) is a funnel whose ball
 rolls to the bottom: this is the geometric statement of convergence. It is a
 statement about the *typical* orbit, in the sense of an average over residues —
-which is exactly where its strength ends, and §7 makes that explicit.
+which is exactly where its strength ends, and §8 makes that explicit. Note too
+that the same value falls out for *both* maps: contraction is reflection-even,
+and so cannot, by itself, separate them. The feature that does is §7.
 
 ---
 
@@ -235,42 +249,89 @@ point on the bisector that the contracting bounce can hold: below it the cone
 has already pinched past the smallest positive integer.
 
 This is the honest content of the slogan "$1$ is inside the cone." It is true,
-and it is suggestive, but — as the next section shows — it is not
-discriminating, because $1$ is inside the $3x-1$ cone too.
+and suggestive — but $1$ is inside the $3x-1$ cone too, so containment is not
+the discriminant. The discriminant is one level finer, and it is the subject of
+the next section: not *whether* the throat is in the cone, but *which side of
+the bisector the throat is on*.
 
 ---
 
-## 7. The mirror cone: the honest obstruction
+## 7. The decisive asymmetry: which side of the bisector the throat is on
 
 Set $b = -1$. The vertex flips to $V' = \left(\tfrac25, \tfrac15\right)$, the
-exact reflection of $V$ through the origin. The even edge is unchanged; the odd
-edge $y = 3x - 1$ is the slope-$3$ line through the new vertex. The diagonal
-still runs inside the wedge (Theorem 1 holds for both signs). The drift is
-still $\log\tfrac34$ (Theorem 3 returned $-0.2876$). **The two cones are mirror
-images, and every structural property we have proved holds identically for
-both.**
+reflection of $V$ through the origin. The even edge is unchanged, the diagonal
+still runs inside the wedge, the drift is still $\log\tfrac34$. Confinement and
+contraction are reproduced exactly. So far the two cones look like mirror
+images with nothing to choose between them — and that is where an earlier,
+over-pessimistic reading (echoed in *The Indestructible Set*) stops: "identical
+laws, different cycle counts, the geometry cannot tell them apart."
 
-And yet the destinies differ completely. The $3x+1$ map has the single
-positive cycle $\{1,2,4\}$. The $3x-1$ map has **three**:
+It can. The reflection through the origin, $(x,y) \mapsto (-x,-y)$, fixes the
+diagonal $y=x$ **as a set** but **swaps its two sides**: if $y>x$ then
+$-y<-x$, so a point above the bisector maps to a point below it. The one cone
+quantity that measures *which side of the bisector* a point lies on is the
+displacement of *The Elementary Theory of the Infinite Application of a
+Function*,
 
 $$
-\{1,2\}, \qquad \{5,7,10,14,20\}, \qquad \{17,25,34,37,41,50,55,61,68,74,82,91,110,122,136,164,182,272\}.
+g(x,y) = y - x \quad\text{(the value of } f(x)-x\text{ read off the graph),}
 $$
 
-The first two are short; the third has eighteen members. Three drains at the
-bottom of a funnel that is geometrically indistinguishable, edge for edge,
-drift for drift, from the funnel with one drain.
+whose sign is, in that book's words, "the fundamental difference" — it "tells
+us whether the orbit is pushed up or down at each step." Evaluate it at the
+vertex:
 
-**This is the wall.** A confinement-plus-contraction argument concludes "the
-ball reaches *a* bottom" — and that is *true* for $3x-1$ as well; every $3x-1$
-orbit does reach one of its three cycles. What the cone cannot deliver is
-*uniqueness of the bottom*. The geometry that traps and shrinks the orbit is
-symmetric under the reflection $b \mapsto -b$, while the cycle count is not, so
-no property invariant under that reflection — and every property in §§2–5 is —
-can separate one cycle from three. The same obstruction appears in *The
-Indestructible Set* from the set-theoretic side: the $3n-1$ map "satisfies
-identical set-level laws while having three cycles instead of one." Here it is
-the identical *cone-level* laws. Two routes, one wall.
+$$
+g(V_b) \;=\; -\tfrac{b}{5} - \left(-\tfrac{2b}{5}\right) \;=\; \frac{b}{5},
+\qquad
+\operatorname{sign} g(V_b) = \operatorname{sign}(b).
+$$
+
+**Theorem 4 (the throat is reflection-odd).** *The displacement at the vertex
+is $g(V_b) = b/5$. Hence the Collatz throat ($b=+1$) lies strictly **above**
+the bisector and the $3x-1$ throat ($b=-1$) strictly **below** it, and this
+single bit is the unique cone-level quantity that is **odd** under the mirror
+$b \mapsto -b$. Every property in §§2–4 — vertex location up to sign,
+containment of the diagonal, the $\tfrac34$ drift — is reflection-**even** and
+therefore blind to the difference; the side of the bisector is not.*
+
+This is exactly the structure the book's **bell on the diagonal** is built to
+display. There a Gaussian sits below the diagonal except for the *dome* that
+pierces above it; the dome is the **trap** — "a point pushed right whenever it
+stands on the dome, pulled left whenever it stands beyond it" — and the orbit's
+infinite application locks into a small bounded oscillation *on the dome*, while
+points on the wrong side "march away forever" to $-\infty$. Above the diagonal
+is the side of capture; below is the side of escape.
+
+Read the two throats against that template:
+
+- **$3x+1$, throat above ($g(V)=+\tfrac15$):** the narrow end of the funnel
+  sits on the **dome / trapping side**. The contracting bounce, funneled down,
+  is captured into a single bounded oscillation at the throat — the lattice's
+  smallest available cycle, $1 \to 4 \to 2 \to 1$. **One drain.**
+- **$3x-1$, throat below ($g(V')=-\tfrac15$):** the narrow end sits on the
+  **escaping side**. There is no single trapping point at the throat to capture
+  the bounce; the descent fragments into several terminal pools — and indeed the
+  $3x-1$ map has **three** positive cycles,
+
+$$
+\{1,2\}, \quad \{5,7,10,14,20\}, \quad \{17,25,34,37,41,50,55,61,68,74,82,91,110,122,136,164,182,272\}.
+$$
+
+So the mirror image is not a wall after all — it is the *signpost*. The cone
+does distinguish the one-drain world from the three-drain world, and it does so
+through precisely the quantity the infinite-application theory singles out as
+fundamental: the sign of $g$ at the vertex.
+
+**What remains open.** Theorem 4 establishes the discriminant and its
+interpretation; it does **not** prove the implication "throat above the
+bisector $\Rightarrow$ exactly one positive cycle." That implication, made
+rigorous and uniform over all integers, *is* the Collatz conjecture. What this
+section does is locate it: the conjecture lives in the sign of $g(V_b)$, the one
+feature the mirror symmetry breaks, and a proof must be an argument that this
+sign forces a single trap — sensitive to the sign of $b$, because the answer
+is. That is a sharper task than "find denser witnesses," and a more hopeful one
+than "the geometry is blind."
 
 ---
 
@@ -287,25 +348,33 @@ The cone is an honest instrument. It sees, exactly:
 - **A single attractor for the infinite application** in the sense of §5: a
   narrowing throat that the integers can only fill with a small terminal cycle.
 
+And it sees one thing more than a first reading credits it with:
+
+- **Which side of equilibrium the funnel narrows onto** (Thm. 4): the sign of
+  $g$ at the vertex, $\operatorname{sign} g(V_b) = \operatorname{sign}(b)$ — the
+  Collatz throat above the bisector (the trapping/dome side), the $3x-1$ throat
+  below it (the escaping side). This is the one cone quantity odd under the
+  mirror, and it tracks the split between one drain and three.
+
 It does not see:
 
-- **Which** terminal cycle a given orbit reaches — the discrimination that
-  separates $3x+1$ from $3x-1$ is invisible to every cone property, because
-  the cones are mirror images.
+- **That "throat above" forces a single cycle.** Theorem 4 names the
+  discriminant; it does not prove the implication. That implication, uniform
+  over all integers, *is* the conjecture.
 - **Whether the contraction is universal** rather than merely average. Theorem
   3 is an expectation over residues; a single orbit can climb for a long time
   (the upper edge has slope $3$), and "on average downhill" is not "always
   arrives." Turning the average drift into a guarantee for *every* starting
-  value is precisely the conjecture, and the cone leaves it open.
+  value is, again, the conjecture.
 
-The path forward is the one named at the close of *The Indestructible Set*: not
-a stronger confinement, however tight, but bounce-to-bounce composition that
-the symmetric geometry cannot capture — an argument sensitive to the sign of
-$b$, because the answer is.
+The path forward is no longer "the geometry is blind, find denser witnesses."
+It is sharper: prove that a throat on the **dome side** of the bisector admits a
+single trap. The argument must be sensitive to the sign of $b$ — because the
+answer is, and now we know exactly where in the geometry that sign lives.
 
 ---
 
-## 9. Conclusion: a true funnel, an incomplete proof
+## 9. Conclusion: a true funnel, and the seam where the proof must enter
 
 Two lines, one vertex, one wedge. The Collatz map, read one step at a time,
 is a ball bouncing in a funnel that confines it (it never leaves the cone) and
@@ -314,12 +383,22 @@ throat). That funnel is real, and it is the geometric body of the same
 "asymptotic shadow" the infinite-application theory studies abstractly: the
 collapse of an iterated map onto the residue it cannot shed.
 
-But the $3x-1$ map bounces in the mirror of that funnel — same confinement,
-same drift, same bisector — and drains into three pools, not one. So the cone,
-for all its honesty, stops exactly where every honest picture of Collatz stops:
-it proves the ball goes *down*, and is silent on *which* drain it finds. The
-funnel is genuine; the proof it gestures at is not; and between the two the
-conjecture sits, intact, waiting for an argument that knows the sign of $b$.
+The $3x-1$ map bounces in the mirror of that funnel — same confinement, same
+drift — and the mirror tempts one to conclude the geometry cannot tell one
+drain from three. But the mirror, reflecting through the origin, fixes the
+bisector as a set and **swaps its two sides**, and the throats fall on opposite
+sides: Collatz above (the trapping dome side, $g(V)=+\tfrac15$), $3x-1$ below
+(the escaping side, $g(V')=-\tfrac15$). The cone is not blind; it points. The
+displacement $g$ at the vertex — the very quantity the infinite-application
+theory calls the fundamental difference — is the one feature the symmetry
+breaks, and it tracks the one-versus-three split exactly.
+
+What the cone does not yet do is *force* the implication from that sign to a
+unique cycle; that step, made uniform, is the conjecture itself. So the funnel
+is genuine and the discriminant is genuine, and between them lies not a blank
+wall but a seam: prove that a throat above the bisector admits a single trap.
+The conjecture sits there, at the sign of $g(V_b)$ — exactly where the mirror
+could not follow it.
 
 ---
 
@@ -337,7 +416,10 @@ $V_b = (-2b/5, -b/5)$ and the containment of the diagonal in the wedge
 cone, exhaustively for all starting values $n < 5000$ over $200$ steps each
 (Proposition 2); the mean log-multiplier per macrostep, measured at $-0.2877$
 ($b=+1$) and $-0.2876$ ($b=-1$) against the predicted $\log\tfrac34 = -0.2877$
-(Theorem 3); and the positive cycle structure — the single cycle $\{1,2,4\}$
-for $b=+1$ versus the three cycles $\{1,2\}$, $\{5,7,10,14,20\}$, and the
-$18$-element cycle for $b=-1$ (Section 7). It also renders the two-panel figure
-`library/images/collatz-light-cone.png`.
+(Theorem 3); the displacement at the vertex $g(V_b) = b/5$, reporting the
+Collatz throat **above** the bisector and the $3x-1$ throat **below** it, with
+$\operatorname{sign} g(V_b) = \operatorname{sign}(b)$ (Theorem 4); and the
+positive cycle structure — the single cycle $\{1,2,4\}$ for $b=+1$ versus the
+three cycles $\{1,2\}$, $\{5,7,10,14,20\}$, and the $18$-element cycle for
+$b=-1$ (Section 7). It also renders the two-panel figure (with vertex zoom
+insets) `library/images/collatz-light-cone.png`.

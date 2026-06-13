@@ -56,6 +56,17 @@ def vertex(b: int) -> tuple[Fraction, Fraction]:
     return x, x / 2
 
 
+def displacement_at_vertex(b: int) -> Fraction:
+    """g(V) = (vertex y) - (vertex x) = f(x)-x at the vertex.
+
+    Positive => the throat sits ABOVE the bisector (the trapping/dome side);
+    negative => BELOW it (the escaping side). Equals b/5, so its sign tracks
+    the sign of b and FLIPS under the origin reflection b -> -b.
+    """
+    vx, vy = vertex(b)
+    return vy - vx
+
+
 def verify_edges(b: int, bound: int = 5000) -> bool:
     """Every orbit point (x, T(x)) lies on the upper or lower edge."""
     for n in range(1, bound):
@@ -112,8 +123,11 @@ def report() -> None:
     for b in (1, -1):
         vx, vy = vertex(b)
         print(f"3x{b:+d} map")
+        g = displacement_at_vertex(b)
+        side = "ABOVE (dome / trapping side)" if g > 0 else "BELOW (escaping side)"
         print(f"  cone vertex V = ({vx}, {vy})")
         print(f"  diagonal slope 1 in (1/2, 3)? yes -> y=x lies inside the wedge")
+        print(f"  displacement g(V) = {g} -> vertex is {side}; sign matches sign(b)")
         verify_edges(b)
         print(f"  every orbit point lies on a cone edge: OK")
         d = drift(b)
@@ -158,6 +172,20 @@ def plot() -> None:
         ax.set_xlabel("$x$ (current value)")
         ax.set_ylabel("$T(x)$ (next value)")
         ax.legend(loc="upper left", fontsize=8)
+
+        # --- zoom inset on the vertex: above vs below the bisector ----------
+        axin = ax.inset_axes([0.58, 0.10, 0.38, 0.38])
+        zx = np.linspace(float(vx) - 0.6, float(vx) + 0.6, 200)
+        axin.plot(zx, 3 * zx + b, color="#b8336a", lw=1.4)
+        axin.plot(zx, zx / 2, color="#2a6f97", lw=1.4)
+        axin.plot(zx, zx, color="gray", lw=1, ls="--")
+        axin.fill_between(zx, zx / 2, 3 * zx + b, where=(3 * zx + b >= zx / 2),
+                          color="#f2c14e", alpha=0.25)
+        axin.plot(float(vx), float(vy), "o", color="black", ms=5)
+        gsign = "above" if (vy - vx) > 0 else "below"
+        axin.set_title(f"vertex {gsign} $y=x$", fontsize=8)
+        axin.set_xticks([])
+        axin.set_yticks([])
 
     draw_cone(ax1, 1, 7, "Collatz cone $3x+1$: one drain $\\{1,2,4\\}$")
     draw_cone(ax2, -1, 7, "The $3x-1$ cone: mirror image, three drains")
