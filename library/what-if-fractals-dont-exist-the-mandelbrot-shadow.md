@@ -2,7 +2,7 @@
 title: "What If Fractals Don't Exist? The Mandelbrot Set Between a Wild Edge and a Finite Machine"
 type: paper
 created: 2026-06-13T18:30:00+00:00
-updated: 2026-06-13T19:30:00+00:00
+updated: 2026-06-13T20:30:00+00:00
 ---
 
 # What If Fractals Don't Exist? The Mandelbrot Set Between a Wild Edge and a Finite Machine
@@ -59,7 +59,24 @@ object**: certified-out, certified-in, and an undecided band the finite render
 must choose how to treat. We argue that the right rendering — and the right way
 to *talk* about fractals — is a refining **mesh** that paints that band
 explicitly, ideally with interval/ball arithmetic so the "certified" labels are
-rigorous, rather than a crisp black-and-white that hides the choice. This is the
+rigorous, rather than a crisp black-and-white that hides the choice.
+
+Two threads deepen the essay past "approximation error." First, the machine
+never iterates $f(z)=z^2+c$; it iterates a map reperturbed each step,
+$\tilde z_{n+1}=\mathrm{fl}(\tilde z_n^2+c)$, so what it follows is a
+**pseudo-orbit**, not the analytic orbit. *Shadowing theory* says a pseudo-orbit
+faithfully tracks a true orbit in **hyperbolic** systems — the reason the bulk
+of the picture is trustworthy — but the boundary is precisely the
+**non-hyperbolic** locus where no such guarantee holds: there we have the least
+right to claim the computed trajectory reflects a real one. Second, an
+escape-time render asks, per pixel, a **Collatz question** ("does this infinite
+orbit stay bounded?") and answers it by finite iteration — accepting for
+Mandelbrot exactly the finite-trial evidence we reject for Collatz. That
+**double pessimism** is justified only by the global theorems $M$ enjoys and
+Collatz lacks; the honest residue of the provocation is that the hyperbolic
+("trivial-destiny") parameters are what we can *certify*, the boundary is what we
+mostly *infer*, and how much of the famous structure we have truly *observed*
+rather than *deduced* is far less than the images suggest. This is the
 Mandelbrot face of the same picture as *The Light Cone of Collatz*: the wild
 thing we see owes part of its wildness to the finite machine that draws it.
 
@@ -87,10 +104,11 @@ we can then measure exactly how much of it survives, is:
 A pure point-by-point analytic settlement is not on the table: deciding whether
 a single boundary parameter $c$ belongs to $M$ by escape-time alone can require
 following an orbit without bound. So we cannot answer the provocation pixel by
-pixel. We can do two better things. We can **measure** how much the picture
-depends on the machine (§§2–5), and we can **bound** the provocation with what
-is actually proven (§§6–7) — and the gap between those two is where the real
-content lives (§8).
+pixel. We can do two better things. We can examine how much the picture depends
+on the machine (§§2–6) — including the subtle point that the computer never even
+follows the true orbit (§6) — and we can **bound** the provocation with what is
+actually proven (§§7–8). The gap between those two is where the real content
+lives (§9).
 
 ### A note on register
 
@@ -244,7 +262,84 @@ measured flips.
 
 ---
 
-## 6. But the set exists — and is provably wild
+## 6. The deeper problem: we never iterate the orbit, only a pseudo-orbit
+
+The depth cap and the mantissa flips are still, in a sense, *bookkeeping* errors
+— wrong verdicts about the right object. There is a deeper issue, and it is the
+real heart of the worry, distinct from the three-state problem of §9. It is not
+that we might mislabel a point. It is that **the trajectory the computer follows
+is not the mathematical orbit at all.**
+
+The dynamics is $z_{n+1} = f(z_n)$ with $f(z) = z^2 + c$. But the machine does
+not iterate $f$. At each step it computes
+
+$$
+\tilde z_{n+1} \;=\; \mathrm{fl}\!\left(\tilde z_n^{\,2} + c\right)
+\;=\; f(\tilde z_n) + \varepsilon_n,
+\qquad |\varepsilon_n| \sim 10^{-16},
+$$
+
+a *different, freshly perturbed map at every step*. In most numerical tasks this
+is harmless: evaluate $\sin(1)$ and the rounding error stays where it is, a
+final-digit nuisance. **Iteration is the exception**, because the error of today
+becomes the input of tomorrow: $\varepsilon_n$ is fed back in and propagated by
+all subsequent steps. What the machine produces is therefore not a sampled orbit
+but a **pseudo-orbit** — the exact term from dynamical-systems theory — a
+sequence $(\tilde z_n)$ in which every term carries the compounded history of
+every rounding before it.
+
+So the honest description of an escape-time render is brutal: *for each pixel we
+follow a pseudo-orbit of a map that changes every step, and report whether
+**that** stays bounded* — and then we attribute the answer to the analytic orbit
+of $f$, which we never computed.
+
+When is this attribution safe? This is exactly the subject of **shadowing
+theory**. A pseudo-orbit is said to be *shadowed* if there exists a true orbit
+(of a possibly slightly different starting point) that stays uniformly close to
+it. The **shadowing lemma** guarantees this in *hyperbolic* (uniformly
+expanding/contracting) systems: there, the computed pseudo-orbit, though not the
+orbit you asked for, faithfully tracks *some* genuine orbit, and the picture is
+trustworthy. For $c$ in the exterior or in a hyperbolic interior component, the
+dynamics of $z^2+c$ is hyperbolic and shadowing applies — which is the rigorous
+reason the *bulk* of the Mandelbrot picture is reliable.
+
+On $\partial M$, however, hyperbolicity fails. The boundary is precisely the
+non-hyperbolic locus — neutral cycles, parabolic points, Siegel disks, the
+infinitely renormalizable parameters — where local expansion can amplify the
+$10^{-16}$ seed without the compensating structure that the shadowing lemma
+needs. There is no general theorem that boundary pseudo-orbits are shadowed.
+So at the very place where the picture is most intricate and most celebrated, we
+have the least right to claim the computed trajectory reflects a real one.
+
+This sharpens the provocation into its strongest defensible form — and we state
+it as a careful claim, not a slogan:
+
+> The mathematical fractal exists (§7). But **no numerical image follows the
+> analytic orbits of the boundary points**; it follows pseudo-orbits produced by
+> an infinite succession of quantizations. It is open, in general, how much of
+> the fine boundary structure we observe is a property of the analytic object
+> and how much is a *robust property of the quantized dynamics* that approximates
+> it — robust enough to survive rounding (and thus reproducible across machines)
+> without being a faithful shadow of any single true orbit.
+
+That last possibility is the genuinely interesting one, and it is *not* the same
+as "the boundary is noise." A feature can be **reproducible across precisions
+and machines** — everyone's renderer shows the same seahorse — and still be a
+property of the *family* of quantized maps rather than of the exact map $f$. The
+shadowing question is precisely: are the reproducible features we see the
+fingerprints of the analytic object, or the stable artifacts of approximating it
+with finite arithmetic? In the hyperbolic bulk, theorems say the former. On the
+boundary, the question is open, and this paper's contribution is to insist it be
+asked rather than assumed away.
+
+This is the same move as everywhere in this notebook's Collatz work: an infinite
+iteration observed through a finite machine confronts us with a choice between
+the object and its **computational shadow**, and the honest stance is to mark
+which one a given pixel, or a given orbit, actually reports.
+
+---
+
+## 7. But the set exists — and is provably wild
 
 If the paper stopped here it would be sensational and wrong. So now the
 correction, and it is decisive. The Mandelbrot set is *not* a computational
@@ -266,7 +361,7 @@ than any curve could hold. So "fractals don't exist" is **false** as a
 statement about the object: $M$ exists, it is connected, and its edge is as
 intricate as mathematics allows.
 
-What Shishikura *also* tells us, though, is why §§4–5 had to happen. A boundary
+What Shishikura *also* tells us, though, is why §§4–6 had to happen. A boundary
 of dimension $2$ is the worst possible case for a finite grid: it cannot be
 covered efficiently, it never thins, and any pixelation straddles infinite
 detail forever. The realness of the wildness and the unavoidability of the
@@ -275,7 +370,7 @@ quantization are **the same fact** seen from two sides. The set is real
 
 ---
 
-## 7. Where the provocation has real bite: the edge as a decision problem
+## 8. Where the provocation has real bite: the edge as a decision problem
 
 So the body is real and the wildness is real. Is anything left of the goad in
 the title? Yes — but it must be stated with care, because the strong version
@@ -324,10 +419,11 @@ mathematics declines to promise it guessed right."
 
 ---
 
-## 8. The honest object: a mesh of shadow zones
+## 9. The honest object: a mesh of shadow zones
 
-The two halves now fit. The set is real (§6); on the boundary the finite
-escape-time procedure gives no answer and our arithmetic is finite (§§3–5, 7).
+The two halves now fit. The set is real (§7); on the boundary the finite
+escape-time procedure gives no answer (§8), our arithmetic is finite, and the
+trajectory itself is only a pseudo-orbit (§§3–6).
 The constructive response — and this is the part of the paper closest to a usable
 technique — is not to draw a crisp black-and-white that hides the guess, but to
 draw **what the machine actually knows** — a three-state map:
@@ -382,36 +478,97 @@ $2$: draw the land, draw the sea, and draw — in a third color — the tide.
 
 ---
 
-## 9. The same shadow as Collatz
+## 10. Mandelbrot is a continuous Collatz — and the double pessimism
 
 This is not an isolated provocation; it is the second instance of a single
-thesis. In *The Light Cone of Collatz* we argued that the "crazy crests" of
-Collatz — orbits soaring to thousands before collapsing — are the **shadow** a
-finite integer lattice casts on a smooth continuous descent to the vertex of a
-cone; the descent is provably calm, only its sampling is jagged. There, too,
-the infinite application of a confined map was shown to be *sensitive to
-quantization*, so that numerical iteration of the continuous model is not a
-valid verification — only analysis is. The Mandelbrot edge is the same
-phenomenon with the roles vivid in the other direction:
+thesis, and the comparison repays being made exact. In *The Light Cone of
+Collatz* we argued that the "crazy crests" of Collatz — orbits soaring to
+thousands before collapsing — are the **shadow** a finite integer lattice casts
+on a smooth continuous descent to the vertex of a cone; the descent is provably
+calm, only its sampling is jagged. There, too, the infinite application of a
+confined map is *sensitive to quantization*, so numerical iteration of the
+continuous model is not a valid verification — only analysis is.
 
-| | Collatz crests | Mandelbrot lace |
+Now look at what an escape-time render actually does. For each parameter $c$ it
+launches the orbit
+
+$$
+0,\ c,\ c^2 + c,\ (c^2+c)^2 + c,\ \ldots
+$$
+
+and asks the one question: *does this stay bounded?* That is structurally a
+**Collatz question, one per pixel**. Each $c$ carries its own infinite iteration
+with its own unknown fate; the Mandelbrot set is, quite literally, a *continuous
+Collatz parametrized by $c$* — a whole plane of "does this orbit settle or run
+away?" conjectures, decided in parallel. And we decide each one the way we are
+told *not* to decide Collatz: by running finitely many steps and trusting the
+trend.
+
+This exposes a real asymmetry of attitude — call it the **double pessimism**.
+For Collatz we are rigorists: a verification to $2^{68}$ is "not a proof," and
+we are right to say so. For Mandelbrot we are credulists: we run a few hundred
+iterations per pixel, in float64, along a pseudo-orbit (§6), and frame the
+result. The same epistemic move — finite iteration of an infinite process,
+reported as the truth about its limit — is treated as worthless in one place and
+as a poster in the other. The user's sharp question follows naturally:
+
+> If we will not accept verified Collatz cases as proof, why do we accept the
+> rendered Mandelbrot boundary as an object? Could $M$ "exist" only on its
+> trivial points — the certifiable hyperbolic interior — while the whole
+> filigree edge is a computational illusion?
+
+Here is where intellectual honesty requires us to *part* from the strong form of
+the provocation, and to say exactly why. The cases are **not** symmetric, and
+the asymmetry is not prejudice — it is the presence or absence of theorems:
+
+| | Collatz | Mandelbrot |
 |---|---|---|
-| the smooth/real thing | continuous funnel to the vertex (provable) | the set $M$, connected, $\dim_H\partial M = 2$ (provable) |
-| the wild thing we see | jagged integer crests | filigree boundary at zoom |
-| the source of the jaggedness | quantization onto the integer lattice | quantization onto grid + depth + mantissa |
-| the honest verification | analytic, not floating-point iteration | three-state mesh, not crisp black/white |
+| definition | a *conjecture* about iterates ("all orbits reach $1$") | a *definition* of a set ("$c$ with bounded orbit") |
+| global theorems | essentially none — we do not know if another cycle exists, or a divergent orbit | many: connectedness, $\dim_H\partial M=2$, infinitely many mini-copies, classified hyperbolic components |
+| source of confidence | finite verification only | decades of complex analysis, *not* the colored pictures |
+| status of the wild part | wholly open | constrained by proof, though MLC keeps part of it open |
 
-In both, a finite machine meets an edge it cannot resolve with its standard
-finite procedure, and the part of what we see that comes from the machine gets
-mistaken for the object. The discipline is the same: separate the provable
-smooth body from the quantization skin, refuse to iterate quantization-sensitive
-dynamics in floating point and call the result truth, and render the uncertainty
-explicitly. (*Metaphor.*) The fractal and the Collatz crest are two shadows of
-one sun — a line to remember the idea by, not to prove anything with.
+For Collatz the wildness is genuinely unconstrained: there could be a second
+cycle, a divergent ray, an infinite set of counterexamples, and nothing we have
+forbids it. For Mandelbrot the wildness is *fenced in by proofs that used no
+computer*: the boundary's dimension, the connectivity of the body, the infinite
+cascade of mini-Mandelbrots are theorems. So "$M$ exists only on the trivial
+points" is very hard to maintain — the non-trivial structure is guaranteed to
+be there whether or not any pixel is honest about it.
+
+But — and this is the version of the user's idea that *survives*, and it is
+worth more than the slogan — there is a precise sense in which the boundary is
+"the place where the trivial points run out." The interior is a union of
+**hyperbolic components**, each certifiable in finite time by exhibiting an
+attracting cycle; those are the "universal-destiny" parameters, the analogue of
+Collatz's numbers with a known fate. The boundary is exactly the **non-
+hyperbolic locus** — neutral, parabolic, Siegel, infinitely renormalizable —
+where no such finite certificate exists and where, by §6, even our trajectory is
+only a pseudo-orbit. So the honest restatement of "maybe only the trivial points
+exist" is:
+
+> The hyperbolic (trivial-destiny) parameters are the part we can *certify*; the
+> boundary is the part we mostly *infer*. Whether hyperbolic parameters are even
+> dense in the boundary is the content of MLC — still open. The structure is
+> real (theorems), but how much of it we have genuinely *observed*, as opposed to
+> *deduced*, is far less than the glossy images suggest.
+
+And that is the most defensible and most interesting thing to say. Strip away
+the theorems and keep only the renders, and the user's scepticism would be very
+hard to refute: our confidence in the Mandelbrot boundary rests almost entirely
+on complex analysis, hardly at all on the pictures — which, as §§4–6 show, are
+machine-dependent pseudo-orbit reports at exactly the place that matters.
+
+The discipline, in both worlds, is therefore the same: separate the provable
+body from the quantization skin; refuse to iterate quantization-sensitive
+dynamics in floating point and call the result truth; mark each pixel and each
+orbit with which register it belongs to. (*Metaphor.*) The Mandelbrot lace and
+the Collatz crest are two shadows of one sun — a line to remember the idea by,
+not to prove anything with.
 
 ---
 
-## 10. Conclusion
+## 11. Conclusion
 
 Do fractals exist? The honest answer is a careful *yes — but the picture is not
 the set.* (*Theorem.*) The Mandelbrot set exists, is connected, and has a
@@ -425,17 +582,28 @@ three resolutions we tried ($9\% \to 28\%$ — a measured trend, not a limit).
 The lace is neither pure object nor pure artifact; it is the **negotiation**
 between a provably wild edge and an unavoidably finite machine.
 
+Two things deepen this past the easy "approximation error." First, the machine
+never even follows the orbit it claims to: it follows a **pseudo-orbit** of a
+map reperturbed at every step (§6), and only in the hyperbolic bulk does
+shadowing theory promise that pseudo-orbit tracks a real one. On the boundary —
+the interesting part — that promise is absent. Second, the operation we perform
+is, per pixel, a **Collatz question** — "does this infinite orbit stay bounded?"
+— answered by finite iteration; and we accept for Mandelbrot exactly the
+finite-trial evidence we reject for Collatz (§10). The asymmetry is justified
+only by the global theorems $M$ enjoys and Collatz lacks; strip the theorems and
+keep the pictures, and the scepticism would be hard to answer.
+
 The goad in the title resolves like this: "fractals don't exist" is false about
 the set and only *half* true about the picture — what we call the fractal is, at
-its edge, partly the record of a finite computation guessing where its standard
-procedure goes silent. The remedy is not more pixels but more honesty: draw the
-certified land, the certified sea, and — in a third colour — the band between
-them, refining the mesh into the uncertain rather than pretending to have
-crossed it, and with interval arithmetic so the two certified colours are
-proofs. (*Metaphor, to close.*) The fractal we can draw truthfully is a map of
-our own resolution; the one underneath, real and dimension-$2$ and perhaps not
-even locally connected, keeps its own counsel just past the last bit of the
-mantissa.
+its edge, partly the record of a finite computation following a pseudo-orbit and
+guessing where its standard procedure goes silent. The remedy is not more pixels
+but more honesty: draw the certified land, the certified sea, and — in a third
+colour — the band between them, with interval arithmetic so the two certified
+colours are proofs; and never confuse a reproducible feature of the *quantized*
+dynamics with a property of the analytic object until shadowing says you may.
+(*Metaphor, to close.*) The fractal we can draw truthfully is a map of our own
+resolution; the one underneath, real and dimension-$2$ and perhaps not even
+locally connected, keeps its own counsel just past the last bit of the mantissa.
 
 ---
 
