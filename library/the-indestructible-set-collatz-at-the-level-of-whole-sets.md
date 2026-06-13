@@ -2,7 +2,7 @@
 title: "The Indestructible Set: Collatz at the Level of Whole Sets"
 type: paper
 created: 2026-06-13T10:00:00+00:00
-updated: 2026-06-13T11:30:00+00:00
+updated: 2026-06-13T12:30:00+00:00
 ---
 
 # The Indestructible Set: Collatz at the Level of Whole Sets
@@ -469,6 +469,42 @@ below itself — its orbit $5 \to 14 \to 7 \to 20 \to 10 \to 5$ stays at or
 above $5$ forever — and, consistently, $3n-1$ has other destinies. A
 statement that distinguishes the two maps is the minimum entry fee for a
 proof, and the descent hypothesis pays it. The "$+1$" finally matters.
+
+There is a second way to repair the proposed rule, and it is worth stating
+because it captures exactly the instinct behind it — *the* $m$ *of the*
+$\forall$ *and the* $n$ *of the* $\exists$ *are objects of the same kind,
+so the witness above me ought to say something about me*. Formalized, that
+instinct is a **domination principle**:
+
+$$
+n \ge m \ \text{ and } \ n \text{ reaches } 1
+\quad\Longrightarrow\quad
+m \text{ reaches } 1.
+$$
+
+Let $W$ be the witness set (the numbers that reach $1$). The flooding of
+Corollary 4 proves, unconditionally, that $W$ is **cofinal**: above every
+$m$ there is a member of $W$. And a cofinal set that is **closed downward**
+is all of $\mathbb{N}$. Hence:
+
+**Proposition 8 (Domination reformulation).** The Collatz conjecture holds
+if and only if $W$ is closed downward — if and only if convergence is
+contagious along the order $\le$.
+
+One direction is trivial (if $W = \mathbb{N}$ it is closed under
+everything); the other is the one-line argument just given: cofinal plus
+downward-closed equals everything. So the domination principle would
+convert the flooding $\exists$ into the conjecture's $\forall$ instantly —
+the instinct is *correct* about what would suffice. The price is that the
+principle is not a lemma on the way to the conjecture: it **is** the
+conjecture, exchanged at par. It passes the litmus test, as it must: under
+$3n-1$ the witness set is cofinal but *not* downward closed ($8$ converges,
+$5 < 8$ does not), which is precisely how that world escapes. And the
+reason no one can prove even fragments of it for $3n+1$ is that Collatz
+trajectories pointedly ignore the order: $27$ soars to $9232$ while its
+neighbour $28$ sinks immediately. Behaviour follows the binary expansion of
+$n$, not its size — and the domination principle asks size to govern
+destiny.
 
 This is, in fact, the angle of view along which the actual frontier of the
 problem is arranged. Terras (1976) proved that the descent $\exists$ holds
