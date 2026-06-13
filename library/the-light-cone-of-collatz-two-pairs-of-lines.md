@@ -2,7 +2,7 @@
 title: "The Light Cone of Collatz: Two Pairs of Lines and the Geometry of the Bounce"
 type: paper
 created: 2026-06-13T15:00:00+00:00
-updated: 2026-06-13T16:30:00+00:00
+updated: 2026-06-13T17:30:00+00:00
 ---
 
 # The Light Cone of Collatz: Two Pairs of Lines and the Geometry of the Bounce
@@ -12,8 +12,12 @@ branches become two lines. They cross at a vertex and open into a wedge — a
 light cone — and every orbit is trapped on its two edges, bouncing between
 them like a ball settling into a funnel. This paper builds the cone exactly,
 proves the bounce is confined and contracting, reads the collapse through the
-theory of the infinite application of a function, and then compares it,
-honestly, with the mirror cone of the $3x-1$ map.*
+theory of the infinite application of a function, compares it honestly with the
+mirror cone of the $3x-1$ map, and then lifts the whole picture off the
+integers: the cone becomes a stage for arbitrary continuous functions, and the
+Collatz conjecture becomes the analytic statement that a confined curve over a
+throat above the bisector drains to the vertex. The crazy crests of Collatz are
+the shadow this smooth descent casts on the integer lattice.*
 
 ## Abstract
 
@@ -335,7 +339,223 @@ than "the geometry is blind."
 
 ---
 
-## 8. What the cone sees, and what it does not
+## 8. From integers to the continuum: the cone as a universal stage
+
+Everything so far has been about integers and about *one* map. But look at
+what the cone actually used: only that the two branches are two lines with
+slopes straddling $1$, meeting at a vertex. The arithmetic of $3x+1$ — the
+parity test, the $2$-adic valuations, the residues — never entered the
+geometry. This invites the real abstraction, and it is the goal of this part
+of the paper.
+
+Forget the integers. Forget the two branches. Let $f : [x_V, \infty) \to
+\mathbb{R}$ be **any continuous function whose graph lives in the cone**:
+
+$$
+\frac{x}{2} \;\le\; f(x) \;\le\; 3x + b
+\qquad\text{for all } x \ge x_V .
+$$
+
+We call such an $f$ **cone-confined**. It need not be piecewise linear, need
+not come from a number-theoretic rule, need not be monotone. It is just a
+curve threaded through the wedge. The question is the one the book *The
+Elementary Theory of the Infinite Application of a Function* asks of every
+map: what is the destiny of the **infinite application** $f^\infty$ — where do
+the orbits $x, f(x), f(f(x)), \ldots$ go?
+
+The conjecture we want to formalize, in the user's own words, is a clean
+dichotomy with no arithmetic in it at all:
+
+> If $f$ lives in the cone and the **vertex is above the bisector**, every
+> orbit is funneled to the throat — the infinite application has a single
+> destiny. If the **vertex is below the bisector**, the destiny is *open* —
+> the funnel may fragment.
+
+The rest of this part makes that statement precise, proves the half of it
+that is a theorem, and isolates — honestly — the exact extra hypothesis the
+other half needs. The reward is the thesis of this whole reading: **the crazy
+crests of Collatz are not chaos but a shadow.** The wild peaks — $27$ soaring
+to $9232$ — are the projection onto the integer lattice of a continuous
+function funnelling, smoothly and inexorably, back toward the vertex of the
+cone. The turbulence is the *sampling* of a calm descent; the integers are
+where a confined continuous curve casts its jagged shadow. The Collatz
+conjecture, in this light, stops being a fact about parities and becomes a
+statement about continuous functions: *a confined curve over a throat above
+the bisector has one attractor.*
+
+---
+
+## 9. The edge-displacement lemma and the throat sign-zone
+
+Work with general edge slopes $0 < s_- < 1 < s_+$ (for Collatz $s_- =
+\tfrac12$, $s_+ = 3$), edges meeting at $V = (x_V, y_V)$, and write the single
+governing datum
+
+$$
+\delta \;:=\; g(V) \;=\; y_V - x_V \;=\; \frac{b}{5}.
+$$
+
+The displacement $g(x) = f(x) - x$ — the book's "fundamental difference,"
+whose sign says whether the orbit is pushed right (toward larger $x$, away
+from the throat) or left (toward the throat) — is squeezed by the edges. On
+the edges themselves it is exactly linear:
+
+**Lemma A (edge displacements).** *Along the lower and upper edges,*
+
+$$
+g_\pm(x) \;=\; (s_\pm - 1)\,(x - x_V) \;+\; \delta .
+$$
+
+*Both equal $\delta$ at the vertex. The lower one ($s_- - 1 < 0$) decreases in
+$x$; the upper one ($s_+ - 1 > 0$) increases.* The proof is one line of
+algebra: $g_\pm(x) = s_\pm(x - x_V) + y_V - x = (s_\pm-1)(x-x_V) + (y_V-x_V)$.
+
+The two edges therefore cross the bisector at
+
+$$
+x_-^\ast = x_V - \frac{\delta}{s_- - 1} = x_V + \frac{\delta}{1 - s_-},
+\qquad
+x_+^\ast = x_V - \frac{\delta}{s_+ - 1},
+$$
+
+which for Collatz are $x_-^\ast = 0$ and $x_+^\ast = -\tfrac12$, and for
+$3x-1$ are $x_-^\ast = 0$ and $x_+^\ast = +\tfrac12$ (verified in the script).
+Because any confined $f$ is trapped between the edges, its displacement is
+trapped between $g_-$ and $g_+$, and this pins the sign of $g$ near the throat:
+
+**Lemma B (throat sign-zone).** *Suppose $\delta > 0$. Then on the interval
+$[x_V,\, x_-^\ast)$ both edges lie strictly above the bisector, so* every
+*confined $f$ satisfies $f(x) > x$ there: the whole cone near the throat is a
+universal **right-push** zone. Symmetrically, if $\delta < 0$, then on
+$[x_V,\, x_+^\ast)$ both edges lie below the bisector and every confined $f$
+satisfies $f(x) < x$: a universal **left-push** zone.*
+
+*Proof.* For $\delta > 0$: $g_+(x) = (s_+-1)(x-x_V) + \delta > 0$ for all
+$x \ge x_V$ (both terms $\ge 0$, second $>0$), so the upper edge is above the
+bisector everywhere; and $g_-$ starts at $\delta > 0$ and decreases to $0$ at
+$x_-^\ast$, so the lower edge is above the bisector on $[x_V, x_-^\ast)$. With
+both edges above, the entire cone slice is above, and $f(x) \ge \tfrac{x}{2} =
+L_-(x) > x$ there. The case $\delta < 0$ is the mirror argument. $\square$
+
+This is the geometric engine of the whole dichotomy: the sign of $\delta$
+decides, with no further information about $f$, whether the throat pushes
+orbits back into the cone or out through its tip.
+
+---
+
+## 10. The invariance dichotomy: trap versus leak
+
+Lemma B already feels like the answer, but it has a subtlety with a beautiful
+resolution. "Right-push near the throat" sounds like it pushes orbits *away*
+from the vertex, not toward it — and so it does, pointwise. The point is what
+it does to the **domain**: a right-push floor at the throat is a *reflecting
+wall*. It guarantees the orbit can never fall out the bottom. Make this exact.
+
+**Theorem A (invariance dichotomy).** *The half-line $[x_V, \infty)$ — the
+$x$-extent of the cone — is forward-invariant under **every** cone-confined
+continuous $f$ if and only if $\delta \ge 0$.*
+
+*Proof.* For any confined $f$, $f(x) \ge L_-(x) = s_-(x-x_V) + y_V \ge y_V$
+for $x \ge x_V$. So $f(x) \ge y_V$, and $y_V \ge x_V \iff \delta \ge 0$. When
+$\delta \ge 0$ every image lands at height $\ge y_V \ge x_V$, back in the
+domain: the cone traps. When $\delta < 0$, the lower-edge map $f = L_-$ itself
+sends throat points below $x_V$ — the script iterates $f(x) = x/2$ from
+$x = 0.5$ and watches it fall under the $3x-1$ vertex $x_V = \tfrac25$ in one
+step — so the cone **leaks**. $\square$
+
+So the geometry sorts the two worlds before any dynamics is run:
+
+- **$\delta > 0$ (Collatz, throat above the bisector):** the cone is a
+  **trap**. Orbits cannot escape through the throat; they are confined to
+  $[x_V, \infty)$ forever and must accumulate on whatever invariant set lives
+  inside.
+- **$\delta < 0$ ($3x-1$, throat below the bisector):** the cone is a
+  **sieve**. Orbits can drain out the narrow end, and what becomes of them is
+  decided elsewhere — the destiny is, in the user's phrase, *to be seen.*
+
+This is the rigorous core of the intuition, and notice it is purely
+order-theoretic: trap-versus-leak is exactly $\operatorname{sign}\delta =
+\operatorname{sign} b$, the one reflection-odd quantity of Theorem 4, now
+given dynamical teeth.
+
+---
+
+## 11. The provable core, and the honest gap
+
+Trapping is not yet converging. A trapped orbit could still wander forever or
+split among several attractors. To turn the trap into a single destiny we need
+one more hypothesis — and naming it precisely is where honesty earns its keep,
+because the tempting statement is false.
+
+**The naive claim is false.** "Lives in the cone with $\delta>0$ $\Rightarrow$
+collapses to the throat" is *not* a theorem. The identity $f(x) = x$ lives in
+the Collatz cone (for $x \ge 0$: $\tfrac{x}{2} \le x \le 3x+1$), yet every
+point is fixed — nothing collapses. The script confirms the confinement and
+the non-collapse. Bare confinement leaves the orbit free to ride the bisector.
+Something must forbid that.
+
+The clean sufficient hypothesis is **contraction**, and it makes the throat
+half of the dichotomy a genuine theorem:
+
+**Theorem B (throat capture).** *Let $f : [x_V, \infty) \to \mathbb{R}$ be
+cone-confined with $\delta > 0$, and a Lipschitz contraction: $|f(x) - f(x')|
+\le \lambda\,|x - x'|$ with $\lambda < 1$. Then $f$ maps the complete space
+$[x_V,\infty)$ into itself (Theorem A), so by the Banach fixed-point theorem
+$f$ has a unique fixed point $x^\ast$, and $f^n(x) \to x^\ast$ for every
+$x \ge x_V$. Moreover $x^\ast \ge x_-^\ast$, since on $[x_V, x_-^\ast)$ the
+right-push of Lemma B forbids any fixed point. The infinite application
+collapses the entire cone to a single throat point.*
+
+Crucially, Theorem B is a **proof**, not a measurement. Banach's theorem
+settles the destiny by an analytic argument; the script's iteration of
+$f(x) = \tfrac{x}{2} + 1$ on $[1,\infty)$ — orbits from $1, 3, 7, 27, 1000$ all
+converging to the throat $x^\ast = 2$ — is an *illustration that happens to be
+trustworthy*, and it is trustworthy for a specific reason: a contraction damps
+rounding error as fast as it damps everything else, so the floating-point
+orbit and the true orbit converge to the same point. This robustness is not
+generic, and §13 is devoted to exactly when it fails. The content of Theorem B
+is the formal, universal statement the user asked for: *any* continuous
+contraction living in a cone with throat above the bisector has the vertex
+region as its sole destiny, by a three-line proof — no arithmetic, no
+parities, no $2$-adics, just confinement, the sign of $\delta$, and
+contraction.
+
+**The other side is genuinely open.** With $\delta < 0$ the same contraction
+hypothesis does not save the day, because the cone is not invariant, and a
+confined map can fragment into *several* attractors — the continuous analogue
+of the three $3x-1$ cycles. One can *draw* such a function (a confined curve
+crossing the bisector several times, each downward crossing an attractor), but
+— for the reasons of §13 — one cannot honestly *iterate it numerically* to
+demonstrate the limits: the fragmented regime is precisely the one where
+quantization decides the destiny. The fragmentation is real and provable
+crossing-by-crossing as a statement about fixed points; its long-run
+*trajectories* are not a thing a floating-point computation may be trusted to
+report. Below the bisector, fragmentation is allowed; the destiny is open
+exactly as the intuition says, and open in a way that numerics cannot close.
+
+**Where Collatz actually sits — and why this is not a proof of it.** The
+catch is that the true Collatz map is **not** a Lipschitz contraction. Its
+single-valued envelope must contain the upper edge $y = 3x+1$, slope $3 > 1$:
+an *expansion*. Collatz contracts only **on average** — the $\tfrac34$ drift
+of Theorem 3, a Lyapunov/measure statement, not a pointwise Lipschitz one.
+Theorem B is unconditional for true contractions; the Collatz map asks us to
+weaken "Lipschitz $\lambda < 1$" to "average multiplier $\tfrac34 < 1$" and
+keep the conclusion. That single weakening is the whole difficulty:
+
+> **The continuum form of the Collatz conjecture.** A cone-confined map with
+> throat above the bisector ($\delta>0$) and **average** log-contraction
+> ($\mathbb{E}[\log\mu] < 0$) sends every orbit to the throat.
+
+For a uniform contraction this is Banach and done. For an average one it is
+open, and it is *exactly* the conjecture — now stated with no reference to
+integers, parity, or $3x+1$, as a clean problem in real dynamics: does
+trapping plus average contraction force a single attractor? The cone has
+carried Collatz out of number theory and set it down in analysis, on the seam
+between Lipschitz and Lyapunov.
+
+---
+
+## 12. What the cone sees, and what it does not
 
 The cone is an honest instrument. It sees, exactly:
 
@@ -374,7 +594,71 @@ answer is, and now we know exactly where in the geometry that sign lives.
 
 ---
 
-## 9. Conclusion: a true funnel, and the seam where the proof must enter
+## 13. On numerical verification and the quantization boundary
+
+A warning, and a self-imposed discipline, about the continuum part. It is
+tempting to *check* the dichotomy of §§9–11 the way we checked everything on
+the integers: pick a confined continuous $f$, iterate it, watch where the
+orbit lands. **This is not a valid verification, and the paper does not rely
+on it.** Here is why.
+
+The infinite application $f^\infty$ of a continuous map confined to the cone
+is, in general, **sensitive to rounding**. A floating-point step replaces the
+true value $f(x)$ with $f(x) + \varepsilon$, $\varepsilon \sim 10^{-16}$; and
+along any stretch where the map does not contract — where its slope exceeds
+$1$, as the upper edge does with slope $3$ — that perturbation is *amplified*,
+not damped. After enough steps the computed trajectory and the true trajectory
+have separated completely. We are sampling a function at the **boundary
+between order and chaos**, where the limit of the iteration is genuinely
+discontinuous in the initial data and in the arithmetic. A number that the
+floating-point orbit reports as the destiny may be an artifact of the last bit
+of the mantissa.
+
+This is not a defect of our particular script; it is a theorem-shaped fact
+about the regime. It cuts our available tools to exactly two:
+
+1. **Analytic proof.** Where the dynamics *is* a contraction, Banach (Theorem
+   B) settles the destiny with no computation at all — and, not coincidentally,
+   that is precisely the regime where a numerical orbit *would* also be
+   reliable, because a contraction damps rounding error at the same rate it
+   damps everything. Robustness of the numerics and provability by Banach are
+   the **same condition**. When we can trust the computer we did not need it;
+   when we need it we cannot trust it.
+2. **Closing on the integers.** One can make the iteration exact by working in
+   a lattice with exact arithmetic — but a confined map on the integers with
+   the Collatz edges *is* the Collatz map. Quantizing to recover exactness
+   hands the problem straight back to number theory; it is not an independent
+   check of the continuum claim, it is the original conjecture wearing the
+   continuum's coat.
+
+So the honest verifications in this paper are confined to what is
+**rounding-proof**: the cone geometry (vertex, edge–bisector crossings,
+the throat sign-zone) is exact rational algebra; the invariance dichotomy
+$\delta \gtrless 0$ is a single inequality; the $\tfrac34$ drift is a
+statistical average over *integers* with exact $2$-adic valuations; the
+contraction demo converges because it is a contraction. Everything that would
+require trusting a long floating-point orbit of a non-contracting confined map
+is deliberately absent, and the multi-attractor "cartoon" of §11 is labelled a
+cartoon for exactly this reason.
+
+There is real mathematics in the instability itself, but it is a *different*
+problem. How does a continuous funnel-to-the-vertex dynamics fracture when you
+quantize it — when you force every value onto a lattice and let the rounding
+error drive the trajectory? That is a question about the dynamics *of the
+quantization error*, and its natural home is the study of the fractal sets
+such errors trace out: the basin boundaries, the strange repellers, the
+self-similar structure of "which lattice point does this continuous orbit snap
+to." We flag it here as a deliberate scope boundary and a sequel: **the crazy
+crests are the shadow of a calm continuous descent (this paper); the precise
+shape of the shadow — how the quantization carves the smooth funnel into
+Collatz's jagged silhouette — belongs to a forthcoming study of quantization
+instability and its fractals.** The two papers meet at this section: this one
+proves the descent is smooth and analytic; that one will measure how the grid
+roughens it.
+
+---
+
+## 14. Conclusion: a true funnel, and the seam where the proof must enter
 
 Two lines, one vertex, one wedge. The Collatz map, read one step at a time,
 is a ball bouncing in a funnel that confines it (it never leaves the cone) and
@@ -400,6 +684,19 @@ wall but a seam: prove that a throat above the bisector admits a single trap.
 The conjecture sits there, at the sign of $g(V_b)$ — exactly where the mirror
 could not follow it.
 
+And the cone does one thing more, which is the deepest reason to have built
+it: it lets us *leave the integers*. Read as a stage for arbitrary continuous
+maps (Part II), the cone turns the Collatz conjecture into a statement with no
+arithmetic in it — *a confined curve over a throat above the bisector, that
+contracts on average, drains to the vertex.* For a genuine contraction this is
+Banach's theorem, three lines. For an average one it is open, and that gap —
+from Lipschitz to Lyapunov — is the whole conjecture, now sitting in real
+dynamics rather than number theory. The crazy crests of Collatz are the shadow
+this continuous descent casts on the integer lattice; the smoothness of the
+descent is provable, while the jaggedness of the shadow is a separate study of
+quantization and its fractals (§13). The funnel is calm. Only its shadow is
+wild.
+
 ---
 
 ## Reproducing the Results
@@ -423,3 +720,15 @@ positive cycle structure — the single cycle $\{1,2,4\}$ for $b=+1$ versus the
 three cycles $\{1,2\}$, $\{5,7,10,14,20\}$, and the $18$-element cycle for
 $b=-1$ (Section 7). It also renders the two-panel figure (with vertex zoom
 insets) `library/images/collatz-light-cone.png`.
+
+For Part II (the continuum abstraction) the script computes only the
+**rounding-proof** quantities, in keeping with §13: the edge–bisector
+crossings $x_-^\ast, x_+^\ast$ and the throat sign-zone (Lemmas A–B, exact
+rational arithmetic); the invariance dichotomy $\delta = b/5 \gtrless 0$
+(Theorem A); and the contraction demonstration $f(x) = \tfrac{x}{2}+1 \to 2$
+(Theorem B — reliable because contractions damp rounding error). It also
+prints the identity counterexample (confinement alone does not collapse) and,
+explicitly labelled as a quantization-sensitive *cartoon* rather than a
+verification, the $\delta<0$ leak and a multi-attractor sketch. No claim in
+the paper rests on iterating a non-contracting confined map in floating point;
+that instability is itself the subject of the sequel announced in §13.

@@ -137,6 +137,112 @@ def report() -> None:
         print("-" * 64)
 
 
+# ---------------------------------------------------------------------------
+# The continuum abstraction: a generic continuous f whose graph lives in the
+# cone. Edges have slopes s_- = 1/2 < 1 < 3 = s_+ and meet at V; the only
+# datum that matters is delta = g(V) = yV - xV (= b/5).
+# ---------------------------------------------------------------------------
+
+def edge_zone(b: int) -> None:
+    """Lemma A/B: edge displacements and the throat sign-zone."""
+    sm, sp = Fraction(1, 2), 3
+    vx, vy = vertex(b)
+    delta = vy - vx  # = b/5
+    # g_pm(x) = (s_pm - 1)(x - vx) + delta; zeros:
+    x_lo = vx - delta / (sm - 1)   # lower edge meets bisector
+    x_hi = vx - delta / (sp - 1)   # upper edge meets bisector
+    print(f"3x{b:+d}: V=({vx},{vy}), delta=g(V)={delta}")
+    print(f"  lower edge (slope 1/2) meets y=x at x={x_lo}")
+    print(f"  upper edge (slope 3)  meets y=x at x={x_hi}")
+    if delta > 0:
+        print(f"  throat zone [{vx},{x_lo}): whole cone ABOVE bisector "
+              f"-> every confined f is pushed RIGHT (toward a trap)")
+    else:
+        print(f"  throat zone [{vx},{x_hi}): whole cone BELOW bisector "
+              f"-> every confined f is pushed LEFT (out through the throat)")
+    # Theorem A: forward-invariance of [xV, inf) for ALL confined f
+    invariant = vy >= vx
+    print(f"  forward-invariant for ALL confined f? {invariant}  "
+          f"(holds iff delta>=0, i.e. yV>=xV)")
+
+
+def confined(f, b: int, lo: float = 1.0, hi: float = 60.0, n: int = 600) -> bool:
+    xs = np.linspace(lo, hi, n)
+    fx = np.array([f(x) for x in xs])
+    return bool(np.all((xs / 2 <= fx + 1e-12) & (fx <= 3 * xs + b + 1e-12)))
+
+
+def contraction_demo() -> None:
+    """Theorem B (delta>0): a confined Lipschitz contraction drains the whole
+    cone to a single throat point. Illustrative continuous model for b=+1."""
+    b = 1
+    f = lambda x: x / 2 + 1            # slope 1/2 < 1, fixed point x* = 2
+    print(f"\n  Theorem B demo (3x+1): f(x) = x/2 + 1, a confined contraction")
+    print(f"    confined on [1,60]? {confined(f, b)}")
+    for seed in (1, 3, 7, 27, 1000):
+        x = float(seed)
+        for _ in range(80):
+            x = f(x)
+        print(f"    orbit from {seed:>4} -> {x:.6f}   (unique throat x* = 2)")
+
+
+def identity_counterexample() -> None:
+    """Bare confinement is NOT enough: the identity lives in the cone yet every
+    point is fixed -- no drainage."""
+    b = 1
+    f = lambda x: x
+    print(f"\n  counterexample: f(x) = x is confined (b=+1, x>=0)? "
+          f"{confined(f, b)} -- yet f^n(x)=x for all n (no collapse).")
+    print(f"    => convergence needs a strict contraction hypothesis, not just"
+          f" 'lives in the cone'.")
+
+
+def leak_and_fragmentation_demo() -> None:
+    """delta<0 (3x-1): the cone is not forward-invariant (it leaks below the
+    vertex), and a confined map can fragment into several attractors.
+
+    NOTE (see paper section 13): the multi-attractor part is an illustrative
+    CARTOON, not a verification. Iterating a non-contracting confined map in
+    floating point is quantization-sensitive -- rounding can change the limit
+    -- so the reported limits are suggestive only. The leak itself (one step
+    of f=x/2 falling below the vertex) is exact and robust.
+    """
+    b = -1
+    vx, _ = vertex(b)
+    print(f"\n  3x-1 leak: lower-edge map f(x)=x/2 sends throat points below "
+          f"the vertex xV={vx}:")
+    x = 0.5
+    for i in range(4):
+        x = x / 2
+        print(f"    step {i+1}: x={x:.4f}  (below xV={float(vx):.2f}? {x < float(vx)})")
+    f = lambda x: x - 0.4 * math.sin(2 * math.pi * math.log(x + 1))
+    print(f"  3x-1 multi-attractor CARTOON (quantization-sensitive, not a "
+          f"verification -- see section 13):")
+    print(f"    f(x)=x-0.4 sin(2pi log(x+1)), confined on [1,60]? {confined(f, b)}")
+    limits = []
+    for seed in (2, 5, 9, 20, 60):
+        x = float(seed)
+        for _ in range(300):
+            x = f(x)
+        limits.append(round(x, 3))
+        print(f"    orbit from {seed:>4} -> {x:.4f}")
+    print(f"    distinct limits: {sorted(set(limits))} -> several drains, like "
+          f"the three 3x-1 cycles.")
+
+
+def report_continuum() -> None:
+    print("=" * 64)
+    print("CONTINUUM ABSTRACTION: generic continuous f living in the cone")
+    print("=" * 64)
+    for b in (1, -1):
+        edge_zone(b)
+        print("-" * 64)
+    contraction_demo()
+    identity_counterexample()
+    leak_and_fragmentation_demo()
+    print("-" * 64)
+
+
 def plot() -> None:
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5.4))
 
@@ -198,4 +304,5 @@ def plot() -> None:
 
 if __name__ == "__main__":
     report()
+    report_continuum()
     plot()
