@@ -2,7 +2,7 @@
 title: The Semilogarithm
 type: paper
 created: 2026-05-23T13:00:00+00:00
-updated: 2026-05-23T14:50:00+00:00
+updated: 2026-06-10T12:00:00+00:00
 ---
 
 # The Semilogarithm
@@ -1107,6 +1107,337 @@ $$
 
 and the semilogarithm corresponds to the case $a=1/2$.
 
+## From the Half-Step to Arbitrary Steps
+
+The semilogarithm splits one logarithmic step into two equal compositional
+halves. Nothing forces us to stop at two. For every integer $n\ge 1$, define an
+**$n$-th splinter** of the logarithm as a function $s_n$ satisfying
+
+$$
+s_n^{\circ n}=\log,
+$$
+
+so that $s_1=\log$ and $s_2=s$, the semilogarithm itself.
+
+The $n$-th splinter inserts $n-1$ intermediate constants between each pair of
+tower values $E_{n+1}$ and $E_n$, exactly as the semilogarithm inserted the
+single half-step $H_n$. The commutation law generalizes with the same proof:
+since $\log=s_n^{\circ n}$,
+
+$$
+s_n(\log x)=s_n^{\circ(n+1)}(x)=\log(s_n(x)).
+$$
+
+Every splinter commutes with the logarithm.
+
+In Abel coordinates the whole family becomes transparent. If
+
+$$
+\Phi(\log x)=\Phi(x)+1,
+$$
+
+then
+
+$$
+s_n(x)=\Phi^{-1}\left(\Phi(x)+\frac{1}{n}\right)
+$$
+
+is an $n$-th splinter. Composing splinters of different orders gives rational
+steps, and passing to the limit gives a **continuous compositional flow**:
+
+$$
+\log^{t}(x)=\Phi^{-1}\left(\Phi(x)+t\right), \qquad t\in\mathbb{R}.
+$$
+
+The flow satisfies the addition law
+
+$$
+\log^{t}\circ\log^{u}=\log^{t+u},
+$$
+
+with $\log^{0}=\mathrm{id}$, $\log^{1}=\log$, $\log^{1/2}=s$. All layers
+commute with each other, because translations of the Abel coordinate commute.
+
+The key structural identity is the **splintering identity**:
+
+$$
+\log=\left(\log^{1/n}\right)^{\circ n}
+\qquad\text{for every } n.
+$$
+
+The logarithm is *compositionally infinitely divisible*: it can be broken into
+arbitrarily many, arbitrarily thin, identical layers. A choice of Abel
+coordinate $\Phi$ — that is, a choice resolving the non-uniqueness described
+earlier — fixes the entire family at once. We call such a choice a
+**canonical splintering** of the logarithm.
+
+## The Infinitesimal Layer
+
+If the layers can be made arbitrarily thin, the natural question is what a
+layer of thickness zero looks like. Differentiating the flow at $t=0$ gives the
+**infinitesimal layer**, or generator:
+
+$$
+\lambda(x)
+=\left.\frac{\partial}{\partial t}\log^{t}(x)\right|_{t=0}
+=\frac{1}{\Phi'(x)}.
+$$
+
+The flow is then the solution of the autonomous differential equation
+
+$$
+\frac{\partial}{\partial t}\log^{t}(x)=\lambda\left(\log^{t}(x)\right),
+\qquad \log^{0}(x)=x.
+$$
+
+The generator satisfies its own functional equation. Differentiating
+$\Phi(\log x)=\Phi(x)+1$ gives $\Phi'(\log x)=x\,\Phi'(x)$, hence
+
+$$
+\lambda(\log x)=\frac{\lambda(x)}{x}.
+$$
+
+This single equation unifies the entire Derivative Relations section. Since
+
+$$
+s(x)=\Phi^{-1}\left(\Phi(x)+\frac{1}{2}\right),
+$$
+
+the chain rule gives
+
+$$
+s'(x)=\frac{\Phi'(x)}{\Phi'(s(x))}=\frac{\lambda(s(x))}{\lambda(x)}.
+$$
+
+Both transport identities now follow in one line. First,
+
+$$
+s'(s(x))\,s'(x)
+=\frac{\lambda(s(s(x)))}{\lambda(s(x))}\cdot\frac{\lambda(s(x))}{\lambda(x)}
+=\frac{\lambda(\log x)}{\lambda(x)}
+=\frac{1}{x}.
+$$
+
+Second,
+
+$$
+s'(\log x)
+=\frac{\lambda(s(\log x))}{\lambda(\log x)}
+=\frac{\lambda(\log s(x))}{\lambda(x)/x}
+=\frac{\lambda(s(x))/s(x)}{\lambda(x)/x}
+=\frac{x\,s'(x)}{s(x)}.
+$$
+
+The free slope parameter $a=s'(1)$ of the Derivative Relations section is
+exposed as a ratio of generator values: under the normalization $s(1)=1/2$,
+
+$$
+a=\frac{\lambda(1/2)}{\lambda(1)}.
+$$
+
+One global function $\lambda$ replaces all the transported local slopes.
+
+At the tower values the generator is forced up to a single constant. Setting
+$x=E_{n+1}$ in $\lambda(\log x)=\lambda(x)/x$ gives
+$\lambda(E_{n+1})=E_{n+1}\,\lambda(E_n)$, hence
+
+$$
+\lambda(E_n)=\lambda(1)\,E_1E_2\cdots E_n
+=\lambda(1)\,e^{E_0+E_1+\cdots+E_{n-1}}.
+$$
+
+Setting $x=1$ gives the curious closure
+
+$$
+\lambda(0)=\lambda(1).
+$$
+
+The generator grows along the exponential tower as the exponential of the
+partial sums of the tower itself, and the only remaining freedom is the single
+value $\lambda(1)$ — the same one-parameter freedom already observed for the
+slopes.
+
+## Canonical Splintering: the Super-Logarithm
+
+The non-uniqueness of the semilogarithm can now be stated exactly. If $\Phi$ is
+an Abel coordinate, then so is
+
+$$
+\Phi+p\circ\Phi
+$$
+
+for every $1$-periodic function $p$, since
+
+$$
+\Phi(\log x)+p(\Phi(\log x))=\Phi(x)+1+p(\Phi(x)+1)
+=\bigl(\Phi+p\circ\Phi\bigr)(x)+1.
+$$
+
+This is the full gauge freedom of the splintering. A pointwise normalization
+such as $s(c)=0$ fixes one value of one layer; it does not fix the gauge.
+
+There is, however, a recognized canonical choice. The Abel coordinate of the
+logarithm is the **super-logarithm** $\mathrm{slog}$, the inverse of tetration
+$\mathrm{tet}$, anchored by
+
+$$
+\mathrm{slog}(1)=0,\qquad \mathrm{slog}(e)=1,\qquad \mathrm{slog}(0)=-1,
+$$
+
+so that $\mathrm{slog}(E_n)=n$: the Abel coordinate counts tower height.
+Kneser's construction selects, among all gauges, the unique solution that is
+real-analytic and extends holomorphically in the way compatible with the
+complex fixed points of $e^z$. This plays for the splintering exactly the role
+that the Bohr–Mollerup theorem plays for the Gamma function: a regularity
+condition that kills the periodic gauge and leaves one canonical object.
+
+The **canonical semilogarithm** is then
+
+$$
+s^{*}(x)=\mathrm{tet}\left(\mathrm{slog}(x)-\frac{1}{2}\right),
+$$
+
+and more generally the canonical flow is
+$\log^{t}=\mathrm{tet}\circ(\mathrm{slog}-t)$.
+
+The canonical chain through the elementary constants reads
+
+$$
+1 \longmapsto c^{*} \longmapsto 0
+\longmapsto \log c^{*} \longmapsto -\infty,
+\qquad
+c^{*}=s^{*}(1)=\mathrm{tet}\left(-\tfrac{1}{2}\right).
+$$
+
+Numerical constructions of the Kneser solution place this constant at
+
+$$
+c^{*}=\mathrm{tet}\left(-\tfrac{1}{2}\right)\approx 0.4986,
+$$
+
+so that
+
+$$
+s^{*}(e)=e^{c^{*}}\approx 1.6464, \qquad
+\log c^{*}\approx -0.6960.
+$$
+
+This adjudicates the comparison between the two normalizations studied above:
+
+| Quantity | $s(1/2)=0$ | canonical | $s(1/\sqrt e)=0$ |
+|---|---:|---:|---:|
+| $c=s(1)$ | $0.5$ | $\approx 0.4986$ | $\approx 0.6065$ |
+| $s(e)$ | $\sqrt e\approx 1.6487$ | $\approx 1.6464$ | $e^{1/\sqrt e}\approx 1.8341$ |
+| singular point $\log c$ | $-\log 2\approx -0.6931$ | $\approx -0.6960$ | $-0.5$ |
+
+The arithmetically naive normalization $s(1/2)=0$ turns out to lie within
+about $0.3\%$ of the canonical splintering, while the logarithmically elegant
+normalization $s(1/\sqrt e)=0$ is far from it. The half-step of the canonical
+semilogarithm at $1$ is *almost*, but not exactly, the arithmetic half — and
+the singular ledge of the canonical semilogarithm is *almost*, but not
+exactly, $-\log 2$. The earlier table of normalizations is thus resolved: the
+first column is the good approximation, and the deviation
+$\tfrac{1}{2}-c^{*}\approx 0.0014$ is a genuine new constant of the theory.
+
+## The Containment Inequality as a Flow Theorem
+
+The containment question of the earlier section also collapses into the flow
+language. The three curves being compared are three layers of the same flow:
+
+$$
+\log x=\log^{1}(x),\qquad
+\log(s(x))=\log^{3/2}(x),\qquad
+\log(\log x)=\log^{2}(x).
+$$
+
+For a canonical splintering, the orbit map $t\mapsto\log^{t}(x)$ is strictly
+monotone in $t$ wherever the descent stays in the domain (each layer pushes
+every point strictly down, since $\log x<x$). Therefore, for $x>e$,
+
+$$
+\log^{2}(x)<\log^{3/2}(x)<\log^{1}(x),
+$$
+
+which is precisely
+
+$$
+\log(\log x)<\log(s(x))<\log x.
+$$
+
+What was previously an interpolation-supported observation becomes a one-line
+structural theorem: the half-step curve lies between the bounding curves
+because $3/2$ lies between $1$ and $2$.
+
+## Onion Functions: the Limit of the Splintering
+
+The splintering now has a natural endpoint, and it is the concept of **onion
+function** proposed in
+[The Elementary Theory of the Infinite Application of a Function](library/the-elementary-theory-of-the-infinite-application-of-a-function.md).
+
+That treatise advances the hypothesis that the familiar functions are not
+primitive but are the stable residue of hidden iterative strata — that, for
+instance, there exists a generator $\mathrm{GOL}$ whose infinite application
+produces the logarithm. The canonical splintering makes this hypothesis
+precise and, for the logarithm, answers it.
+
+Say that a function $F$ is an **onion function** if it admits a canonical
+splintering: a commuting flow $F^{t}$ with $F^{1}=F$, equivalently a
+compositional $n$-th root for every $n$, equivalently an Abel coordinate with
+a canonical gauge. Then:
+
+The **layers** of the onion are the splinters $F^{1/n}$. Peeling one layer
+means applying one splinter; peeling $n$ layers of order $n$ reproduces the
+skin:
+
+$$
+F=\left(F^{1/n}\right)^{\circ n}.
+$$
+
+The **core** of the onion is not a function. As $n\to\infty$ the layers
+$F^{1/n}$ converge to the identity, and what survives the limit is the
+infinitesimal layer — the generator:
+
+$$
+\lambda(x)=\lim_{n\to\infty} n\left(F^{1/n}(x)-x\right).
+$$
+
+The onion has no innermost layer; it has a germ. The archaeological inverse
+problem of the treatise, $F\longrightarrow\,?$, has as its canonical answer
+not a hidden function but a hidden vector field, and the named function is
+recovered as the infinite application of vanishing layers:
+
+$$
+F=\lim_{n\to\infty}\left(F^{1/n}\right)^{\circ n}.
+$$
+
+For the logarithm, the strata are explicit: $\mathrm{GOL}_t=\log^{t}$, the
+first nontrivial layer is the semilogarithm, and the germ is the generator
+$\lambda=1/\mathrm{slog}'$ with its functional equation
+$\lambda(\log x)=\lambda(x)/x$.
+
+Finally, the splintering is compatible with the central equivalence of the
+treatise, which identifies functions by their destiny,
+$f\sim g \iff \mathcal{A}(f)=\mathcal{A}(g)$. Iterating any splinter
+interlaces with iterating the skin — for the semilogarithm,
+
+$$
+s^{\circ 2n}(x)=\log^{\circ n}(x),
+$$
+
+so every orbit of $s$ contains an orbit of $\log$ as a subsequence, refined by
+half-steps. All layers of an onion therefore share one attractor:
+
+$$
+\mathcal{A}\left(F^{t}\right)=\mathcal{A}(F)
+\qquad\text{for every } t>0.
+$$
+
+A whole continuum of distinct functions collapses into a single destiny class,
+and the flow parameter $t$ is a *canonical coordinate inside the class*. The
+destiny classes of the treatise, which identify functions only by where they
+end, acquire through the splintering an internal geometry that distinguishes
+them by how finely the road to the attractor is subdivided.
+
 ## Conclusion
 
 The semilogarithm is a compositional square root of the logarithm:
@@ -1115,17 +1446,30 @@ $$
 s(s(x))=\log x.
 $$
 
-Its most important structural feature is that it inserts a half-step into the
-usual logarithmic descent. Known values of the logarithm create the constraints
+Maximizing this single equation produces a hierarchy. The half-step
+generalizes to $n$-th splinters $s_n^{\circ n}=\log$, the splinters assemble
+into a continuous commuting flow $\log^{t}=\Phi^{-1}(\Phi+t)$, and the flow is
+governed by one infinitesimal object, the generator
+$\lambda=1/\Phi'$, whose functional equation
+$\lambda(\log x)=\lambda(x)/x$ reproduces every derivative relation of the
+theory in one line.
+
+The non-uniqueness of the semilogarithm is exactly the periodic gauge freedom
+of the Abel coordinate, and it is removed canonically by the super-logarithm:
 
 $$
-e^a \longmapsto s(e^a) \longmapsto a,
+s^{*}=\mathrm{tet}\circ\left(\mathrm{slog}-\tfrac{1}{2}\right),
+\qquad
+s^{*}(1)=\mathrm{tet}\left(-\tfrac{1}{2}\right)\approx 0.4986.
 $$
 
-but the intermediate point $s(e^a)$ is not determined without further analytic
-or geometric assumptions.
+The canonical theory adjudicates the normalizations — $s(1/2)=0$ is correct to
+three decimal places, with deviation $\approx 0.0014$ appearing as a new
+constant — and turns the containment inequality into the trivial monotonicity
+statement $\log^{2}<\log^{3/2}<\log^{1}$.
 
-The central problem is therefore one of coherent interpolation: to construct a
-function that maps known logarithmic chains into half-steps while preserving the
-composition law. In Abel coordinates, this becomes the problem of turning the
-logarithm into a translation and then taking half of that translation.
+The limit of the splintering is the onion: a function that divides
+compositionally without end, whose layers all share one destiny, and whose
+core is not a smaller function but a germ — the vector field that the function
+is the infinite application of. The semilogarithm is the first peeled layer of
+the logarithm-onion, and the canonical splintering is the knife.

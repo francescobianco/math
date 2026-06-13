@@ -1,11 +1,53 @@
 {
   "documents": [
     {
-      "slug": "notes-on-the-equation-g-of-f-equals-one",
-      "title": "Notes on the Equation g(f(x)) = 1",
+      "slug": "the-indestructible-set-collatz-at-the-level-of-whole-sets",
+      "title": "The Indestructible Set: Collatz at the Level of Whole Sets",
       "type": "paper",
-      "created": "2026-06-05T10:00:00+00:00",
-      "updated": "2026-06-05T11:00:00+00:00"
+      "created": "2026-06-13T10:00:00+00:00",
+      "updated": "2026-06-13T13:30:00+00:00"
+    },
+    {
+      "slug": "nota-a-cosa-serve-la-chiave-a-tre-fasi",
+      "title": "Nota: a cosa serve la chiave a tre fasi (in parole semplici)",
+      "type": "notes",
+      "created": "2026-06-13T00:30:00+00:00",
+      "updated": "2026-06-13T00:30:00+00:00"
+    },
+    {
+      "slug": "the-three-phase-key-watermarks-from-the-incompressible-collatz-phase",
+      "title": "The Three-Phase Key: Self-Verifying Watermarks from the Incompressible Collatz Phase",
+      "type": "paper",
+      "created": "2026-06-12T23:55:00+00:00",
+      "updated": "2026-06-12T23:55:00+00:00"
+    },
+    {
+      "slug": "from-settling-to-synchrony-expanding-skycaks-continuous-collatz",
+      "title": "From Settling to Synchrony: Expanding Skycak's Continuous Collatz",
+      "type": "paper",
+      "created": "2026-06-12T22:30:00+00:00",
+      "updated": "2026-06-12T22:30:00+00:00"
+    },
+    {
+      "slug": "notes-on-the-forbidden-words-of-the-collatz-phases",
+      "title": "Notes on the Forbidden Words of the Collatz Phases",
+      "type": "notes",
+      "created": "2026-06-10T23:35:00+00:00",
+      "updated": "2026-06-12T21:00:00+00:00"
+    },
+    {
+      "slug": "notes-on-the-music-of-the-collatz-phases",
+      "title": "Notes on the Music of the Collatz Phases",
+      "type": "notes",
+      "created": "2026-06-10T23:30:00+00:00",
+      "updated": "2026-06-10T23:30:00+00:00"
+    },
+    {
+      "slug": "the-phases-of-collatz",
+      "title": "The Phases of Collatz",
+      "type": "paper",
+      "created": "2026-06-10T21:30:00+00:00",
+      "updated": "2026-06-11T00:30:00+00:00"
     },
     {
       "slug": "a-survey-of-informal-proof-strategies-for-the-collatz-conjecture",
@@ -19,7 +61,7 @@
       "title": "The Elementary Theory of the Infinite Application of a Function",
       "type": "book",
       "created": "2026-06-03T09:00:00+00:00",
-      "updated": "2026-06-05T00:00:00+00:00"
+      "updated": "2026-06-12T19:00:00+00:00"
     },
     {
       "slug": "the-derivative-mystery-of-the-logarithm",
@@ -47,7 +89,7 @@
       "title": "The Semilogarithm",
       "type": "paper",
       "created": "2026-05-23T13:00:00+00:00",
-      "updated": "2026-05-23T14:50:00+00:00"
+      "updated": "2026-06-10T12:00:00+00:00"
     },
     {
       "slug": "the-differential-transform",
