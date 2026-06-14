@@ -2,60 +2,80 @@
 title: "From S to Staircase: The Infinite Iteration of a Sigmoid on Its Own Box"
 type: paper
 created: 2026-06-14T10:00:00+00:00
-updated: 2026-06-14T10:00:00+00:00
+updated: 2026-06-14T11:30:00+00:00
 ---
 
 # From S to Staircase: The Infinite Iteration of a Sigmoid on Its Own Box
 
-*A small, complete study of one well-behaved map. Take an S-shaped curve that
-sends a box $[a,b]$ to itself, pinned at the corners $f(a)=a$, $f(b)=b$ and at
-the centre $f(c)=c$. Apply it to itself again and again. We track the slope, the
-two "knees" where the curve runs parallel to the diagonal, and the displacement
-$g(x)=f(x)-x$ that reads the whole dynamics off a single graph. The conclusion
-is clean and provable: inside its box this map has no hysteresis, no escape to
-infinity, and no endless cycles — and its infinite iteration is a **staircase**.
-Pushed to the limit, the sigmoid becomes a step function.*
+*A small, complete study of one well-behaved family of maps. Take an S-shaped
+curve that sends a box $[a,b]$ to itself, pinned at the corners $f(a)=a$,
+$f(b)=b$ and at the centre $f(c)=c$, and apply it to itself again and again. We
+track the slope, the "knees" where the curve runs parallel to the diagonal, and
+the displacement $g(x)=f(x)-x$ that reads the whole dynamics off a single graph.
+The conclusion is clean and provable: inside its box this map has no hysteresis,
+no escape to infinity, and no endless cycles — its infinite iteration is always a
+**staircase**, with treads at the attracting fixed points and risers at the
+repelling ones. How many stairs depends on the shape: a simple steep-centre S
+gives a single threshold at $c$; a double-bend S with a gentle, attracting centre
+gives the two-step staircase $a\to c\to b$. The critical slope $f'=1$ decides
+which.*
 
 ## Abstract
 
-Let $f:[a,b]\to[a,b]$ be a smooth, strictly increasing **S-curve** (one
-inflection) fixing the two ends and the centre,
+Let $f:[a,b]\to[a,b]$ be a smooth, strictly increasing **S-curve** fixing the
+two ends and the centre,
 
 $$
 f(a)=a,\qquad f(c)=c,\qquad f(b)=b,
 $$
 
-with the S **steep in the middle**: $f'(c)>1$ and $f'(a),f'(b)<1$. We study the
-infinite application $f^\infty=\lim_{N\to\infty}f^{N}$.
+and consider the infinite application $f^\infty=\lim_{N\to\infty}f^{N}$.
 
 Three tools do all the work, and they are the tools of the infinite-application
 program. The **displacement** $g(x)=f(x)-x$ turns the dynamics into a single
-graph: its zeros are the fixed points $a,c,b$, and its sign is the direction of
-flow. The **first derivative** $f'$ gives stability — $a,b$ attract ($f'<1$),
-$c$ repels ($f'>1$). And the **knees** $g_1,g_2$, defined by $g'(x)=f'(x)-1=0$
-(equivalently $f'(x)=1$), are the local extrema of $g$: the steepest risers of
-the eventual staircase and the exact thresholds between local contraction and
-expansion. The inflection of the S is the zero of $f''$, and for a symmetric S
-it coincides with the centre $c$.
+graph: its zeros are the fixed points, and its sign is the direction of flow.
+The **first derivative** sets the **critical threshold** $f'=1$: a fixed point
+*attracts* where $f'<1$ and *repels* where $f'>1$ — so the slope crossing $1$ is
+exactly where a point's role flips from tread to threshold. And the **knees**,
+defined by $g'(x)=f'(x)-1=0$ (equivalently $f'(x)=1$), are the local extrema of
+$g$ and the places where the slope crosses that critical threshold.
 
-The destiny is then forced by a single structural fact: a continuous increasing
-self-map of an interval has **no periodic orbit of period $>1$** — every orbit
-is monotone and bounded, hence convergent to a fixed point. So there is no
-hysteresis (the map is single-valued and deterministic), no escape (it is a
-self-map of a compact box), and no endless cycling. The infinite application is
-therefore the **step function**
+The central result is a single law:
+
+> **The infinite application of a monotone S-self-map is a staircase. Its treads
+> are the attracting fixed points ($f'<1$); its risers stand at the repelling
+> fixed points ($f'>1$), which are the basin thresholds. The number of treads is
+> the number of attracting fixed points, and that number is set by how many times
+> the S crosses the diagonal.**
+
+This is forced by one structural fact (Section 8): a continuous increasing
+self-map has **no orbit of period $>1$** — every orbit is monotone and bounded,
+hence converges to a fixed point. So there is no hysteresis, no escape, no
+endless cycling; only treads and risers.
+
+How many treads depends on the *shape* of the S, and this is the heart of the
+matter — the point on which a first, too-hasty reading of this study was wrong.
+A **simple** S (a single inflection) crosses the diagonal at most three times,
+so it yields at most a *one*-step staircase: with a **steep centre**
+($f'(c)>1$) the centre repels and $f^\infty(x)=a$ on $[a,c)$, $\,b$ on $(c,b]$
+(threshold at $c$); with a **gentle centre** ($f'(c)<1$) the centre attracts and
+the whole open box drains to it (one central tread). But a **double-bend** S
+(two inflections, five diagonal crossings) makes $a,c,b$ *all* attracting with
+two repellers $r_1,r_2$ between them, and then
 
 $$
-f^\infty(x)=\begin{cases}a,& a\le x<c,\\[2pt] c,& x=c,\\[2pt] b,& c<x\le b,\end{cases}
+f^\infty(x)=\begin{cases}a,& a\le x<r_1,\\[2pt] c,& r_1<x<r_2,\\[2pt] b,& r_2<x\le b,\end{cases}
 $$
 
-a staircase whose treads are the attracting fixed points and whose single riser
-sits at the repelling centre $c$. The knees do not change *where* a point goes;
-they shape *how steeply* it gets there. On the canonical example $f(x)=3x^2-2x^3$
-on $[0,1]$ everything is exact: fixed points $0,\tfrac12,1$; knees
-$g_{1,2}=(3\mp\sqrt3)/6\approx0.211,\,0.789$ with $g(g_{1,2})=\mp0.096$;
-inflection at $c=\tfrac12$. Iterating the sigmoid to infinity sharpens it into a
-hard threshold at $c$.
+the genuine **two-step staircase $a\to c\to b$**, with the thresholds at the
+repellers, not at the knees. The knees do not decide *where* a point goes; they
+mark the critical slope $f'=1$ and, as the S deepens, they are the **birthplaces**
+of new treads (a saddle-node tangency where $g$ touches the diagonal). On the
+canonical simple S $f(x)=3x^2-2x^3$ everything is exact (one step, threshold
+$c=\tfrac12$, knees $(3\mp\sqrt3)/6$); on the double-bend
+$f(x)=x-6\,x(x-\tfrac14)(x-\tfrac12)(x-\tfrac34)(x-1)$ the basins are
+$[0,\tfrac14)\to0$, $(\tfrac14,\tfrac34)\to\tfrac12$, $(\tfrac34,1]\to1$ — the
+two-step $a\to c\to b$, verified.
 
 All numerical claims are reproduced by `library/scripts/s_map_staircase.py`.
 
@@ -154,27 +174,46 @@ $x=\tfrac12=c$, so the **inflection of the S is the centre fixed point itself**,
 and $g''$ has opposite signs at $g_1$ and $g_2$, marking one as a minimum and one
 as a maximum.
 
-What the knees *mean* dynamically is the answer to the intuition that motivates
-this study. Move a little away from $a$: there $f'<1$, the map is a contraction,
-and the orbit eases back to $a$. Push on toward $c$: there $f'>1$, the map
-expands, and the orbit is flung away from $c$. The knee $g_1$ is the exact
-boundary between these two regimes — the place of **maximal displacement** on
-$(a,c)$, the steepest part of the descent, the steepest **riser** of the
-staircase we are about to meet. So the knee is not a destination; it is the
-inflection of the journey. A point does not stop at $g_1$ — it moves *fastest*
-there and continues to $a$. The reading "if I move a little from $a$ the orbit
-heads toward the knee" is right about the *shape* of the descent (it sweeps down
-through $g_1$) and is corrected only in its destination: the destiny is the fixed
-point $a$, and $g_1$ is the knee of the slide into it.
+The knees mark a **critical threshold**, and this is the right place to credit
+the intuition that drove this study. The slope $f'=1$ is the dividing line of all
+the dynamics: where $f'<1$ the map *contracts* (pulls toward), where $f'>1$ it
+*expands* (pushes away). A fixed point is therefore an **attractor exactly when
+its slope is below the threshold** and a **repeller when above it** — and a
+fixed point's role can be made to flip simply by changing the slope through $1$.
+That is precisely the correct mechanism: *if the slope at the centre drops below
+the critical threshold, $c$ becomes an attractor* (a gentle-centre S); if it
+stays above, $c$ repels (the steep-centre S of the smoothstep, where
+$f'(c)=\tfrac32>1$).
+
+But one must separate two roles the slope plays, because conflating them is the
+easy mistake. The threshold $f'=1$ governs **stability at the fixed points**;
+it does *not*, on its own, place the **basin boundaries**. For the simple
+steep-centre S the knees $g_1,g_2$ are *not* fixed points — $g(g_1)=-0.096\neq0$
+— so they are not thresholds between basins; they are the points of **maximal
+displacement**, the steepest part of the slide, the steepest *riser*. A point
+started between $g_1$ and $c$ does not stop at the knee and does not go to $c$:
+$g<0$ there, so it slides past $g_1$, fastest at the knee, all the way down to
+$a$. (Run it: from $x_0=0.4$, between $g_1\approx0.21$ and $c=0.5$, the orbit
+goes $0.4\to0.352\to0.284\to\cdots\to0$.) The destiny is the *fixed point*; the
+knee only shapes the descent. The basin boundary is the repelling fixed point —
+here $c$ — not the knee.
+
+This distinction is exactly what opens the door to the richer behaviour. To make
+$c$ a genuine **tread** (an attractor over an interval, the middle step of an
+$a\to c\to b$ staircase) we must drop its slope below the threshold *and* supply
+two new repelling fixed points to bound its basin. That is the double-bend S of
+Section 6 — and there the intuition "attraction changes near the bends" becomes
+literally true, at the two repellers $r_1,r_2$.
 
 ---
 
 ## 4. Stability from the first derivative
 
 The first derivative at each anchor classifies it, by the textbook criterion
-$|f'|<1\Rightarrow$ attracting, $|f'|>1\Rightarrow$ repelling:
+$|f'|<1\Rightarrow$ attracting, $|f'|>1\Rightarrow$ repelling. For the
+**steep-centre** simple S studied so far:
 
-| anchor | $f'$ (general S) | $f'$ (smoothstep) | verdict |
+| anchor | $f'$ (steep-centre S) | $f'$ (smoothstep) | verdict |
 |---|---|---|---|
 | $a$ | $<1$ | $0$ | attracting |
 | $c$ | $>1$ | $3/2$ | repelling |
@@ -228,76 +267,159 @@ increasing map never folds.
 
 ---
 
-## 6. The infinite application is a staircase
+## 6. The staircase law, and the one-step case
 
-Assemble the pieces. Section 2 split the box into two basins at $c$; Section 4
-made $a,b$ attracting and $c$ repelling; Section 5 guaranteed every orbit
-converges monotonically to a fixed point. There is only one possibility for the
-limit, and it depends only on which basin the start lies in:
+Assemble the pieces. Section 5 guarantees every orbit converges monotonically to
+a fixed point; Section 4 sorts the fixed points into attractors and repellers by
+the threshold $f'=1$; Section 2 reads the basins off the sign of $g$. Together
+they give the general law, valid for *any* monotone S-self-map:
+
+> **Staircase law.** $f^\infty$ is constant on the open basin of each attracting
+> fixed point, equal to that fixed point. So $f^\infty$ is a **staircase**: its
+> **treads** are the attracting fixed points, its **risers** stand at the
+> repelling fixed points (the basin boundaries). The number of treads equals the
+> number of attractors, and is bounded by the number of times the S crosses the
+> diagonal.
+
+For the simple steep-centre S this gives a **one-step** staircase. Sections 2
+and 4 made $a,b$ attracting and $c$ repelling, so
 
 $$
-\boxed{\,f^\infty(x)=\lim_{N\to\infty}f^{N}(x)=
+\boxed{\,f^\infty(x)=
 \begin{cases}
 a, & a\le x<c,\\[2pt]
 c, & x=c,\\[2pt]
-b, & c<x\le b.
+b, & c<x\le b
 \end{cases}\,}
+\qquad(\text{steep-centre simple S}).
 $$
 
-This is a **step function** — a staircase with two treads, at heights $a$ and
-$b$, joined by a single riser at the threshold $c$ (the lone unstable point,
-which only $x=c$ itself ever lands on). The bottom-left panel watches it form:
-$f^1$ is the gentle S; $f^2$ is steeper; by $f^{30}$ the curve is
-indistinguishable from a vertical jump at $c=\tfrac12$. The sigmoid does not
-*approximate* a step — iterated to the limit, it *becomes* one.
-
-The knees now take their proper place. They never were destinations; they are the
-hinges on which the riser steepens. Each application of $f$ amplifies the slope
-in the expanding zone $(g_1,g_2)$ and flattens it outside, so the steep middle
-gets steeper and the flat flanks get flatter — the S tightening, iteration after
-iteration, into the threshold. The whole story is the single sentence: **between
-the knees the curve climbs away from the centre; outside them it settles onto an
-end; the limit of doing this forever is a step.**
+Two treads at $a$ and $b$, one riser at the threshold $c$ (the lone unstable
+point, which only $x=c$ ever lands on). The bottom-left panel of the first figure
+watches it form: $f^1$ is the gentle S, $f^2$ steeper, and by $f^{30}$ the curve
+is a vertical jump at $c=\tfrac12$. The sigmoid does not *approximate* a step —
+iterated to the limit, it *becomes* one. Here the knees are not destinations:
+each iteration amplifies the slope in the expanding zone $(g_1,g_2)$ and flattens
+it outside, so the steep middle steepens into the riser while the flanks flatten
+into the treads.
 
 ---
 
-## 7. The dual S, and the place of this in the program
+## 7. The two-step staircase $a\to c\to b$: a double-bend S
 
-If the S is **flat in the middle** instead of steep — $f'(c)<1$ and
-$f'(a),f'(b)>1$ — every sign flips: the centre $c$ becomes the lone attractor,
-the ends become repelling, and the staircase has a single central tread (the
-whole open box drains to $c$) with risers at $a$ and $b$. Nothing else changes,
-because the only ingredient the result truly needs is **monotonicity**
-(Section 5). The dichotomy is entirely carried by the sign of the displacement's
-slope at the centre, $g'(c)=f'(c)-1$ — the same vertex-displacement quantity that
-decided one drain from three in *The Light Cone of Collatz*, here deciding two
-treads from one.
+The one-step picture is *not* the whole story, and the way it is exceeded is the
+genuinely interesting case — the one the staircase law was stated generally to
+capture. To get a true **two-step** staircase $a\to c\to b$, with $c$ an
+attracting tread over a whole interval, the law tells us exactly what is needed:
+three attractors $a,c,b$ and, between them, two repellers $r_1,r_2$ as basin
+walls — **five** fixed points, i.e. an S that crosses the diagonal five times.
 
-This places the little study inside the larger program. In the language of *The
-Elementary Theory of the Infinite Application of a Function*, the infinite
-application $f^\infty$ is a new object built from $f$, and its destiny here is the
-tamest of the catalogue: a **finite array** of point-attractors, assembled into a
-staircase. The displacement $g=f-x$ is the reading instrument; the knees
-$f'=1$ are where its derivative changes the local verdict; and the monotone
-self-map is the one setting where the infinite application can be written down in
-closed form — no hysteresis, no infinities, no cycles. It is the clean baseline
-against which the wild cases (the non-hyperbolic, the average-but-not-uniform,
-the quantization-sensitive) are precisely the departures from one or another of
-these three hypotheses.
+A simple sigmoid cannot do this. With a single inflection, $f'$ is unimodal, so
+$g'=f'-1$ vanishes at most twice and $g=f-x$ has at most three zeros: a
+single-inflection S crosses the diagonal at most three times, and so yields at
+most one step. The two-step staircase requires a **double-bend** S — two
+inflections, a gentle attracting centre flanked by two steep repelling shoulders.
+A clean exact example on $[0,1]$:
+
+$$
+f(x)=x-6\,x\!\left(x-\tfrac14\right)\!\left(x-\tfrac12\right)\!\left(x-\tfrac34\right)\!(x-1),
+$$
+
+increasing on $[0,1]$, with five fixed points and slopes
+
+$$
+f'(0)=0.44,\quad f'(\tfrac14)=1.14,\quad f'(\tfrac12)=0.91,\quad f'(\tfrac34)=1.14,\quad f'(1)=0.44.
+$$
+
+Now the centre $c=\tfrac12$ is **below** the critical threshold ($f'=0.91<1$): it
+has become an attractor, exactly as the slope argument predicts. The two
+shoulders $r_1=\tfrac14,\,r_2=\tfrac34$ are **above** it ($f'=1.14>1$): repellers,
+the basin walls. The staircase law then gives the two-step:
+
+$$
+\boxed{\,f^\infty(x)=
+\begin{cases}
+a=0, & 0\le x<\tfrac14,\\[2pt]
+c=\tfrac12, & \tfrac14<x<\tfrac34,\\[2pt]
+b=1, & \tfrac34<x\le 1
+\end{cases}\,}
+\qquad(\text{double-bend S}).
+$$
+
+Verified directly: orbits from $0.1,0.24$ fall to $0$; from $0.26,0.5,0.74$
+settle on $\tfrac12$; from $0.76,0.9$ climb to $1$. The thresholds are the
+repellers $r_1,r_2$ — *near the bends of the S*, which is exactly the
+"attraction changes at the bends" the geometry suggests, made precise: the
+change of attraction happens at the repelling fixed points, the steep shoulders,
+not at the gentle centre and not at the literal knees $f'=1$ (which sit slightly
+inside them). The middle tread $c$ is real, occupies the whole interval
+$(r_1,r_2)$, and survives to the limit.
+
+![The double-bend S and its two-step staircase. Left: the curve crosses the diagonal five times — three attracting treads $a,c,b$ (filled dots) and two repelling thresholds $r_1,r_2$ (open dots); three cobwebs settle on $0$, $\tfrac12$, $1$. Right: $f^N$ for $N=1,2,4,8,20,60$ sharpening into the two-step staircase $a\to c\to b$, with the risers forming at the repellers $r_1=\tfrac14,\,r_2=\tfrac34$.](library/images/s-map-two-step.png)
+
+This is the corrected and complete answer to the motivating question. Whether the
+limit is a one-step or a two-step (or higher) staircase is not a property of "the
+S" in the abstract; it is decided by how many times the curve crosses the
+diagonal and by the slope at each crossing. The steep-centre simple S gives one
+step; the gentle-centre double-bend S gives the two-step $a\to c\to b$. The knees
+$f'=1$ are the critical slope that decides each crossing's stability, and — as the
+centre is lowered through the threshold — they are the **birthplaces** of the new
+middle tread: at the moment $c$'s neighbourhood first dips to slope $1$ while
+touching the diagonal, a repeller–attractor pair is born (a saddle-node
+tangency), and the one-step staircase grows its middle step.
 
 ---
 
-## 8. Conclusion
+## 8. How many steps? The count, and the place in the program
+
+The pattern generalizes cleanly. The number of treads of $f^\infty$ is the number
+of attracting fixed points of $f$, and attractors and repellers must alternate
+along $[a,b]$ (between two attractors sits a repelling wall). So the staircase has
+$k$ treads exactly when $f$ has $2k-1$ fixed points (counting the bounding
+behaviour), and that count is limited by the shape: an S with $m$ inflections can
+cross the diagonal at most $m+2$ times. One inflection $\Rightarrow$ at most one
+step; two inflections $\Rightarrow$ up to the two-step $a\to c\to b$; more bends,
+more steps. **Iterating an S to infinity always yields a staircase; how many
+stairs is set by how many times the S meets the diagonal.**
+
+The whole dichotomy is carried by one quantity, the slope of the displacement at
+a fixed point, $g'(\,\cdot\,)=f'(\,\cdot\,)-1$ — the same vertex-displacement that
+decided one drain from three in *The Light Cone of Collatz*, here deciding tread
+from threshold and so the very number of stairs. And the result needs only
+**monotonicity**: an increasing self-map cannot fold, hence cannot cycle, escape,
+or carry hysteresis (Section 5), so its infinite application is always this tame
+object.
+
+This places the study inside the larger program. In the language of *The
+Elementary Theory of the Infinite Application of a Function*, $f^\infty$ is a new
+object built from $f$, and its destiny here is the gentlest of the catalogue: a
+**finite array** of point-attractors assembled into a staircase. The displacement
+$g=f-x$ is the reading instrument; the critical slope $f'=1$ is where it changes
+the local verdict; and the monotone self-map is the one setting where the infinite
+application can be written in closed form. It is the clean baseline against which
+the wild cases — the non-hyperbolic, the average-but-not-uniform, the
+quantization-sensitive — are precisely the departures from one of these
+hypotheses.
+
+---
+
+## 9. Conclusion
 
 An S-curve on its own box is a switch with a memoryless rule. Its displacement
-$g=f-x$ shows two basins meeting at the centre; its slope marks the centre as a
-source and the ends as sinks; its knees, where $f'=1$, are the steepest risers,
-not resting places. Because the map is increasing it cannot fold, so it cannot
-cycle, and being a self-map of a box it cannot escape; every orbit slides
-monotonically to an end. The infinite application is therefore a staircase, and
-the sigmoid, applied without end, is revealed as a step function — a hard
-threshold sitting exactly on the unstable centre, with the knees recording how
-steeply the world on either side was swept toward its destiny.
+$g=f-x$ shows the basins; the critical slope $f'=1$ sorts each diagonal crossing
+into an attracting tread or a repelling threshold; and because the map is
+increasing it cannot fold, so it cannot cycle, escape, or carry hysteresis —
+every orbit slides monotonically to a fixed point. The infinite application is
+therefore always a **staircase**: treads at the attractors, risers at the
+repellers. How many stairs is decided by the shape — by how many times the S
+meets the diagonal. A simple steep-centre S gives one step, a hard threshold at
+the unstable centre $c$; a double-bend S with a gentle attracting centre gives
+the **two-step $a\to c\to b$**, with the thresholds at the two repelling
+shoulders. The knees $f'=1$ are not destinations but the critical slope that
+decides each crossing — and, as the centre is lowered through that threshold, the
+birthplace of a new middle tread. The corrected headline: iterating an S to
+infinity yields a staircase, and the centre is a step of it precisely when its
+slope has dropped below one.
 
 ---
 
@@ -309,12 +431,15 @@ All numerical claims are reproduced by:
 python3 library/scripts/s_map_staircase.py
 ```
 
-The script works the canonical S-map $f(x)=3x^2-2x^3$ on $[0,1]$: it locates the
-fixed points $0,\tfrac12,1$ and classifies them by $f'$ ($0,\tfrac32,0$); solves
-$f'(x)=1$ for the knees $g_{1,2}=(3\mp\sqrt3)/6$ and reports the displacement
-extrema $g(g_{1,2})=\mp0.0962$; checks $f''=0$ at the centre $c=\tfrac12$;
-verifies that orbits from a spread of seeds are monotone and land on $0$ or $1$
-(no cycles); and renders the four-panel figure
-`library/images/s-map-staircase.png` (the S-map with cobwebs, the displacement
-$g$ and its derivative, the staircase-forming $f^N$, and $f'$ crossing $1$ at the
-knees).
+The script works two maps on $[0,1]$. For the simple steep-centre S
+$f(x)=3x^2-2x^3$: it locates the fixed points $0,\tfrac12,1$ and classifies them
+by $f'$ ($0,\tfrac32,0$); solves $f'(x)=1$ for the knees $g_{1,2}=(3\mp\sqrt3)/6$
+and reports the displacement extrema $g(g_{1,2})=\mp0.0962$; checks $f''=0$ at the
+centre; verifies that orbits between $g_1$ and $c$ go to $a$ (not to $c$), and that
+all orbits are monotone with no cycles, giving the one-step staircase; and renders
+the four-panel figure `library/images/s-map-staircase.png`. For the double-bend S
+$f(x)=x-6\,x(x-\tfrac14)(x-\tfrac12)(x-\tfrac34)(x-1)$: it confirms the five fixed
+points with $a,c,b$ attracting and $r_1,r_2$ repelling, checks the basins
+$[0,\tfrac14)\to0$, $(\tfrac14,\tfrac34)\to\tfrac12$, $(\tfrac34,1]\to1$, and
+renders `library/images/s-map-two-step.png` (the double-bend S with cobwebs and
+$f^N$ forming the two-step staircase $a\to c\to b$).

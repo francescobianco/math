@@ -71,6 +71,29 @@ def iterate(x0, n):
     return x
 
 
+# ---- the user's richer "double-bend" S on [0,1] ---------------------------
+# Five crossings of the diagonal: attracting 0, c=1/2, 1 and repelling
+# r1=1/4, r2=3/4. Its infinite iteration is the TWO-step staircase a->c->b.
+ALPHA = 6.0
+R1, R2 = 0.25, 0.75
+
+
+def f2(x):
+    return x - ALPHA * x * (x - R1) * (x - C) * (x - R2) * (x - B)
+
+
+def f2p(x):
+    h = 1e-6
+    return (f2(x + h) - f2(x - h)) / (2 * h)
+
+
+def iterate2(x0, n):
+    x = x0
+    for _ in range(n):
+        x = f2(x)
+    return x
+
+
 def report():
     print("=" * 60)
     print("S-map  f(x) = 3x^2 - 2x^3  on [0,1]")
@@ -100,7 +123,24 @@ def report():
         print(f"  x0={x0:<4} -> limit={x:.6f}   monotone={'yes' if (up or dn) else 'NO'}")
 
     print("\nf^inf is the step function:  0 on [0,1/2),  1/2 at 1/2,  1 on (1/2,1].")
-    print("Iterating the sigmoid to infinity yields a hard threshold at c=1/2.")
+    print("Iterating the simple sigmoid to infinity yields ONE threshold at c=1/2.")
+
+    print("\n" + "=" * 60)
+    print(f"DOUBLE-BEND S  f(x) = x - {ALPHA}*x(x-1/4)(x-1/2)(x-3/4)(x-1)")
+    print("=" * 60)
+    print("\nfive fixed points (g=f-x crosses zero five times):")
+    for p in (A, R1, C, R2, B):
+        kind = "attract" if abs(f2p(p)) < 1 else "repel "
+        print(f"  x={p:<5} f'={f2p(p):+.3f}  [{kind}]")
+    print("\ninfinite iteration -> TWO-step staircase a -> c -> b:")
+    for x0 in (0.1, 0.24, 0.26, 0.5, 0.74, 0.76, 0.9):
+        x = x0
+        for _ in range(400):
+            x = f2(x)
+        print(f"  x0={x0:<5} -> {x:.5f}")
+    print("\nf^inf:  0 on [0,1/4),  1/2 on (1/4,3/4),  1 on (3/4,1].")
+    print("Thresholds are the REPELLING fixed points r1=1/4, r2=3/4 -- the")
+    print("centre c is now an attracting tread. Steps = attracting fixed points.")
 
 
 def plot(out=None):
@@ -180,6 +220,53 @@ def plot(out=None):
     print(f"\nwrote {out}")
 
 
+def plot_two_step(out=None):
+    """The double-bend S and its two-step staircase a->c->b."""
+    import matplotlib.pyplot as plt
+
+    xs = np.linspace(0, 1, 600)
+    fig, ax = plt.subplots(1, 2, figsize=(11, 4.8))
+
+    a0 = ax[0]
+    a0.plot(xs, f2(xs), color="#b8336a", lw=2, label="double-bend $f$")
+    a0.plot(xs, xs, color="gray", ls="--", lw=1, label="$y=x$")
+    for p in (A, C, B):           # attracting: filled
+        a0.plot(p, p, "o", color="black", ms=7)
+    for p in (R1, R2):            # repelling: open
+        a0.plot(p, p, "o", mfc="white", mec="black", ms=7)
+
+    def cobweb(a, x0, color):
+        x = x0
+        for _ in range(60):
+            y = f2(x)
+            a.plot([x, x], [x, y], color=color, lw=0.6)
+            a.plot([x, y], [y, y], color=color, lw=0.6)
+            x = y
+
+    cobweb(a0, 0.18, "#e08a1e")   # -> 0
+    cobweb(a0, 0.45, "#1ea05a")   # -> 1/2
+    cobweb(a0, 0.82, "#2a6f97")   # -> 1
+    a0.set_title("double-bend S: three attracting treads (filled),\n"
+                 "two repelling thresholds $r_1,r_2$ (open)")
+    a0.set_xlabel("$x$"); a0.set_ylabel("$f(x)$"); a0.legend(loc="upper left", fontsize=8)
+
+    a1 = ax[1]
+    a1.plot(xs, xs, color="gray", ls="--", lw=1)
+    for n, col in zip((1, 2, 4, 8, 20, 60),
+                      plt.cm.viridis(np.linspace(0, 0.9, 6))):
+        a1.plot(xs, iterate2(xs, n), color=col, lw=1.6, label=f"$f^{{{n}}}$")
+    a1.set_title(r"$f^N$ -> two-step staircase  $a\to c\to b$" "\n"
+                 r"(treads at $0,\frac{1}{2},1$; risers at $r_1=\frac{1}{4}, r_2=\frac{3}{4}$)")
+    a1.set_xlabel("$x$"); a1.set_ylabel("$f^N(x)$"); a1.legend(fontsize=8, ncol=2)
+
+    fig.tight_layout()
+    if out is None:
+        out = Path(__file__).resolve().parent.parent / "images" / "s-map-two-step.png"
+    fig.savefig(out, dpi=150)
+    print(f"wrote {out}")
+
+
 if __name__ == "__main__":
     report()
     plot()
+    plot_two_step()
