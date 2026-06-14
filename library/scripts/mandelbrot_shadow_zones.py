@@ -30,6 +30,13 @@ near the boundary where the finite escape-time test gives no verdict
                         resolutions run it rises rather than falls -- a measured
                         trend, not a proven limit; consistent with, but not a
                         proof of, Shishikura's dim_H(dM) = 2.
+  4. escape_faithfulness(): the OTHER side -- is an ESCAPE faithful? float64 vs
+                        80-bit longdouble: spurious escapes (f64 says outside,
+                        higher precision stays bounded), missed escapes, and
+                        escape-time discrepancies. The divergence inequality is a
+                        theorem about the TRUE orbit; the computed crossing is a
+                        pseudo-orbit event, so plain float certifies escape no
+                        better than it certifies boundedness near the boundary.
 
 It also renders images/mandelbrot-shadow-zones.png: the set with the shadow
 skin painted red -- an honest three-state picture (out / in / undecided).
@@ -47,15 +54,19 @@ import numpy as np
 WINDOW = (-2.5, 1.0, -1.5, 1.5)  # (re_min, re_max, im_min, im_max)
 
 
+_CDTYPE = {np.float32: np.complex64, np.float64: np.complex128,
+           np.longdouble: np.clongdouble}
+
+
 def escape_iter(window, res, maxiter, dtype=np.float64):
     """Return per-pixel escape iteration; -1 means 'still bounded at cap N'
     (i.e. painted black = classified IN the set)."""
-    cdtype = np.complex128 if dtype == np.float64 else np.complex64
+    cdtype = _CDTYPE.get(np.dtype(dtype).type, np.complex128)
     re = np.linspace(window[0], window[1], res, dtype=dtype)
     im = np.linspace(window[2], window[3], res, dtype=dtype)
     C = (re[np.newaxis, :] + 1j * im[:, np.newaxis]).astype(cdtype)
     Z = np.zeros_like(C)
-    out = np.full(C.shape, -1, dtype=np.int32)
+    out = np.full(C.shape, -1, dtype=np.int64)
     alive = np.ones(C.shape, dtype=bool)
     for n in range(maxiter):
         Z[alive] = Z[alive] * Z[alive] + C[alive]
@@ -93,6 +104,31 @@ def precision_flip(res=600, maxiter=1000):
     print(f"   float32 vs float64 at N={maxiter}, {res}x{res} grid:")
     print(f"   {flips} pixels change verdict ({100*flips/total:.3f}% of the grid)")
     print(f"   -> the rendered set is not precision-independent near dM")
+    print()
+
+
+def escape_faithfulness(res=700, maxiter=2000):
+    """The OTHER side: is an ESCAPE faithful? The divergence inequality is a
+    theorem about the TRUE orbit; the machine checks it on a pseudo-orbit. Near
+    the boundary a spurious crossing can paint a bounded point 'outside'.
+    We compare float64 against 80-bit extended precision (longdouble)."""
+    print("4. Is an escape even faithful? (the white side)")
+    it64 = escape_iter(WINDOW, res, maxiter, np.float64)
+    it80 = escape_iter(WINDOW, res, maxiter, np.longdouble)
+    esc64, esc80 = it64 >= 0, it80 >= 0
+    spurious = int(np.count_nonzero(esc64 & ~esc80))   # f64 escapes, f80 bounded
+    missed = int(np.count_nonzero(~esc64 & esc80))
+    both = esc64 & esc80
+    dt = np.abs(it64 - it80)[both]
+    print(f"   {res}x{res}, N={maxiter}, float64 vs 80-bit longdouble:")
+    print(f"   escape-verdict flips: {spurious + missed}  "
+          f"(SPURIOUS escapes f64 paints outside but stay bounded: {spurious}; "
+          f"missed: {missed})")
+    print(f"   among commonly-escaped pixels: max |escape-time difference| = "
+          f"{int(dt.max())}, #(>=5) = {int((dt >= 5).sum())}")
+    print(f"   -> the escape inequality is a theorem about the TRUE orbit; the")
+    print(f"      computed crossing is a pseudo-orbit event, unfaithful near dM.")
+    print(f"      Only interval arithmetic certifies escape; plain float does not.")
     print()
 
 
@@ -165,4 +201,5 @@ if __name__ == "__main__":
     black_breath()
     precision_flip()
     shadow_zone()
+    escape_faithfulness()
     render_three_state()

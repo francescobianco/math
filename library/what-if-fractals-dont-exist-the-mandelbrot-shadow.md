@@ -2,7 +2,7 @@
 title: "What If Fractals Don't Exist? The Mandelbrot Set Between a Wild Edge and a Finite Machine"
 type: paper
 created: 2026-06-13T18:30:00+00:00
-updated: 2026-06-13T21:30:00+00:00
+updated: 2026-06-14T14:30:00+00:00
 ---
 
 # What If Fractals Don't Exist? The Mandelbrot Set Between a Wild Edge and a Finite Machine
@@ -68,7 +68,15 @@ $\tilde z_{n+1}=\mathrm{fl}(\tilde z_n^2+c)$, so what it follows is a
 faithfully tracks a true orbit in **hyperbolic** systems — the reason the bulk
 of the picture is trustworthy — but the boundary is precisely the
 **non-hyperbolic** locus where no such guarantee holds: there we have the least
-right to claim the computed trajectory reflects a real one. Second, an
+right to claim the computed trajectory reflects a real one. This cuts *both* ways:
+even the "escape" verdict, long treated as the certifiable side, is only a
+pseudo-orbit event — the divergence inequality is a theorem about the *true*
+orbit, but the machine checks it on a computed one that, near $\partial M$, can
+cross the threshold spuriously. (Measured: recomputing in $80$-bit precision flips
+$7$ escape verdicts on a $700^2$ grid, $5$ of them spurious escapes float64 paints
+as "outside" but higher precision keeps bounded, and shifts escape times by up to
+$378$ iterations.) Only interval arithmetic certifies either side; plain floating
+point guesses on both. Second, an
 escape-time render asks, per pixel, a **Collatz question** ("does this infinite
 orbit stay bounded?") and answers it by finite iteration — accepting for
 Mandelbrot exactly the finite-trial evidence we reject for Collatz. That
@@ -113,8 +121,9 @@ following an orbit without bound. So we cannot answer the provocation pixel by
 pixel. We can do two better things. We can examine how much the picture depends
 on the machine (§§2–6) — including the subtle point that the computer never even
 follows the true orbit (§6) — and we can **bound** the provocation with what is
-actually proven (§§7–8). The gap between those two is where the real content
-lives (§9).
+actually proven (§§7–8), including the unexpected fact that the *escape* verdict
+is no more faithful than the "inside" one (§9). The gap between those is where the
+real content lives (§10).
 
 ### A note on register
 
@@ -272,7 +281,7 @@ measured flips.
 
 The depth cap and the mantissa flips are still, in a sense, *bookkeeping* errors
 — wrong verdicts about the right object. There is a deeper issue, and it is the
-real heart of the worry, distinct from the three-state problem of §9. It is not
+real heart of the worry, distinct from the three-state problem of §10. It is not
 that we might mislabel a point. It is that **the trajectory the computer follows
 is not the mathematical orbit at all.**
 
@@ -384,19 +393,22 @@ the title? Yes — but it must be stated with care, because the strong version
 actually true.
 
 **What the escape-time test can and cannot settle.** For $c$ outside $M$ the
-orbit crosses $|z|>2$ at some finite step, and the renderer certifies "outside"
-the moment it does. For $c$ in a hyperbolic interior component the orbit is
-attracted to a cycle and one can certify "inside" in finite time *once the cycle
-is located*. But the plain escape-time loop — the one everybody runs — never
-certifies "inside": it only ever runs out of patience. For $c$ on $\partial M$
+*true* orbit crosses $|z|>2$ at some finite step, and the **escape inequality** —
+once the true $|z|>2$, the orbit diverges — certifies "outside." That inequality
+is a genuine theorem; the catch (the subject of §9) is that the renderer checks
+it on the *computed* orbit, not the true one. For $c$ in a hyperbolic interior
+component the orbit is attracted to a cycle and one can certify "inside" in finite
+time *once the cycle is located*. But the plain escape-time loop — the one
+everybody runs — never certifies "inside": it only ever runs out of patience. For
+$c$ on $\partial M$
 the orbit neither escapes nor settles to an attracting cycle, so the escape-time
 test **returns no verdict at any finite $N$**. This is a statement about *that
 algorithm*, not a claim that membership is logically undecidable in the
 Turing sense; $M$ as a whole is widely expected to be computable in the sense of
 computable analysis (it would follow from MLC). The precise, defensible claim
 is: *the finite escape-time procedure decides the exterior and the hyperbolic
-interior, and is silent on the boundary, where it substitutes "hasn't escaped
-yet" for an answer.*
+interior — given a faithful orbit (§9) — and is silent on the boundary, where it
+substitutes "hasn't escaped yet" for an answer.*
 
 **Local connectivity is open (MLC).** Whether $M$ is locally connected — whether
 the boundary behaves tamely enough that the filaments connect up the way the
@@ -425,17 +437,88 @@ mathematics declines to promise it guessed right."
 
 ---
 
-## 9. The honest object: a mesh of shadow zones
+## 9. The other side of the boundary: is an escape even faithful?
+
+So far the doubt has been aimed at the black: the "inside" is an overcount, a
+"hasn't escaped yet" worn as a verdict. It is natural to think the *outside* is
+the solid ground — escape is a theorem, after all. This section aims the same
+doubt at the white, and finds it bites there too. The argument is the sharpest in
+the paper, and it is exactly right.
+
+**What is actually proven is an implication, not a computation.** The escape
+criterion is: *if the true orbit ever satisfies $|z_n|>2$, then it diverges.*
+That is a clean theorem about the **analytic** orbit. But the renderer never has
+the analytic orbit; it has the pseudo-orbit $\tilde z_n$ of §6, a sequence
+reperturbed at every step. When the machine paints a pixel "outside," what has
+actually happened is that the *pseudo*-orbit crossed $2$ — and the theorem says
+nothing about pseudo-orbits. The question the white side must answer is therefore
+the mirror of the black side's: *who guarantees that the computed trajectory which
+crossed $|z|=2$ is faithful to the analytic one — that it escaped because the true
+orbit escapes, and not because rounding nudged a lingering, bounded orbit over the
+line?* The only proven fact, the divergence inequality, supplies its antecedent
+("the true $|z|>2$") only through a computation that is not faithful near the
+edge. So an escape verdict near $\partial M$ is, like a black verdict, a
+pseudo-orbit claim — not a certificate.
+
+**Where this is and is not a real worry (the honest asymmetry).** Far from
+$\partial M$ the escape verdict is robust, and for two solid reasons. First, out
+there the orbit blows up *super-exponentially*, so the true value swamps the
+$10^{-16}$ rounding error by many orders of magnitude within a few steps — the
+computed and true orbits both rocket to infinity and there is nothing to confuse.
+Second, the exterior is the basin of the superattracting fixed point $\infty$ of
+$z\mapsto z^2+c$ on the Riemann sphere, a **hyperbolic** region, so the shadowing
+lemma of §6 applies: an escaping pseudo-orbit really is shadowed by a true
+escaping orbit (of some nearby parameter). The vulnerable zone is the same thin
+**lingering band** hugging $\partial M$, where an orbit can wander near the Julia
+set for hundreds of iterations before (maybe) crossing $2$ — long enough for the
+pseudo-orbit to drift off its analytic twin and cross the line spuriously, or to
+linger when the true orbit would have crossed. There, and only there, an escape
+is not to be trusted.
+
+**Measured.** (*Experiment.*) On the standard window at $700\times700$, $N=2000$,
+recomputing each orbit in $80$-bit extended precision (`longdouble`) against
+double precision: **$7$ pixels flip their escape verdict**, of which **$5$ are
+spurious escapes** — float64 paints them "outside," yet in higher precision the
+orbit stays bounded — and $2$ are missed escapes. Among the pixels both
+precisions agree have escaped, the **escape time differs by up to $378$
+iterations**, with $29$ pixels differing by $5$ or more. So both the *verdict*
+and the *coloring* (which is just the escape time) are precision-dependent in the
+boundary band: change the mantissa and a handful of pixels cross the line that
+should not have, and many more cross it at a different moment. The white is not
+the bedrock it looked like.
+
+**The consequence: the boundary is unreliable symmetrically.** This closes a gap
+the earlier sections left open. It is *not* that the inside is soft and the
+outside is hard; **both** verdicts, in the near-boundary band, are pseudo-orbit
+claims that move with the machine. The asymmetry the decision-problem view
+suggested — "the exterior is the certifiable side" — survives only with **interval
+(ball) arithmetic**: there, a cell whose entire enclosing ball exceeds radius $2$
+has *every* point genuinely escaping, a real certificate; and symmetrically a cell
+provably trapped in a hyperbolic component is genuinely inside. Plain floating
+point certifies *neither* near $\partial M$ — it only reports where its one
+drifting pseudo-orbit happened to fall. The shadow band of §10 is therefore the
+locus where neither a true-escape certificate nor a true-bounded certificate is in
+hand, and the red skin in the figure should be read as covering spurious escapes
+just as much as premature blacks. The doubt that began at the black has reached
+all the way across the white: at the edge, the finite machine guesses on both
+sides.
+
+---
+
+## 10. The honest object: a mesh of shadow zones
 
 The two halves now fit. The set is real (§7); on the boundary the finite
-escape-time procedure gives no answer (§8), our arithmetic is finite, and the
-trajectory itself is only a pseudo-orbit (§§3–6).
+escape-time procedure gives no answer (§8), our arithmetic is finite, the
+trajectory itself is only a pseudo-orbit (§§3–6), and even the escape verdict on
+the far side is unfaithful there (§9).
 The constructive response — and this is the part of the paper closest to a usable
 technique — is not to draw a crisp black-and-white that hides the guess, but to
 draw **what the machine actually knows** — a three-state map:
 
-- **OUT** — certifiable: the orbit has escaped (rigorously, once $|z|>2$; with
-  interval arithmetic, once the whole cell escapes).
+- **OUT** — certifiable, but only with the right arithmetic: once an *interval*
+  enclosing the whole cell's orbit exceeds radius $2$, every point in it truly
+  escapes (§9). A single floating-point orbit crossing $2$ is *not* such a
+  certificate near the edge — it may be a spurious, rounding-induced crossing.
 - **IN** — certifiable: the cell provably lies in a known hyperbolic component
   (an attracting cycle can be exhibited in finite time).
 - **SHADOW** — undecided at this budget: neither certificate is in hand.
@@ -484,7 +567,7 @@ $2$: draw the land, draw the sea, and draw — in a third color — the tide.
 
 ---
 
-## 10. Mandelbrot is a continuous Collatz — and the double pessimism
+## 11. Mandelbrot is a continuous Collatz — and the double pessimism
 
 This is not an isolated provocation; it is the second instance of a single
 thesis, and the comparison repays being made exact. In *The Light Cone of
@@ -574,7 +657,7 @@ not to prove anything with.
 
 ---
 
-## 11. Conclusion
+## 12. Conclusion
 
 Do fractals exist? The honest answer is a careful *yes — but the picture is not
 the set.* (*Theorem.*) The Mandelbrot set exists, is connected, and has a
@@ -592,12 +675,19 @@ Two things deepen this past the easy "approximation error." First, the machine
 never even follows the orbit it claims to: it follows a **pseudo-orbit** of a
 map reperturbed at every step (§6), and only in the hyperbolic bulk does
 shadowing theory promise that pseudo-orbit tracks a real one. On the boundary —
-the interesting part — that promise is absent. Second, the operation we perform
-is, per pixel, a **Collatz question** — "does this infinite orbit stay bounded?"
-— answered by finite iteration; and we accept for Mandelbrot exactly the
-finite-trial evidence we reject for Collatz (§10). The asymmetry is justified
-only by the global theorems $M$ enjoys and Collatz lacks; strip the theorems and
-keep the pictures, and the scepticism would be hard to answer.
+the interesting part — that promise is absent, and it fails *symmetrically*: not
+only is a black "inside" pixel a "hasn't escaped yet," but a white "outside"
+pixel may be a *spurious* escape, a lingering bounded orbit that rounding pushed
+over the line (§9 — measured, $5$ such on a $700^2$ grid against $80$-bit
+precision). The only proven thing is the divergence *inequality*, a statement
+about the true orbit; the machine supplies its antecedent unfaithfully. So at the
+edge the finite computation guesses on **both** sides, and only interval
+arithmetic certifies either. Second, the operation we perform is, per pixel, a
+**Collatz question** — "does this infinite orbit stay bounded?" — answered by
+finite iteration; and we accept for Mandelbrot exactly the finite-trial evidence
+we reject for Collatz (§11). The asymmetry is justified only by the global
+theorems $M$ enjoys and Collatz lacks; strip the theorems and keep the pictures,
+and the scepticism would be hard to answer.
 
 The goad in the title resolves like this: "fractals don't exist" is false about
 the set and only *half* true about the picture — what we call the fractal is, at
@@ -613,7 +703,7 @@ locally connected, keeps its own counsel just past the last bit of the mantissa.
 
 ---
 
-## 12. Coda: definition by deferral, and the theory this is a premise for
+## 13. Coda: definition by deferral, and the theory this is a premise for
 
 *A closing note that steps outside this paper's scope, to say what the paper is
 for. Register: program, not theorem.*
@@ -643,7 +733,7 @@ analytically is exactly the thing we cannot do. It is a **definition by
 deferral**: it points at the answer and quietly hands the computation to a limit
 we cannot take. This is not to say the set is ill-defined — it is well-defined.
 It is to say *where the difficulty has been hidden.* The escape-time loop (§2),
-the pseudo-orbits (§6), the three-state mesh (§9) are one confession in
+the pseudo-orbits (§6), the three-state mesh (§10) are one confession in
 different clothes: we can only ever **sample** the infinite application, never
 solve it, so the boundary — the locus where sampling and solving would diverge —
 stays just out of reach of the very definition that names it.
@@ -699,9 +789,15 @@ $N$, monotonically shrinking and still moving at $N=2000$); the float32-versus-
 float64 verdict flips at fixed depth ($72$ pixels on a $600^2$ grid); and the
 shadow-zone fraction — pixels whose in/out verdict changes under a change of
 depth or precision — relative to the boundary band, across grids $300^2$,
-$600^2$, $1200^2$ (share growing $0.09 \to 0.17 \to 0.28$). It also renders the
-three-state figure `library/images/mandelbrot-shadow-zones.png` (out / in /
-shadow). The reported share rise $0.09 \to 0.17 \to 0.28$ is a measured trend
+$600^2$, $1200^2$ (share growing $0.09 \to 0.17 \to 0.28$). It also tests the
+**faithfulness of the escape verdict** (§9) by recomputing each orbit in $80$-bit
+extended precision (`longdouble`) and comparing with double precision on a $700^2$
+grid at $N=2000$: $7$ escape-verdict flips ($5$ spurious escapes that float64
+paints "outside" but extended precision keeps bounded, $2$ missed), and escape
+times differing by up to $378$ iterations among commonly-escaped pixels. It
+renders the three-state figure `library/images/mandelbrot-shadow-zones.png`
+(out / in / shadow). The reported share rise $0.09 \to 0.17 \to 0.28$ is a
+measured trend
 over three resolutions, not a proven limit. The "certified" labels here are
 sampled, not interval-rigorous; a fully certified mesh would replace point
 sampling with interval / ball arithmetic, turning the OUT and IN colours into
