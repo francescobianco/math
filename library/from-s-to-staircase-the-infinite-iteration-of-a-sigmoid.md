@@ -2,7 +2,7 @@
 title: "From S to Staircase: The Infinite Iteration of a Sigmoid on Its Own Box"
 type: paper
 created: 2026-06-14T10:00:00+00:00
-updated: 2026-06-14T11:30:00+00:00
+updated: 2026-06-14T13:00:00+00:00
 ---
 
 # From S to Staircase: The Infinite Iteration of a Sigmoid on Its Own Box
@@ -48,13 +48,22 @@ The central result is a single law:
 > the number of attracting fixed points, and that number is set by how many times
 > the S crosses the diagonal.**
 
-This is forced by one structural fact (Section 8): a continuous increasing
+This is forced by one structural fact (Section 5): a continuous increasing
 self-map has **no orbit of period $>1$** — every orbit is monotone and bounded,
 hence converges to a fixed point. So there is no hysteresis, no escape, no
 endless cycling; only treads and risers.
 
-How many treads depends on the *shape* of the S, and this is the heart of the
-matter — the point on which a first, too-hasty reading of this study was wrong.
+The deepest organizing idea (Section 8) is that the right classifier is not the
+*shape* of the S but the **rotation of its central tangent** — the multiplier
+$s=f'(c)$. As $s$ turns down from vertical through $45°$ ($s=1$, a saddle-node
+that births the middle tread) past horizontal into negative slope ($s=-1$, a
+period-doubling that births a $2$-cycle), the curve is *forced* through one-step
+staircase $\to$ two-step staircase $\to$ N-shape with cycles and chaos. The
+double-bend is not a different object; it is the same S with its centre tangent
+rotated below $45°$.
+
+How many treads depends, in this first pass, on the *shape* of the S — the point
+on which a first, too-hasty reading of this study was wrong.
 A **simple** S (a single inflection) crosses the diagonal at most three times,
 so it yields at most a *one*-step staircase: with a **steep centre**
 ($f'(c)>1$) the centre repels and $f^\infty(x)=a$ on $[a,c)$, $\,b$ on $(c,b]$
@@ -357,20 +366,81 @@ $(r_1,r_2)$, and survives to the limit.
 
 ![The double-bend S and its two-step staircase. Left: the curve crosses the diagonal five times — three attracting treads $a,c,b$ (filled dots) and two repelling thresholds $r_1,r_2$ (open dots); three cobwebs settle on $0$, $\tfrac12$, $1$. Right: $f^N$ for $N=1,2,4,8,20,60$ sharpening into the two-step staircase $a\to c\to b$, with the risers forming at the repellers $r_1=\tfrac14,\,r_2=\tfrac34$.](library/images/s-map-two-step.png)
 
-This is the corrected and complete answer to the motivating question. Whether the
-limit is a one-step or a two-step (or higher) staircase is not a property of "the
-S" in the abstract; it is decided by how many times the curve crosses the
-diagonal and by the slope at each crossing. The steep-centre simple S gives one
-step; the gentle-centre double-bend S gives the two-step $a\to c\to b$. The knees
-$f'=1$ are the critical slope that decides each crossing's stability, and — as the
-centre is lowered through the threshold — they are the **birthplaces** of the new
-middle tread: at the moment $c$'s neighbourhood first dips to slope $1$ while
-touching the diagonal, a repeller–attractor pair is born (a saddle-node
-tangency), and the one-step staircase grows its middle step.
+This already corrects the motivating question: whether the limit is a one-step or
+a two-step staircase is not a property of "the S" in the abstract but of how many
+times the curve crosses the diagonal and the slope at each crossing. But there is
+a still better way to see *why* the second crossing-pair appears at all — not as a
+shape one chooses, but as a consequence forced by rotating a single tangent. That
+is the next section, and it is the right axis for the whole classification.
 
 ---
 
-## 8. How many steps? The count, and the place in the program
+## 8. The right axis: rotate the central tangent, don't change the shape
+
+Sections 6–7 sorted the behaviour by *shape* — simple S versus double-bend. That
+is the wrong axis. The right one is sharper and canonical: classify by the **slope
+of the tangent at the centre**, $s=f'(c)$ — the central multiplier, which is the
+one conjugacy-invariant of the fixed point. The "change of shape" is not an
+independent choice; it is *forced* by rotating that tangent. Picture the tangent
+at $c$ pinned and turning, while the ends $a,b$ stay fixed and attracting, and
+follow $s=f'(c)=\tan\theta$.
+
+**The two-step is forced, not drawn.** When $s>1$ (tangent steeper than the
+diagonal, toward vertical) the centre repels: with $a,b$ attracting we have
+attract–repel–attract, the one-step staircase. Now rotate the tangent down through
+$45°$. The instant $s<1$ the centre *attracts*, so $a,c,b$ are three consecutive
+attractors — which a continuous map cannot have without a repeller between each
+pair. Two fixed points are therefore **compelled into existence**, and one sees
+exactly where: with $g'(a),g'(c),g'(b)<0$, the displacement $g=f-x$ goes negative
+just right of $a$ yet must return to $0$ at $c$, so by the intermediate value
+theorem it has a zero $r_1\in(a,c)$ crossing *upward* — $f'(r_1)>1$, a repeller —
+and symmetrically $r_2\in(c,b)$. The double-bend is not a shape you elect to draw;
+it is the shape the curve is forced into the moment its central tangent tilts below
+$45°$. (Verified by blending the one-step map into the two-step map: the
+fixed-point count jumps $3\to5$ exactly as $s$ crosses $1$, and the basin of $c$
+opens from a single point to the whole interval $(r_1,r_2)$.)
+
+**Past horizontal: the N and the wild.** Keep turning. At $s=0$ the tangent is
+horizontal and $c$ is super-attracting. Past it, $s<0$: the tangent tilts
+*downward*, $f$ stops being increasing at $c$, and the curve folds into an **N**.
+The monotonicity that guaranteed "no cycles" (Section 5) is now gone, and the tame
+staircase theorem lapses. At $s=-1$ (tangent at $-45°$) the centre **period-
+doubles**: it loses stability and a **$2$-cycle** is born around it (verified: the
+cubic with $f'(c)=-1$ shows a $2$-cycle of vanishing amplitude, widening to
+$\{\tfrac13,\tfrac23\}$ by $f'(c)=-\tfrac54$). Beyond, $s<-1$, the N deepens, its
+humps push across the diagonal, and the cascade to longer cycles and chaos begins
+— the regime of the wild maps (the logistic map, the Collatz crests, the
+Mandelbrot boundary). The knees, here, are the humps that "peek across the
+diagonal," each crossing a newly forced fixed point: the geometry the motivating
+intuition described.
+
+So one number — the central multiplier — organizes the entire catalogue:
+
+| $f'(c)$ | central tangent | centre | infinite application |
+|---|---|---|---|
+| $>1$ | steep up (→ vertical) | repeller | one-step staircase (treads $a,b$) |
+| $=1$ | $45°$ | neutral | **saddle-node**: middle tread is born |
+| $0<\cdot<1$ | shallow up | attractor | two-step $a\to c\to b$ |
+| $=0$ | horizontal | super-attractor | two-step, fastest approach |
+| $-1<\cdot<0$ | shallow down (N) | attractor | two-step, alternating approach |
+| $=-1$ | $-45°$ | neutral | **period-doubling**: $2$-cycle is born |
+| $<-1$ | steep down (N) | repeller | cycles $\to$ chaos (the wild) |
+
+![Classifying by the rotation of the central tangent. Left: holding $a,b$ fixed and attracting, the central tangent rotates from slope $1.5$ (one-step, three fixed points) down through $1$ to $0.91$ — the curve is forced to bulge across the diagonal, creating the two repellers $r_1,r_2$ (open dots) of the two-step staircase. Middle: destiny versus central slope; for $f'(c)>1$ only the two outer treads $0,1$ are reached, and at the saddle-node $f'(c)=1$ a third tread at $\tfrac12$ appears. Right: rotated past horizontal to slope $-1.3$, the map is an N — non-monotone — and a cobweb spirals onto a $2$-cycle: the gateway out of the tame staircase into cycles and chaos.](library/images/s-map-tangent-rotation.png)
+
+This is the corrected classification, and it settles the motivating point. The
+double-S was never a composite object; it is the simple S with its central tangent
+rotated past $45°$, which *forces* the extra crossings. The very same rotation,
+continued past horizontal, is the bridge out of the tame staircase world into the
+wild one: the moment the tangent tilts below horizontal, monotonicity breaks and
+cycles appear. The classification is not by what the curve *looks like*, but by
+**how its central tangent is turned** — and the two critical angles, $f'(c)=+1$
+(saddle-node) and $f'(c)=-1$ (period-doubling), are where the destiny changes
+kind.
+
+---
+
+## 9. How many steps? The count, and the place in the program
 
 The pattern generalizes cleanly. The number of treads of $f^\infty$ is the number
 of attracting fixed points of $f$, and attractors and repellers must alternate
@@ -403,7 +473,7 @@ hypotheses.
 
 ---
 
-## 9. Conclusion
+## 10. Conclusion
 
 An S-curve on its own box is a switch with a memoryless rule. Its displacement
 $g=f-x$ shows the basins; the critical slope $f'=1$ sorts each diagonal crossing
@@ -442,4 +512,10 @@ $f(x)=x-6\,x(x-\tfrac14)(x-\tfrac12)(x-\tfrac34)(x-1)$: it confirms the five fix
 points with $a,c,b$ attracting and $r_1,r_2$ repelling, checks the basins
 $[0,\tfrac14)\to0$, $(\tfrac14,\tfrac34)\to\tfrac12$, $(\tfrac34,1]\to1$, and
 renders `library/images/s-map-two-step.png` (the double-bend S with cobwebs and
-$f^N$ forming the two-step staircase $a\to c\to b$).
+$f^N$ forming the two-step staircase $a\to c\to b$). Finally it produces
+`library/images/s-map-tangent-rotation.png`: blending the one-step map into the
+two-step map to rotate the central tangent, it shows the fixed-point count jump
+$3\to5$ as $f'(c)$ crosses $1$ (the saddle-node birthing the middle tread), the
+destiny-versus-central-slope diagram, and an N-shaped map ($f'(c)=-1.3$) whose
+cobweb spirals onto a $2$-cycle — the period-doubling gateway to the wild
+regime.

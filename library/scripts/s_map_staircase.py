@@ -266,7 +266,73 @@ def plot_two_step(out=None):
     print(f"wrote {out}")
 
 
+def plot_tangent_rotation(out=None):
+    """Classify by the central multiplier: rotate the tangent at c.
+    one-step (f'(c)>1) -> saddle-node (=1) -> two-step (<1) -> N / 2-cycle (=-1)."""
+    import matplotlib.pyplot as plt
+
+    def ft(x, t):
+        return (1 - t) * f(x) + t * f2(x)        # blend one-step -> two-step
+
+    def slope_c(t, h=1e-6):
+        return (ft(C + h, t) - ft(C - h, t)) / (2 * h)
+
+    def cubicN(x, Acoef):
+        return x + Acoef * x * (x - C) * (x - B)  # central slope 1 - Acoef/4
+
+    xs = np.linspace(0, 1, 700)
+    fig, ax = plt.subplots(1, 3, figsize=(15, 4.8))
+
+    a0 = ax[0]
+    a0.plot(xs, xs, "--", color="gray", lw=1)
+    for t, col in ((0.0, "#b8336a"), (0.8, "#e08a1e"), (1.0, "#2a6f97")):
+        a0.plot(xs, ft(xs, t), color=col, lw=1.8, label=f"slope at c = {slope_c(t):.2f}")
+    for p in (A, C, B):
+        a0.plot(p, p, "o", color="black", ms=6)
+    for p in (R1, R2):
+        a0.plot(p, p, "o", mfc="white", mec="black", ms=6)
+    a0.set_title("Rotate the central tangent through 1\n(a,b stay attracting; r1,r2 forced in)", fontsize=10)
+    a0.set_xlabel("x"); a0.set_ylabel("f(x)"); a0.legend(fontsize=8, loc="upper left")
+
+    a1 = ax[1]
+    for t in np.linspace(0, 1, 140):
+        s = slope_c(t)
+        finals = []
+        for x0 in np.linspace(0.02, 0.98, 60):
+            x = x0
+            for _ in range(400):
+                x = ft(x, t)
+            finals.append(x)
+        a1.plot([s] * len(finals), finals, ".", color="#444", ms=1.2)
+    a1.axvline(1, color="red", lw=1, ls=":")
+    a1.text(1.01, 0.10, "saddle-node\nat slope 1", color="red", fontsize=8)
+    a1.set_title("Destiny vs central slope:\n2 treads -> 3 treads at slope 1", fontsize=10)
+    a1.set_xlabel("slope at c"); a1.set_ylabel("attractor reached"); a1.invert_xaxis()
+
+    a2 = ax[2]
+    Acoef = 9.2  # central slope 1 - 9.2/4 = -1.3
+    a2.plot(xs, cubicN(xs, Acoef), color="#6a4c93", lw=1.8, label="N-shape, slope at c = -1.30")
+    a2.plot(xs, xs, "--", color="gray", lw=1)
+    x = C + 0.05
+    for _ in range(60):
+        y = cubicN(x, Acoef)
+        a2.plot([x, x], [x, y], color="#1ea05a", lw=0.5)
+        a2.plot([x, y], [y, y], color="#1ea05a", lw=0.5)
+        x = y
+    a2.plot(C, C, "o", mfc="white", mec="black", ms=6)
+    a2.set_xlim(0, 1); a2.set_ylim(0, 1)
+    a2.set_title("Rotate past horizontal: N-shape\nslope -1 period-doubles -> 2-cycle (wild)", fontsize=10)
+    a2.set_xlabel("x"); a2.set_ylabel("f(x)"); a2.legend(fontsize=8, loc="upper left")
+
+    fig.tight_layout()
+    if out is None:
+        out = Path(__file__).resolve().parent.parent / "images" / "s-map-tangent-rotation.png"
+    fig.savefig(out, dpi=150)
+    print(f"wrote {out}")
+
+
 if __name__ == "__main__":
     report()
     plot()
     plot_two_step()
+    plot_tangent_rotation()
