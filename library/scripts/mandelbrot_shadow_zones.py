@@ -202,6 +202,69 @@ def render_three_state(res=900, out=None):
     print(f"wrote {out}")
 
 
+def render_escape_vs_attractors(res=900, out=None):
+    """Two ways to draw M. Left: classic escape-time (iterated). Right: drawn
+    from ATTRACTORS only -- each hyperbolic component coloured by the period of
+    its attracting cycle, with the exact cardioid and period-2 disk overlaid.
+    The fractal boundary is present on the left and ABSENT on the right: it is
+    not made of attractors."""
+    import matplotlib.pyplot as plt
+
+    win = (-2.2, 0.7, -1.25, 1.25)
+    re = np.linspace(win[0], win[1], res)
+    im = np.linspace(win[2], win[3], res)
+    C = (re[None, :] + 1j * im[:, None]).astype(np.complex128)
+
+    # left: escape-time
+    Z = np.zeros_like(C); it = np.zeros(C.shape); al = np.ones(C.shape, bool)
+    for n in range(300):
+        Z[al] = Z[al] * Z[al] + C[al]; e = al & (np.abs(Z) > 2); it[e] = n; al &= ~e
+    esc_img = np.where(al, 0.0, it)
+
+    # right: attractor tiling by attracting-cycle period
+    with np.errstate(over="ignore", invalid="ignore"):
+        settle, Pmax, tol = 400, 40, 1e-4
+        Z = np.zeros_like(C); esc = np.zeros(C.shape, bool)
+        for _ in range(settle):
+            Z = np.where(esc, Z, Z * Z + C); esc |= np.abs(Z) > 2
+            Z = np.where(esc, 2 + 0j, Z)
+        period = np.zeros(C.shape, int); Z0 = Z.copy(); W = Z.copy()
+        for p in range(1, Pmax + 1):
+            W = np.where(esc, 2 + 0j, W * W + C)
+            period[(~esc) & (period == 0) & (np.abs(W - Z0) < tol)] = p
+        lam = np.ones(C.shape, complex); zz = Z0.copy()
+        for i in range(Pmax):
+            act = period > i; lam[act] *= 2 * zz[act]
+            zz = np.where(esc, 2 + 0j, zz * zz + C)
+    attract = (period > 0) & (np.abs(lam) < 1)
+    periodimg = np.where(attract, period, 0)
+
+    fig, ax = plt.subplots(1, 2, figsize=(14, 6.2))
+    ax[0].imshow(esc_img, extent=win, origin="lower", cmap="gnuplot2")
+    ax[0].set_title("Classic Mandelbrot (escape-time, iterated)\n"
+                    "solid body + fuzzy fractal boundary")
+    ax[0].set_xlabel("Re c"); ax[0].set_ylabel("Im c")
+
+    cmap = plt.cm.get_cmap("tab20", 20)
+    masked = np.ma.masked_where(periodimg == 0, periodimg % 20 + 1)
+    ax[1].imshow(np.ones((res, res, 3)), extent=win, origin="lower")
+    ax[1].imshow(masked, extent=win, origin="lower", cmap=cmap, vmin=1, vmax=20)
+    t = np.linspace(0, 2 * np.pi, 800); mu = np.exp(1j * t); card = mu / 2 - mu * mu / 4
+    ax[1].plot(card.real, card.imag, "k-", lw=1.0)
+    th = np.linspace(0, 2 * np.pi, 400)
+    ax[1].plot(-1 + 0.25 * np.cos(th), 0.25 * np.sin(th), "k-", lw=1.0)
+    ax[1].set_xlim(win[0], win[1]); ax[1].set_ylim(win[2], win[3])
+    ax[1].set_title("Drawn from attractors only (coloured by cycle period)\n"
+                    "exact cardioid + period-2 disk in black; boundary is ABSENT")
+    ax[1].set_xlabel("Re c"); ax[1].set_ylabel("Im c")
+
+    fig.tight_layout()
+    if out is None:
+        out = Path(__file__).resolve().parent.parent / "images" / "mandelbrot-escape-vs-attractors.png"
+    fig.savefig(out, dpi=150)
+    print(f"wrote {out}")
+
+
 if __name__ == "__main__":
     print("=" * 64)
     print("What if fractals don't exist? Mandelbrot as a machine artifact")
@@ -211,3 +274,4 @@ if __name__ == "__main__":
     shadow_zone()
     escape_faithfulness()
     render_three_state()
+    render_escape_vs_attractors()

@@ -2,7 +2,7 @@
 title: "What If Fractals Don't Exist? The Mandelbrot Set Between a Wild Edge and a Finite Machine"
 type: paper
 created: 2026-06-13T18:30:00+00:00
-updated: 2026-06-14T17:30:00+00:00
+updated: 2026-06-14T18:45:00+00:00
 ---
 
 # What If Fractals Don't Exist? The Mandelbrot Set Between a Wild Edge and a Finite Machine
@@ -754,6 +754,21 @@ non-separable in the strongest sense. The honest picture is a tame body welded t
 a tame exterior along a seam that is dimension-$2$ fractal, possibly of positive
 area, and computationally undecidable — and the seam is the only fractal in the
 room.
+
+This is something one can *draw*. Beside the classic escape-time render — a solid
+body fringed with fractal lace — put a second picture built **from attractors
+only**: colour each parameter by the period of its attracting cycle, and overlay
+the cardioid and the period-$2$ disk as their *exact* analytic curves. The body
+comes out identical, tiled cleanly by its hyperbolic components — but the lace is
+simply **absent**. It cannot appear, because it is not made of attractors: the
+escape-time picture draws $M$ from outside (by who leaves), the attractor picture
+from inside (by who has a cycle), and the boundary is exactly what neither the
+escapers nor the cyclers occupy. The contrast is the whole thesis in one image:
+the tame body is analytic and exact from within; the fractal edge is the
+unreachable limit that only the (machine-dependent) escape-time render even
+gestures at.
+
+![Left: the classic Mandelbrot, escape-time (iterated) — a solid body wrapped in a fuzzy fractal boundary. Right: the same set drawn from attractors only, each hyperbolic component coloured by the period of its attracting cycle, with the exact cardioid and period-2 disk drawn as black analytic curves. The interior matches; the fractal boundary is absent on the right — attractors fill the body but never reach the edge.](library/images/mandelbrot-escape-vs-attractors.png)
 
 ---
 
