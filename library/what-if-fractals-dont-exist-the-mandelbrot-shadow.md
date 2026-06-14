@@ -2,7 +2,7 @@
 title: "What If Fractals Don't Exist? The Mandelbrot Set Between a Wild Edge and a Finite Machine"
 type: paper
 created: 2026-06-13T18:30:00+00:00
-updated: 2026-06-14T18:45:00+00:00
+updated: 2026-06-14T19:30:00+00:00
 ---
 
 # What If Fractals Don't Exist? The Mandelbrot Set Between a Wild Edge and a Finite Machine
@@ -769,6 +769,25 @@ unreachable limit that only the (machine-dependent) escape-time render even
 gestures at.
 
 ![Left: the classic Mandelbrot, escape-time (iterated) — a solid body wrapped in a fuzzy fractal boundary. Right: the same set drawn from attractors only, each hyperbolic component coloured by the period of its attracting cycle, with the exact cardioid and period-2 disk drawn as black analytic curves. The interior matches; the fractal boundary is absent on the right — attractors fill the body but never reach the edge.](library/images/mandelbrot-escape-vs-attractors.png)
+
+The exterior has the dual analytic skeleton, and it is in a sense the *most*
+decidable region: every parameter outside $M$ has a **guaranteed, finite** escape
+certificate (its true orbit must exceed $2$ at some finite step, exact for
+algebraic $c$ — §9), whereas inside only the hyperbolic strata have a finite
+certificate. Globally, the Douady–Hubbard uniformization makes
+$\mathbb{C}\setminus M$ conformally the outside of the unit disk, with an explicit
+**Green's function** (potential) $G(c)=\lim_n 2^{-n}\log|z_n|$ — harmonic outside,
+zero on $\partial M$. Its level sets are **equipotentials** (smooth closed curves
+shrinking onto $M$) and its gradient flow lines are the **external rays** (landing
+on $\partial M$). This foliation is well-conditioned — no boundary chaos — and is
+the analytic way to draw the outside, dual to the attractors that draw the inside.
+And the symmetry is exact at the seam: the attractor tiling approaches
+$\partial M$ from within and the equipotentials/rays approach it from without, but
+*neither contains it* — the equipotential $G=0$ **is** the boundary (the limit),
+and whether every external ray lands (and where) is, once more, the MLC question.
+The fractal edge is the common limit of both skeletons, reached by neither.
+
+![Left: classic escape-time Mandelbrot. Right: the exterior drawn analytically — equipotentials of the Green's function $G$ (blue, level sets shrinking onto $M$) and external rays (red, gradient flow lines landing on $\partial M$), with $M$ filled black. Together with the attractor figure this is the full triptych: the inside drawn from attractors, the outside from the potential, and the fractal boundary the unreachable seam between them.](library/images/mandelbrot-exterior-analytic.png)
 
 ---
 

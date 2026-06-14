@@ -265,6 +265,62 @@ def render_escape_vs_attractors(res=900, out=None):
     print(f"wrote {out}")
 
 
+def render_exterior_analytic(res=800, out=None):
+    """The dual skeleton: the exterior drawn analytically. The Green's function
+    (potential) G(c) = lim 2^-n log|z_n| foliates C\\M into equipotentials
+    (its level sets) and external rays (its gradient flow lines, orthogonal to
+    them, landing on dM). Both approach the boundary; neither contains it."""
+    import matplotlib.pyplot as plt
+
+    win = (-2.3, 0.8, -1.3, 1.3)
+    re = np.linspace(win[0], win[1], res)
+    im = np.linspace(win[2], win[3], res)
+    C = (re[None, :] + 1j * im[:, None]).astype(np.complex128)
+
+    # left: classic escape-time
+    Z = np.zeros_like(C); it = np.zeros(C.shape); al = np.ones(C.shape, bool)
+    for n in range(300):
+        Z[al] = Z[al] * Z[al] + C[al]; e = al & (np.abs(Z) > 2); it[e] = n; al &= ~e
+    esc_img = np.where(al, np.nan, it); inside = al
+
+    # right: Green's function (potential), well-conditioned in the exterior
+    with np.errstate(over="ignore", invalid="ignore"):
+        Z = np.zeros_like(C); G = np.zeros(C.shape); live = np.ones(C.shape, bool)
+        for n in range(300):
+            Z[live] = Z[live] * Z[live] + C[live]
+            esc = live & (np.abs(Z) > 1e10)
+            G[esc] = np.log(np.abs(Z[esc])) / (2.0 ** n)
+            live &= ~esc
+    Gpos = np.where(live, np.nan, G)
+    RE, IM = np.meshgrid(re, im)
+
+    fig, ax = plt.subplots(1, 2, figsize=(14, 6.2))
+    ax[0].imshow(esc_img, extent=win, origin="lower", cmap="gnuplot2")
+    ax[0].set_title("Classic Mandelbrot (escape-time, iterated)")
+    ax[0].set_xlabel("Re c"); ax[0].set_ylabel("Im c")
+
+    ax[1].imshow(np.where(inside, 1.0, np.nan), extent=win, origin="lower",
+                 cmap="gray_r", vmin=0, vmax=1)
+    G0 = np.nan_to_num(Gpos, nan=0.0)
+    ax[1].contour(RE, IM, G0, levels=[0.02, 0.04, 0.08, 0.15, 0.3, 0.6, 1.2],
+                  colors="#2a6f97", linewidths=0.8)
+    dx, dy = re[1] - re[0], im[1] - im[0]
+    gy, gx = np.gradient(G0, dy, dx)
+    m = ~np.isnan(Gpos)
+    ax[1].streamplot(RE, IM, np.where(m, gx, np.nan), np.where(m, gy, np.nan),
+                     density=1.4, color="#b8336a", linewidth=0.5, arrowstyle="-")
+    ax[1].set_xlim(win[0], win[1]); ax[1].set_ylim(win[2], win[3])
+    ax[1].set_title("Drawn from outside, analytically\n"
+                    "equipotentials (blue) + external rays (red), landing on dM")
+    ax[1].set_xlabel("Re c"); ax[1].set_ylabel("Im c")
+
+    fig.tight_layout()
+    if out is None:
+        out = Path(__file__).resolve().parent.parent / "images" / "mandelbrot-exterior-analytic.png"
+    fig.savefig(out, dpi=150)
+    print(f"wrote {out}")
+
+
 if __name__ == "__main__":
     print("=" * 64)
     print("What if fractals don't exist? Mandelbrot as a machine artifact")
@@ -275,3 +331,4 @@ if __name__ == "__main__":
     escape_faithfulness()
     render_three_state()
     render_escape_vs_attractors()
+    render_exterior_analytic()
