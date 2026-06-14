@@ -1,6 +1,13 @@
 {
   "documents": [
     {
+      "slug": "nota-c-0.1-0.3i-e-dentro-mandelbrot",
+      "title": "Nota: c = 0.1 − 0.3i è dentro M (prova facile, analitica)",
+      "type": "notes",
+      "created": "2026-06-14T18:00:00+00:00",
+      "updated": "2026-06-14T18:00:00+00:00"
+    },
+    {
       "slug": "from-s-to-staircase-the-infinite-iteration-of-a-sigmoid",
       "title": "From S to Staircase: The Infinite Iteration of a Sigmoid on Its Own Box",
       "type": "paper",
