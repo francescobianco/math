@@ -2,7 +2,7 @@
 title: "What If Fractals Don't Exist? The Mandelbrot Set Between a Wild Edge and a Finite Machine"
 type: paper
 created: 2026-06-13T18:30:00+00:00
-updated: 2026-06-14T16:30:00+00:00
+updated: 2026-06-14T17:30:00+00:00
 ---
 
 # What If Fractals Don't Exist? The Mandelbrot Set Between a Wild Edge and a Finite Machine
@@ -699,7 +699,65 @@ not to prove anything with.
 
 ---
 
-## 12. Conclusion
+## 12. The fractal is the boundary, not the set
+
+Three threads of this paper converge on a single correction to the casual phrase
+"the Mandelbrot fractal," worth stating plainly because it sharpens what is — and
+is not — fractal here.
+
+**The body of $M$ is not a fractal.** "Fractal" has no single definition, but on
+the two standard ones the filled set fails both. By **self-similarity**: $M$ is
+not self-similar. It carries shrunken near-copies of itself — the baby
+Mandelbrots strung along its edge — but they are *approximate*, each dressed in
+different filaments; $M$ is only *quasi*-self-similar, never self-similar the way
+a Koch curve or a Sierpiński gasket is. By **dimension excess** (Mandelbrot's own
+criterion, $\dim_H > \dim_{\text{top}}$): the body is a plain two-dimensional
+blob, $\dim_H = \dim_{\text{top}} = 2$, no excess at all. The bulk of $M$ — its
+hyperbolic interior components, each an ordinary topological disk — is as tame as
+a planar region gets.
+
+**The boundary is the fractal.** What carries the fractality is $\partial M$: a
+set that is morally a boundary (topological dimension $1$) yet of **Hausdorff
+dimension $2$** (Shishikura, §7) — maximal, and the genuine dimension excess. The
+lace we admire is the boundary, and the boundary alone is the fractal object. The
+reflexive "the Mandelbrot set is a fractal" should read: *the **boundary** of the
+Mandelbrot set is a fractal; the set is a tame body with a fractal edge.*
+
+**Three names for one place.** The striking part is that $\partial M$ is at once
+three things this paper met separately:
+
+- the **fractal** locus (dimension $2$, a theorem about the true set — §7);
+- the **non-hyperbolic** locus (neutral, parabolic, Siegel, infinitely-
+  renormalizable parameters — the watershed between the attractor at $\infty$ and
+  the attracting cycle — §8);
+- the **undecidable** locus (where the finite escape-time test returns no verdict
+  and the pseudo-orbit is unfaithful on *both* sides — §§8–9).
+
+These are not the same property — the first is geometric and machine-independent,
+the third is about our finite access — but they sit on exactly the same set. In
+that precise sense the fractal of Mandelbrot *is* its undecidable skin: the
+dimension-$2$ boundary and the locus of computational indecision coincide point
+for point. (Registers apart, as always: $\partial M$ would be fractal at infinite
+precision too — its fractality is a theorem, its undecidability is ours.)
+
+**Why it cannot be cleanly excised.** A free-standing fractal — a Koch curve —
+sits alone in the plane. $\partial M$ cannot: it exists *only* as the shared edge
+of two tame regions, the interior of $M$ and its exterior. Remove it and what
+remains on either side is not fractal — the interior is a union of disks, the
+exterior is conformally a disk (the Douady–Hubbard uniformization). So the
+fractal here is irreducibly an **interface**, not an excisable object: one cannot
+split the plane into "the fractal" plus tame leftovers that are themselves
+fractal. And we do not even know how *thick* the interface is — whether
+$\partial M$ has positive Lebesgue area is a **famous open problem**. If it does,
+the fractal edge is not a measure-zero curtain but a region of positive area,
+non-separable in the strongest sense. The honest picture is a tame body welded to
+a tame exterior along a seam that is dimension-$2$ fractal, possibly of positive
+area, and computationally undecidable — and the seam is the only fractal in the
+room.
+
+---
+
+## 13. Conclusion
 
 Do fractals exist? The honest answer is a careful *yes — but the picture is not
 the set.* (*Theorem.*) The Mandelbrot set exists, is connected, and has a
@@ -745,7 +803,7 @@ locally connected, keeps its own counsel just past the last bit of the mantissa.
 
 ---
 
-## 13. Coda: definition by deferral, and the theory this is a premise for
+## 14. Coda: definition by deferral, and the theory this is a premise for
 
 *A closing note that steps outside this paper's scope, to say what the paper is
 for. Register: program, not theorem.*
