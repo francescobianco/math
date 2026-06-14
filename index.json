@@ -1,6 +1,13 @@
 {
   "documents": [
     {
+      "slug": "from-s-to-staircase-the-infinite-iteration-of-a-sigmoid",
+      "title": "From S to Staircase: The Infinite Iteration of a Sigmoid on Its Own Box",
+      "type": "paper",
+      "created": "2026-06-14T10:00:00+00:00",
+      "updated": "2026-06-14T10:00:00+00:00"
+    },
+    {
       "slug": "what-if-fractals-dont-exist-the-mandelbrot-shadow",
       "title": "What If Fractals Don't Exist? The Mandelbrot Set Between a Wild Edge and a Finite Machine",
       "type": "paper",
