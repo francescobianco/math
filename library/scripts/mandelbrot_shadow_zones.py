@@ -126,6 +126,14 @@ def escape_faithfulness(res=700, maxiter=2000):
           f"missed: {missed})")
     print(f"   among commonly-escaped pixels: max |escape-time difference| = "
           f"{int(dt.max())}, #(>=5) = {int((dt >= 5).sum())}")
+    # the guinea pigs: f64 says escaped, 80-bit says bounded
+    re = np.linspace(WINDOW[0], WINDOW[1], res)
+    im = np.linspace(WINDOW[2], WINDOW[3], res)
+    ys, xs = np.where(esc64 & ~esc80)
+    if len(ys):
+        print(f"   guinea pigs (f64 OUT, 80-bit IN) -- finite precision names either side:")
+        for y, x in list(zip(ys, xs))[:5]:
+            print(f"     c ~ {re[x]:+.6f} {im[y]:+.6f}i  (f64 escape-iter={int(it64[y,x])})")
     print(f"   -> the escape inequality is a theorem about the TRUE orbit; the")
     print(f"      computed crossing is a pseudo-orbit event, unfaithful near dM.")
     print(f"      Only interval arithmetic certifies escape; plain float does not.")

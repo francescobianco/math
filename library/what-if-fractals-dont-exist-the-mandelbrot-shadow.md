@@ -2,7 +2,7 @@
 title: "What If Fractals Don't Exist? The Mandelbrot Set Between a Wild Edge and a Finite Machine"
 type: paper
 created: 2026-06-13T18:30:00+00:00
-updated: 2026-06-14T15:30:00+00:00
+updated: 2026-06-14T16:30:00+00:00
 ---
 
 # What If Fractals Don't Exist? The Mandelbrot Set Between a Wild Edge and a Finite Machine
@@ -502,6 +502,48 @@ hand, and the red skin in the figure should be read as covering spurious escapes
 just as much as premature blacks. The doubt that began at the black has reached
 all the way across the white: at the edge, the finite machine guesses on both
 sides.
+
+**A guinea pig, and the price of finite precision.** The spurious escapes are not
+a nuisance to average away; each is a concrete *witness*. Take one the script
+turns up:
+
+$$
+c \approx -0.612303 - 0.405579\,i,
+$$
+
+which float64 declares escaped at iteration $1908$ — a long, threshold-grazing
+linger before it crosses — while $80$-bit precision keeps its orbit bounded.
+Which is right? Neither computation is the orbit; both are pseudo-orbits, and the
+true verdict is fixed only by the *exact* value of $c$ carried to the end of an
+infinite process. Push the precision higher and the verdict can move again. The
+point is a guinea pig for a general fact, exactly the one the threshold-grazing
+suggests: **near $|z|=2$ the verdict is determined only by the complete, infinite
+data of $c$; any finite truncation can name either side.** (*Theorem.*) Two facts
+make this precise. First, *almost no $c$ can even be handed to the machine*: the
+computable reals are countable, so almost every $c\in\mathbb C$ is
+non-computable, and for such a parameter we never possess $c$ itself, only a
+finite approximation — the question "is *this* $c$ in $M$?" cannot be posed
+exactly. Second, the verdict function $\chi_M$ is **discontinuous on every point
+of $\partial M$** (each neighbourhood holds both members and non-members), and a
+$\{0,1\}$-valued discontinuous function is not computable in the sense of
+computable analysis: no algorithm, fed $c$ to ever-finer precision, returns a
+boundary point's membership. The discontinuity *is* the orbit grazing the
+threshold.
+
+Is this "breaking the axiom of choice," as the intuition put it? Not literally —
+defining $M$ needs no choice; each $c$'s fate is fixed by a property, and the
+total verdict $\chi_M$ exists by the law of excluded middle alone. But the
+instinct points at something real and adjacent: that verdict is a
+**non-constructive total function**. Classical logic hands us an answer at every
+one of uncountably many parameters — most of which no machine can name, and whose
+answers no machine can compute. We have helped ourselves, for free, to a verdict
+"in or out" at every point of a continuum we cannot survey, and the boundary is
+where the bill comes due: the one place that free assignment is not also a
+continuous, computable one. Finite precision did not break an axiom; it revealed
+that the axiom — excluded middle, applied pointwise to an infinite process — was
+doing work no computation can redo. Only if we could write the irrational $c$ to
+infinite precision could we honestly speak of its membership; since we cannot,
+the guinea pig has, at finite precision, two truthful and opposite verdicts.
 
 ---
 
