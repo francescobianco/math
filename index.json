@@ -1,6 +1,13 @@
 {
   "documents": [
     {
+      "slug": "nota-progetto-esploratore-analitico-mandelbrot",
+      "title": "Nota di progetto: esploratore analitico del Mandelbrot (web / JS)",
+      "type": "notes",
+      "created": "2026-06-14T20:00:00+00:00",
+      "updated": "2026-06-14T20:00:00+00:00"
+    },
+    {
       "slug": "nota-c-0.1-0.3i-e-dentro-mandelbrot",
       "title": "Nota: c = 0.1 − 0.3i è dentro M (prova facile, analitica)",
       "type": "notes",
