@@ -2,7 +2,7 @@
 title: "What If Fractals Don't Exist? The Mandelbrot Set Between a Wild Edge and a Finite Machine"
 type: paper
 created: 2026-06-13T18:30:00+00:00
-updated: 2026-06-14T14:30:00+00:00
+updated: 2026-06-14T15:30:00+00:00
 ---
 
 # What If Fractals Don't Exist? The Mandelbrot Set Between a Wild Edge and a Finite Machine
@@ -772,6 +772,24 @@ definition** — the place where naming a thing by its infinite application stop
 being the same as understanding it. The honest fractal, like the honest
 Collatz, is a map of exactly that frontier. Crossing it is the work an analytic
 theory of infinite application would be for.
+
+The bottom line is one sentence, and it is the program's premise in miniature.
+**For every $c$ a destiny exists** — the orbit of $0$ is a determined sequence,
+bounded or not, so membership is settled for every parameter the instant the set
+is defined; that bare existence is exactly what makes $M$ a set. On the
+**trivial strata** we can also *name* the destiny: inside a hyperbolic component
+an attracting cycle can be exhibited, and in the exterior an enclosing ball
+crosses radius $2$ (§9) — there the verdict is explicit and certifiable.
+Everywhere else — the boundary, the non-hyperbolic parameters — the destiny
+still exists but we hold no finite means to exhibit it, and "a destiny exists"
+is the most we can honestly assert. That gap, between the destiny the
+*definition guarantees* and the destiny a theory would let us *compute*, is the
+entire content of the deferral. It is also the exact job description of an
+analytic theory of the infinite application: to convert the bare existential —
+*for every $c$, some destiny* — into the explicit map $c \mapsto$ its destiny.
+Until then, the trivial points are the only ones we have truly read; for all the
+rest we know only that an answer is there, waiting past the last iteration we
+were willing to compute.
 
 ---
 
